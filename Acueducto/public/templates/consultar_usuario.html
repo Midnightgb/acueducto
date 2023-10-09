@@ -13,7 +13,7 @@
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.7.1/css/buttons.dataTables.min.css">
-    <script src="sweetalert2.all.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11">
 </head>
 <style>
     /* Cambia el color de fondo del modal de copia */
@@ -56,7 +56,7 @@
                             <th>Documento</th>
                             <th>Ciudad</th>
                             {% if usuario.rol == 'SuperAdmin' or usuario.rol == 'Admin' %}
-                            <th>estado</th>
+                                <th>estado</th>
                             {% endif %}
                             <th>Direccion</th>
                             <th class="dt-no-sorting"></th>
@@ -65,34 +65,31 @@
                     </thead>
                     <tbody>
                         {% for user in usuarios %}
-                        <tr>
-                            <td>{{ user.nom_usuario }}</td>
-                            <td>{{ user.apellido_usuario }}</td>
-                            <td>{{ user.correo }}</td>
-                            <td>{{ user.rol }}</td>
-                            <td>{{ user.tipo_doc }}</td>
-                            <td>{{ user.num_doc}}</td>
-                            <td>{{ user.municipio }}</td>
-                            {% if usuario.rol == 'SuperAdmin' or usuario.rol == 'Admin' %}
-                            <td><img src="{{ url_for('static', path='assets/images/')}}{{user.estado}}.png"
-                                    alt="{{ user.estado }}"></td>
-                            {% endif %}
-                            <td>{{ user.direccion }}</td>
-
-                            <td>
-                                <form action="/EditarUsuarios/" method="POST">
-                                    <input type="hidden" name="id_usuario" value="{{ user.id_usuario }}">
-                                    <button type="submit" class="btn btn-warning">Editar</button>
-                                </form>
-                            <td>
-                                {% if user.estado == 'Activo' %}
-                                <button type="button" class="btn btn-danger"
-                                    onclick="confirmDelete('{{ user.id_usuario }}')">
-                                    Desactivar
-                                </button>
+                            <tr>
+                                <td>{{ user.nom_usuario }}</td>
+                                <td>{{ user.apellido_usuario }}</td>
+                                <td>{{ user.correo }}</td>
+                                <td>{{ user.rol }}</td>
+                                <td>{{ user.tipo_doc }}</td>
+                                <td>{{ user.num_doc}}</td>
+                                <td>{{ user.municipio }}</td>
+                                {% if usuario.rol == 'SuperAdmin' or usuario.rol == 'Admin' %}
+                                <td><img src="{{ url_for('static', path='assets/images/')}}{{user.estado}}.png" alt="{{ user.estado }}"></td>
                                 {% endif %}
-                            </td>
-                        </tr>
+                                <td>{{ user.direccion }}</td>
+
+                                <td><form action="/EditarUsuarios/" method="POST">
+                                        <input type="hidden" name="id_usuario" value="{{ user.id_usuario }}">
+                                        <button type="submit" class="btn btn-warning">Editar</button>
+                                    </form>
+                                <td>
+                                    {% if user.estado == 'Activo' %}
+                                        <button type="button" class="btn btn-danger" onclick="confirmDelete('{{ user.id_usuario }}')"> 
+                                            Desactivar
+                                        </button>
+                                    {% endif %}
+                                </td>
+                            </tr>
                         {% endfor %}
                     </tbody>
                 </table>
@@ -114,8 +111,7 @@
                             </div>
                             <div class="modal-footer">
                                 <div class="content-buttons">
-                                    <button type="button" id="confirmDeleteButton" class="btn btn-danger">Desactivar
-                                        usuario</button>
+                                    <button type="button" id="confirmDeleteButton" class="btn btn-danger">Desactivar usuario</button>
                                 </div>
                             </div>
                         </form>
@@ -139,16 +135,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/vfs_fonts.js"></script>
     <script src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.print.min.js"></script>
 
-    {% if alerta: %}
-    <script>
-        Swal.fire({
-            icon: '{{alerta.color}}',
-            title: '{{alerta.mensaje}}',
-            showConfirmButton: false,
-            timer: 1500
-        })
-    </script>
-    {% endif %}
     <script>
         $(document).ready(function () {
             $('#dataUsers').DataTable({
@@ -210,8 +196,9 @@
                         location.reload();
                     },
                     error: function (error) {
-
+                         
                         console.error('Error al cambiar el estado del Usuario:', error);
+                        // Puedes mostrar un mensaje de error al user si es necesario
                     }
                 });
             });
