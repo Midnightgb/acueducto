@@ -111,13 +111,19 @@ def cambiarEstadoUsuario(
             if rol_usuario not in {SUPER_ADMIN, ADMIN}:
                 raise HTTPException(
                     status_code=403, detail="No cuenta con los permisos para cambiar el estado")
-
+            viviendas = db.query(Vivienda).filter(Vivienda.id_usuario == id_usuario).first()
+            
             # Cambia el estado del usuario a "Inactivo"
             usuario_a_cambiar = db.query(Usuario).filter_by(
                 id_usuario=id_usuario).first()
             if not usuario_a_cambiar:
                 raise HTTPException(
                     status_code=404, detail="Usuario no encontrado")
+            
+            if viviendas:
+                raise HTTPException(
+                    status_code=403, detail="No se puede cambiar el estado del usuario porque tiene viviendas asociadas")
+
 
             # CAMBIAR ESTADO ACTIVO O INACTIVO
             nuevoEstado = 'Inactivo'

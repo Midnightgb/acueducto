@@ -208,8 +208,15 @@
                         location.reload();
                     },
                     error: function (error) {
-
-                        console.error('Error al cambiar el estado del Usuario:', error);
+                        $('#confirmDeleteModal').modal('hide');
+                        Swal.fire({
+                            position: 'center',
+                            icon: 'error',
+                            title: 'Error al cambiar el estado del usuario',error,
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
+                        console.log('Error al cambiar el estado del usuario:', error);
                         // Puedes mostrar un mensaje de error al user si es necesario
                     }
                 });
