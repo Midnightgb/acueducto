@@ -53,3 +53,17 @@ class Token(Base):
     id_token = Column(Integer, primary_key=True,
                       autoincrement=True, nullable=False)
     token = Column(String(255), nullable=False)
+
+
+class Vivienda(Base):
+    __tablename__ = "inmuebles_suscritor"
+    id_inmueble = Column(Integer, primary_key=True, autoincrement=True)
+    id_usuario = Column(String(30), ForeignKey('usuarios.id_usuario'))
+    direccion = Column(String(100))
+    estrato = Column(String(50))
+    uso = Column(Enum('Doméstico', 'Industrial',
+                 'Institucional', 'Comercial', 'Agropecuario'))
+    numero_residentes = Column(Integer)
+    create_at = Column(String, server_default=func.now(), nullable=False)
+    update_at = Column(String, server_default=func.now(),
+                       onupdate=func.now(), nullable=False)
