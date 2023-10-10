@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from jose import jwt
 from docx import Document
 from fpdf import FPDF
-from models import Token, Usuario, Empresa
+from models import Token, Usuario, Empresa, Vivienda
 from docx2pdf import convert
 import PyPDF2
 
@@ -50,8 +50,10 @@ def get_rol(id_usuario, db):
             return None
     else:
         return None
-    
+
 # FUNCION PARA OBTENER LA EMPRESA DEL USUARIO
+
+
 def get_empresa(id_usuario, db):
     if id_usuario:
         usuario = db.query(Usuario).filter(
@@ -90,9 +92,11 @@ def get_datos_usuario(id_usuario, db):
         return None
 
 # CAMBIAR LOS CAMPOS "[]" POR VALORES DE FORMULARIO
+
+
 def reemplazar_texto(docx_path, datos):
     document = Document(docx_path)
-    
+
     for paragraph in document.paragraphs:
         for campo, valor in datos.items():
             if campo in paragraph.text:
@@ -101,6 +105,8 @@ def reemplazar_texto(docx_path, datos):
     return document
 
 # CONVIERTE EL DOCUMENTO DOCX A PDF
+
+
 def convertir_a_pdf(docx_path, pdf_path):
     try:
         # Llama a la función convert para convertir el documento DOCX a PDF
@@ -139,7 +145,7 @@ def get_datos_empresas(db) -> list[str]:
     return [nombre[0] for nombre in nom_empresas]
 
 
-#FUNCION PARA ELIMINAR EL CACHE (HEADERS) 4/10/2023
+# FUNCION PARA ELIMINAR EL CACHE (HEADERS) 4/10/2023
 
 def elimimar_cache():
     headers = {
@@ -147,3 +153,35 @@ def elimimar_cache():
         "Pragma": "no-cache",
     }
     return headers
+
+
+def get_datos_vivienda(id_vivienda, db):
+    if id_vivienda:
+        vivienda = db.query(Vivienda).filter(
+            Vivienda.id_inmueble == id_vivienda).first()
+        if vivienda:
+            datos_vivienda = {
+                "id_vivienda": vivienda.id_inmueble,
+                "id_usuario": vivienda.id_usuario,
+                "direccion": vivienda.direccion,
+                "estrato": vivienda.estrato,
+                "uso": vivienda.uso,
+                "numero_residentes": vivienda.numero_residentes,
+            }
+            return datos_vivienda
+        else:
+            return None
+    else:
+        return None
+
+
+def get_viviendas(id_usuario, db):
+    if id_usuario:
+        viviendas = db.query(Vivienda).filter(
+            Vivienda.id_usuario == id_usuario).all()
+        if viviendas:
+            return viviendas
+        else:
+            return None
+    else:
+        return None

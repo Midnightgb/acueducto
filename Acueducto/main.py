@@ -20,7 +20,7 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session, joinedload
 from funciones import *
-from models import Empresa, Servicio, Usuario, Token
+from models import Empresa, Servicio, Usuario, Token, Vivienda
 import bcrypt
 from database import get_database
 from funciones import get_datos_empresa
@@ -39,7 +39,7 @@ app.mount("/static", StaticFiles(directory="public/dist"), name="static")
 template = Jinja2Templates(directory="public/templates")
 
 
-@app.get("/", response_class=HTMLResponse)
+@app.get("/", response_class=HTMLResponse, tags=["Login"])
 def login(request: Request):
     headers = elimimar_cache()
     # return template.TemplateResponse("login.html", {"request": request})
@@ -48,14 +48,15 @@ def login(request: Request):
     return response
 
 
-@app.get("/index", response_class=RedirectResponse)
+@app.get("/index", response_class=RedirectResponse, tags=["Operacion Index"])
 def inicio(
     request: Request, token: str = Cookie(None), db: Session = Depends(get_database)
 ):
     if token:
         is_valid = verificar_token(token, db)
         if is_valid:
-            usuario = db.query(Usuario).filter(Usuario.id_usuario == is_valid).first()
+            usuario = db.query(Usuario).filter(
+                Usuario.id_usuario == is_valid).first()
             headers = elimimar_cache()
 
             response = template.TemplateResponse(
@@ -71,7 +72,7 @@ def inicio(
 
 # -- 1.1 --
 # CENSO
-@app.get("/censo", response_class=HTMLResponse)
+@app.get("/censo", response_class=HTMLResponse, tags=["Operaciones Documentos"])
 def pagCenso(
     request: Request, token: str = Cookie(None), db: Session = Depends(get_database)
 ):
@@ -109,7 +110,7 @@ def pagCenso(
 
 
 # CONCEPTOS BASICO
-@app.get("/conceptos_basicos", response_class=HTMLResponse)
+@app.get("/conceptos_basicos", response_class=HTMLResponse, tags=["Operaciones Documentos"])
 def pagConceptosBasicos(
     request: Request, token: str = Cookie(None), db: Session = Depends(get_database)
 ):
@@ -146,7 +147,7 @@ def pagConceptosBasicos(
 
 
 # ESTATUTOS
-@app.get("/estatutos", response_class=HTMLResponse)
+@app.get("/estatutos", response_class=HTMLResponse, tags=["Operaciones Documentos"])
 def pagEstatutos(
     request: Request, token: str = Cookie(None), db: Session = Depends(get_database)
 ):
@@ -183,7 +184,7 @@ def pagEstatutos(
 
 
 # CONTRATO DE CONDICIONES UNIFORME
-@app.get("/contrato_condiciones", response_class=HTMLResponse)
+@app.get("/contrato_condiciones", response_class=HTMLResponse, tags=["Operaciones Documentos"])
 def pagContrato_de_condiciones_uniformes(
     request: Request, token: str = Cookie(None), db: Session = Depends(get_database)
 ):
@@ -220,7 +221,7 @@ def pagContrato_de_condiciones_uniformes(
 
 
 # INVITACION A LA ASAMBLEA
-@app.get("/invitacion_asamblea", response_class=HTMLResponse)
+@app.get("/invitacion_asamblea", response_class=HTMLResponse, tags=["Operaciones Documentos"])
 def pagInvitacion_a_la_asamblea(
     request: Request, token: str = Cookie(None), db: Session = Depends(get_database)
 ):
@@ -263,7 +264,7 @@ def pagInvitacion_a_la_asamblea(
 
 
 # LLAMADO A LISTA
-@app.get("/llamado_lista", response_class=HTMLResponse)
+@app.get("/llamado_lista", response_class=HTMLResponse, tags=["Operaciones Documentos"])
 def pagLlamado(
     request: Request, token: str = Cookie(None), db: Session = Depends(get_database)
 ):
@@ -300,7 +301,7 @@ def pagLlamado(
 
 
 # VERIFICACION DEL CUORUM
-@app.get("/cuorum", response_class=HTMLResponse)
+@app.get("/cuorum", response_class=HTMLResponse, tags=["Operaciones Documentos"])
 def pagCuorum(
     request: Request, token: str = Cookie(None), db: Session = Depends(get_database)
 ):
@@ -337,7 +338,7 @@ def pagCuorum(
 
 
 # ORDEN DEL DIA
-@app.get("/orden_dia", response_class=HTMLResponse)
+@app.get("/orden_dia", response_class=HTMLResponse, tags=["Operaciones Documentos"])
 def pagOrdenDia(
     request: Request, token: str = Cookie(None), db: Session = Depends(get_database)
 ):
@@ -374,7 +375,7 @@ def pagOrdenDia(
 
 
 # ELECCION A LA COMISION
-@app.get("/eleccion_comision", response_class=HTMLResponse)
+@app.get("/eleccion_comision", response_class=HTMLResponse, tags=["Operaciones Documentos"])
 def pagEleccion(
     request: Request, token: str = Cookie(None), db: Session = Depends(get_database)
 ):
@@ -411,7 +412,7 @@ def pagEleccion(
 
 
 # APROBACION ESTATUTOS
-@app.get("/aprobacion_estatutos", response_class=HTMLResponse)
+@app.get("/aprobacion_estatutos", response_class=HTMLResponse, tags=["Operaciones Documentos"])
 def pagAprobacion_estatutos(
     request: Request, token: str = Cookie(None), db: Session = Depends(get_database)
 ):
@@ -448,7 +449,7 @@ def pagAprobacion_estatutos(
 
 
 # ELECCION DE LA JUNTA
-@app.get("/eleccion_junta_administradora", response_class=HTMLResponse)
+@app.get("/eleccion_junta_administradora", response_class=HTMLResponse, tags=["Operaciones Documentos"])
 def pagEleccion_junta_administradora(
     request: Request, token: str = Cookie(None), db: Session = Depends(get_database)
 ):
@@ -487,7 +488,7 @@ def pagEleccion_junta_administradora(
 # APROBACION DE LA ACTA
 
 
-@app.get("/aprobacion_acta_constitucion", response_class=HTMLResponse)
+@app.get("/aprobacion_acta_constitucion", response_class=HTMLResponse, tags=["Operaciones Documentos"])
 def PagAprobacion_acta_constitucion(
     request: Request, token: str = Cookie(None), db: Session = Depends(get_database)
 ):
@@ -525,8 +526,7 @@ def PagAprobacion_acta_constitucion(
 
 # FIN 1.2
 
-
-@app.get("/archivo_control_documental", response_class=HTMLResponse)
+@app.get("/archivo_control_documental", response_class=HTMLResponse, tags=["Operaciones Documentos"])
 def PagArchivo_control_documental(
     request: Request, token: str = Cookie(None), db: Session = Depends(get_database)
 ):
@@ -562,7 +562,7 @@ def PagArchivo_control_documental(
         return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
 
 
-@app.get("/registro_suscriptor", response_class=HTMLResponse)
+@app.get("/registro_suscriptor", response_class=HTMLResponse, tags=["Operaciones Users"])
 def PagRegistro_suscriptor(request: Request):
     headers = elimimar_cache()
     response = template.TemplateResponse(
@@ -575,14 +575,15 @@ def PagRegistro_suscriptor(request: Request):
 @app.get("/registro_comision", response_class=HTMLResponse)
 def PagRegistro_comiSion(request: Request):
     headers = elimimar_cache()
-    response = template.TemplateResponse("registro_comision.html", {"request": request})
+    response = template.TemplateResponse(
+        "registro_comision.html", {"request": request})
     response.headers.update(headers)
     return response
 
 
 # FUNCIONES PARA LA TAREA DE DIEGO
 # CREAR USUARIO
-@app.get("/form_super_admin", response_class=HTMLResponse)
+@app.get("/form_super_admin", response_class=HTMLResponse, tags=["Operaciones Users"])
 def PagRegistro_comiSion(request: Request):
     headers = elimimar_cache()
     response = template.TemplateResponse(
@@ -593,7 +594,7 @@ def PagRegistro_comiSion(request: Request):
 
 
 # PARA CREAR SUPER ADMIN
-@app.post("/crear_super_admin/")
+@app.post("/crear_super_admin/", tags=["Operaciones Users"])
 def create_super_admin(
     id_usuario: str = Form(...),
     rol: str = Form(...),
@@ -626,7 +627,7 @@ def create_super_admin(
 
 
 # INICIAR SESION
-@app.post("/iniciarSesion", response_class=RedirectResponse)
+@app.post("/iniciarSesion", response_class=RedirectResponse, tags=["Operaciones sesiones"])
 async def login(
     request: Request,
     email: Optional[str] = Form(""),
@@ -689,14 +690,16 @@ async def login(
     # Construir la URL con el diccionario de usuario codificado
     redirect_url = f"/index"
 
-    template.TemplateResponse("index.html", {"request": request, "usuario": usuario})
-    response = RedirectResponse(url=redirect_url, status_code=status.HTTP_303_SEE_OTHER)
+    template.TemplateResponse(
+        "index.html", {"request": request, "usuario": usuario})
+    response = RedirectResponse(
+        url=redirect_url, status_code=status.HTTP_303_SEE_OTHER)
     response.set_cookie(key="token", value=tokenge)
     return response
 
 
 # CERRAR SESION
-@app.post("/cerrarSesion", response_class=RedirectResponse)
+@app.post("/cerrarSesion", response_class=RedirectResponse, tags=["Operaciones sesiones"])
 async def una_ruta(token: str = Cookie(None), db: Session = Depends(get_database)):
     if token:
         deleteToken = db.query(Token).filter(Token.token == token).first()
@@ -711,11 +714,8 @@ async def una_ruta(token: str = Cookie(None), db: Session = Depends(get_database
 
 
 # GENERAR DOCUMENTOS PERSONALIZADOS
-@app.post("/generar_docx_P01_F_03/")
-def generar_docx_P01_F_03(
-    request: Request,
-    token: str = Cookie(None),
-    db: Session = Depends(get_database),
+@app.post("/generar_docx_P01_F_03/", tags=["Operaciones Documentos"])
+async def generar_docx_P01_F_03(
     nombre_de_la_asociacion: str = Form(...),
     nit: str = Form(...),
     direccion: str = Form(...),
@@ -755,11 +755,11 @@ def generar_docx_P01_F_03(
 
 
 # --- FUNCION PARA DAR ACCESO AL REGISTRO DEL USUARIO
-@app.get("/form_registro_usuario", response_class=HTMLResponse)
+@app.get("/form_registro_usuario", response_class=HTMLResponse, tags=["Operaciones Users"])
 def get_form_usuario(
     request: Request, token: str = Cookie(None), db: Session = Depends(get_database)
 ):
-    respuesta = get_formUsuario(request,token,db)
+    respuesta = get_formUsuario(request, token, db)
     return respuesta
 
 
@@ -806,28 +806,32 @@ def create_usuario(
 
 
 # --- FUNCION PARA MOSTRAR TODOS LOS USUARIOS(GENERAL)
-@app.get("/usuarios", response_class=HTMLResponse)
+@app.get("/usuarios", response_class=HTMLResponse, tags=["Operaciones Users"])
 def consultarUsuario(
     request: Request, token: str = Cookie(None), db: Session = Depends(get_database)
 ):
-    respuesta = consultarUsuarios(request,token,db)
+    respuesta = consultarUsuarios(request, token, db)
     return respuesta
 
 
 # --- FUNCION PARA MOSTRAR LA PAGINA DONDE SE EDITA EL USUARIO(GENERAL)
-@app.post("/EditarUsuarios/", response_class=HTMLResponse)
+
+
+@app.post("/EditarUsuarios/", response_class=HTMLResponse, tags=["Operaciones Users"])
 def Editar_Usuarios(
     request: Request,
     id_usuario: str = Form(...),
     token: str = Cookie(None),
     db: Session = Depends(get_database),
 ):
-    respuesta = EditarUsuarios(request,id_usuario,token,db)
+    respuesta = EditarUsuarios(request, id_usuario, token, db)
     return respuesta
 
 
 # --- FUNCION PARA ACTUALIZAR EL USUARIO(GENERAL)
-@app.post("/updateUser/")
+
+
+@app.post("/updateUser/", tags=["Operaciones Users"], response_class=HTMLResponse)
 def updateUser(
     id_usuario: str = Form(...),
     nom_usuario: str = Form(...),
@@ -858,7 +862,7 @@ def updateUser(
 
 
 # ---FUNCION PARA CAMBIAR EL ESTADO DEL USUARIO EN EL TABLA
-@app.post("/CambiarEstadoUsuario/{id_usuario}")
+@app.post("/CambiarEstadoUsuario/{id_usuario}", tags=["Operaciones Users"])
 def cambiar_estado_usuario(
     id_usuario: str, token: str = Cookie(None), db: Session = Depends(get_database)
 ):
@@ -873,28 +877,32 @@ def cambiar_estado_usuario(
 
 
 # --- MOSTRAMOS PAGINA CON EL ACCESO AL PERFIL DEL USUARIO(PERSONAL)
-@app.get("/perfil_usuario", response_class=HTMLResponse)
+@app.get("/perfil_usuario", response_class=HTMLResponse, tags=["Operaciones Users"])
 def get_perfil_usuario(
     request: Request, token: str = Cookie(None), db: Session = Depends(get_database)
 ):
-    respuesta = getPerfilUsuario(request,token,db)
+    respuesta = getPerfilUsuario(request, token, db)
     return respuesta
 
 
 # --- RUTA PARA QUE EL USUARIO PUEDA VER SU INFORMACION PERSONAL DESDE EL PERFIL
-@app.post("/EditarUsuario/", response_class=HTMLResponse)
+
+
+@app.post("/EditarUsuario/", response_class=HTMLResponse, tags=["Operaciones Users"])
 def Editar_Usuario(
     request: Request,
     id_usuario: str = Form(...),
     token: str = Cookie(None),
     db: Session = Depends(get_database),
 ):
-    respuesta = EditarUsuarioPerfil(request,id_usuario,token,db)
+    respuesta = EditarUsuarioPerfil(request, id_usuario, token, db)
     return respuesta
 
 
 # --- FUNCI0N PARA ACTUALIZAR LOS DATOS DEL PERFIL (PERSONAL):
-@app.post("/actualizarPerfil")
+
+
+@app.post("/actualizarPerfil", tags=["Operaciones Users"])
 def actualizar_perfil(
     nom_usuario: str = Form(...),
     apellido_usuario: str = Form(...),
@@ -918,7 +926,7 @@ def actualizar_perfil(
 
 
 # --- MOSTRAMOS LA PAGINA PARA REGISTRAR UNA EMPRESA
-@app.get("/registro_empresa", response_class=HTMLResponse)
+@app.get("/registro_empresa", response_class=HTMLResponse, tags=["Operaciones Empresas"])
 def MostrarRegistroEmpresa(
     request: Request, token: str = Cookie(None), db: Session = Depends(get_database)
 ):
@@ -927,7 +935,8 @@ def MostrarRegistroEmpresa(
         if token_valido:
             rol_usuario = get_rol(token_valido, db)
             usuario = (
-                db.query(Usuario).filter(Usuario.id_usuario == token_valido).first()
+                db.query(Usuario).filter(
+                    Usuario.id_usuario == token_valido).first()
             )
             headers = elimimar_cache()
             if rol_usuario in [SUPER_ADMIN, ADMIN]:
@@ -949,8 +958,7 @@ def MostrarRegistroEmpresa(
         return RedirectResponse("/", status_code=status.HTTP_303_SEE_OTHER)
 
 
-# --- CREAMOS UNA EMPRESA
-@app.post("/registrarEmpresa")
+@app.post("/registrarEmpresa", tags=["Operaciones Empresas"])
 def crearEmpresa(
     nom_empresa: str = Form(...),
     direccion_empresa: str = Form(...),
@@ -973,20 +981,26 @@ def crearEmpresa(
 
 
 # --- FUNCION PARA MOSTRAR TODAS LA EMPRESAS
-@app.get("/empresas", response_class=HTMLResponse)
-def consultarEmpresas(
-    request: Request, token: str = Cookie(None), db: Session = Depends(get_database)
-):
+@app.get("/empresas/{page}", response_class=HTMLResponse, tags=["Operaciones Empresas"])
+def consultarEmpresa(request: Request, page: int, token: str = Cookie(None), db: Session = Depends(get_database)):
+
     if token:
         token_valido = verificar_token(token, db)
         if token_valido:
             rol_usuario = get_rol(token_valido, db)
             usuario = (
-                db.query(Usuario).filter(Usuario.id_usuario == token_valido).first()
+                db.query(Usuario).filter(
+                    Usuario.id_usuario == token_valido).first()
             )
             headers = elimimar_cache()
             if rol_usuario in [SUPER_ADMIN, ADMIN]:
-                query_empresas = db.query(Empresa)
+                items_per_page = 10
+                offset = (page - 1) * items_per_page
+                query_empresas = db.query(Empresa).offset(
+                    offset).limit(items_per_page).all()
+                total_empresas = db.query(Empresa).count()
+                total_pages = (total_empresas // items_per_page) + \
+                    (1 if total_empresas % items_per_page > 0 else 0)
                 if query_empresas:
                     response = template.TemplateResponse(
                         "crud-empresas/consultar_empresa.html",
@@ -994,6 +1008,8 @@ def consultarEmpresas(
                             "request": request,
                             "empresa": query_empresas,
                             "usuario": usuario,
+                            "page": page,
+                            "total_pages": total_pages
                         },
                     )
                     response.headers.update(headers)
@@ -1011,7 +1027,7 @@ def consultarEmpresas(
 
 
 # --- FUNCION PARA CAMBIAR EL ESTADO DE LA EMPRESA
-@app.post("/CambiarEstadoEmpresa/{id_empresa}")
+@app.post("/CambiarEstadoEmpresa/{id_empresa}", tags=["Operaciones Empresas"])
 def cambiar_estado_empresa(
     id_empresa: int, token: str = Cookie(None), db: Session = Depends(get_database)
 ):
@@ -1020,7 +1036,7 @@ def cambiar_estado_empresa(
 
 
 # --- RUTA PARA MOSTRAR LA PAGUNA DONDE SE EDITA LA EMPRESA
-@app.post("/EditarEmpresa/", response_class=HTMLResponse)
+@app.post("/EditarEmpresa/", response_class=HTMLResponse, tags=["Operaciones Empresas"])
 def Editar_Empresas(
     request: Request,
     id_empresa: int = Form(...),
@@ -1032,7 +1048,8 @@ def Editar_Empresas(
         if token_valido:
             rol_usuario = get_rol(token_valido, db)
             usuario = (
-                db.query(Usuario).filter(Usuario.id_usuario == token_valido).first()
+                db.query(Usuario).filter(
+                    Usuario.id_usuario == token_valido).first()
             )
             headers = elimimar_cache()
             if rol_usuario == SUPER_ADMIN or rol_usuario == ADMIN:
@@ -1050,10 +1067,12 @@ def Editar_Empresas(
     else:
         return RedirectResponse("/", status_code=status.HTTP_303_SEE_OTHER)
 
-
 # --- FUNCION PARA ACTUALIZAR LA EMPRESA
-@app.post("/updateEmpresa")
-def obtenerDatos(
+
+
+@app.post("/updateEmpresa", tags=["Operaciones Empresas"])
+def updateEmpresa(
+
     id_empresa: int = Form(...),
     nom_empresa: str = Form(...),
     tel_fijo: str = Form(...),
@@ -1063,13 +1082,349 @@ def obtenerDatos(
     token: str = Cookie(None),
     db: Session = Depends(get_database),
 ):
-    respuesta = updateEmpresa(
-        id_empresa, nom_empresa, tel_fijo, tel_cel, email, estado, token, db
-    )
-    if respuesta:
-        return RedirectResponse("/empresas", status_code=status.HTTP_303_SEE_OTHER)
+
+    if not nom_empresa:
+        raise HTTPException(status_code=400, detail="El nombre es requerido")
+
+    if not tel_fijo:
+        raise HTTPException(
+            status_code=400, detail="El telefono fijo es requerido")
+
+    if not tel_cel:
+        raise HTTPException(
+            status_code=400, detail="El telefono celular es requerido")
+
+    if not email:
+        raise HTTPException(status_code=400, detail="El correo es requerido")
+
+    if not nom_empresa or not tel_fijo or not tel_cel or not email:
+        raise HTTPException(
+            status_code=400, detail="Todos los campos son requeridos")
+
+    if token:
+        token_valido = verificar_token(token, db)
+        if token_valido:
+            rol_usuario = get_rol(token_valido, db)
+
+            if rol_usuario in [SUPER_ADMIN, ADMIN]:
+                update_empresa = db.query(Empresa).filter_by(
+                    id_empresa=id_empresa).first()
+
+                if update_empresa:
+                    update_empresa.nom_empresa = nom_empresa
+                    update_empresa.tel_fijo = tel_fijo
+                    update_empresa.tel_cel = tel_cel
+                    update_empresa.email = email
+                    update_empresa.estado = estado
+                    db.commit()
+                    return RedirectResponse(url="/empresas/1", status_code=status.HTTP_303_SEE_OTHER)
+                else:
+                    raise HTTPException(
+                        status_code=404, detail="Empresa no encontrada")
+            else:
+                raise HTTPException(
+                    status_code=403, detail="No tienes permisos para actualizar empresas")
+        else:
+            return RedirectResponse("/", status_code=status.HTTP_303_SEE_OTHER)
+    else:
+        return RedirectResponse("/", status_code=status.HTTP_303_SEE_OTHER)
+
+# ============================================= FIN DE BLOQUE PARA ACTUALIZAR EMPRESA =============================================
+
+
+@app.post("/registrarVivienda", tags=["Operaciones Viviendas"], response_class=HTMLResponse)
+def crearVivienda(
+    request: Request,
+    id_usuario: str = Form(...),
+    drcVivienda: str = Form(...),
+    estrato: int = Form(...),
+    tipoVivienda: str = Form(...),
+    numPersonas: int = Form(...),
+    token: str = Cookie(None),
+    db: Session = Depends(get_database),
+):
+    if token:
+        token_valido = verificar_token(token, db)
+    if token_valido:
+        rol_usuario = get_rol(token_valido, db)
+        if rol_usuario in [SUPER_ADMIN, ADMIN]:
+
+            vivienda_db = Vivienda(
+                id_usuario=id_usuario,
+                direccion=drcVivienda,
+                estrato=estrato,
+                uso=tipoVivienda,
+                numero_residentes=numPersonas
+            )
+            usuario = db.query(Usuario).filter(
+                Usuario.id_usuario == token_valido).first()
+            user = get_datos_usuario(id_usuario, db)
+
+            try:
+                db.add(vivienda_db)
+                db.commit()
+                db.refresh(vivienda_db)
+                alerta = {
+                    "mensaje": "Vivienda creada exitosamente",
+                    "color": "success",
+                }
+                viviendas = get_viviendas(id_usuario, db)
+                return template.TemplateResponse("EditarUsuario.html", {"request": request, "user": user, "usuario": usuario, "viviendas": viviendas, "alerta": alerta})
+            except Exception as e:
+                db.rollback()
+                alerta = {
+                    "mensaje": "Error al registrar la vivienda",
+                    "color": "error",
+                }
+                return template.TemplateResponse("EditarUsuario.html", {"request": request, "user": user, "usuario": usuario, "viviendas": viviendas, "alerta": alerta})
+        else:
+            raise HTTPException(
+                status_code=403, detail="nada")
+    else:
+        return RedirectResponse("/", status_code=status.HTTP_303_SEE_OTHER)
+
+# --- FUNCION PARA Desactivar vivienda del usuario
+
+
+@app.post("/deleteVivienda", tags=["Operaciones Viviendas"], response_class=HTMLResponse)
+def desactivarVivienda(
+    request: Request,
+    id_vivienda: int = Form(...),
+    id_usuario: str = Form(...),
+    token: str = Cookie(None),
+    db: Session = Depends(get_database),
+):
+    if token:
+        token_valido = verificar_token(token, db)
+    if token_valido:
+        rol_usuario = get_rol(token_valido, db)
+
+        if rol_usuario in [SUPER_ADMIN, ADMIN]:
+            vivienda = db.query(Vivienda).filter(
+                Vivienda.id_inmueble == id_vivienda).first()
+            usuario = db.query(Usuario).filter(
+                Usuario.id_usuario == token_valido).first()
+            user = get_datos_usuario(id_usuario, db)
+            if vivienda:
+                vivienda.id_usuario = None
+                vivienda.numero_residentes = 0
+                db.commit()
+                viviendas = get_viviendas(id_usuario, db)
+                alerta = {
+                    "mensaje": "Vivienda desactivada exitosamente",
+                    "color": "success",
+                }
+                return template.TemplateResponse("EditarUsuario.html", {"request": request, "user": user, "usuario": usuario, "viviendas": viviendas, "alerta": alerta})
+            else:
+                alerta = {
+                    "mensaje": "Vivienda no encontrada",
+                    "color": "error",
+                }
+                return template.TemplateResponse("EditarUsuario.html", {"request": request, "user": user, "usuario": usuario, "viviendas": viviendas, "alerta": alerta})
+        else:
+            raise HTTPException(
+                status_code=403, detail="nada")
+    else:
+        return RedirectResponse("/", status_code=status.HTTP_303_SEE_OTHER)
+
+# --- FUNCION PARA ACTUALIZAR LA VIVIENDA
+
+
+@app.post("/updateVivienda", tags=["Operaciones Viviendas"], response_class=HTMLResponse)
+def updateVivienda(
+    request: Request,
+    id_vivienda: int = Form(...),
+    id_usuario: str = Form(...),
+    drcViviendaEdit: str = Form(...),
+    estratoEdit: int = Form(...),
+    tipoViviendaEdit: str = Form(...),
+    numPersonasEdit: int = Form(...),
+    token: str = Cookie(None),
+    db: Session = Depends(get_database),
+):
+    if token:
+        token_valido = verificar_token(token, db)
+    if token_valido:
+        rol_usuario = get_rol(token_valido, db)
+
+        if rol_usuario in [SUPER_ADMIN, ADMIN]:
+            vivienda = db.query(Vivienda).filter(
+                Vivienda.id_inmueble == id_vivienda).first()
+            usuario = db.query(Usuario).filter(
+                Usuario.id_usuario == token_valido).first()
+            user = get_datos_usuario(id_usuario, db)
+            if vivienda:
+                vivienda.direccion = drcViviendaEdit
+                vivienda.estrato = estratoEdit
+                vivienda.uso = tipoViviendaEdit
+                vivienda.numero_residentes = numPersonasEdit
+                db.commit()
+                viviendas = get_viviendas(id_usuario, db)
+                alerta = {
+                    "mensaje": "Vivienda actualizada exitosamente",
+                    "color": "success",
+                }
+                return template.TemplateResponse("EditarUsuario.html", {"request": request, "user": user, "usuario": usuario, "viviendas": viviendas, "alerta": alerta})
+            else:
+                alerta = {
+                    "mensaje": "Vivienda no encontrada",
+                    "color": "error",
+                }
+                return template.TemplateResponse("EditarUsuario.html", {"request": request, "user": user, "usuario": usuario, "viviendas": viviendas, "alerta": alerta})
+        else:
+            raise HTTPException(
+                status_code=403, detail="nada")
     else:
         return RedirectResponse("/", status_code=status.HTTP_303_SEE_OTHER)
 
 
-# ============================================= FIN DE BLOQUE PARA ACTUALIZAR EMPRESA =============================================
+# --- FUNCION PARA MOSTRAR TODAS LAS VIVIENDAS SIN USUARIO
+
+
+@app.get("/viviendas", response_class=HTMLResponse, tags=["Operaciones Viviendas"])
+def consultarVivienda(request: Request, token: str = Cookie(None), db: Session = Depends(get_database)):
+    if token:
+        token_valido = verificar_token(token, db)
+        if token_valido:
+            rol_usuario = get_rol(token_valido, db)
+            usuario = db.query(Usuario).filter(
+                Usuario.id_usuario == token_valido).first()
+            if rol_usuario in [SUPER_ADMIN, ADMIN]:
+                query_viviendas = db.query(Vivienda).filter(
+                    Vivienda.id_usuario == None)
+                if query_viviendas:
+                    return template.TemplateResponse("consultar_viviendas.html", {"request": request, "viviendas": query_viviendas, "usuario": usuario})
+                else:
+                    raise HTTPException(
+                        status_code=403, detail="No hay viviendas que consultar")
+            else:
+                raise HTTPException(status_code=403, detail="No puede entrar")
+        else:
+            return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
+    else:
+        return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
+
+
+# --- FUNCION PARA MOSTRAR LA PAGINA DONDE SE EDITA LA VIVIENDA
+
+
+@app.post("/EditarVivienda", response_class=HTMLResponse, tags=["Operaciones Viviendas"])
+def Editar_Viviendas(
+    request: Request,
+    id_vivienda: int = Form(...),
+    token: str = Cookie(None),
+    db: Session = Depends(get_database),
+):
+    if token:
+        token_valido = verificar_token(token, db)
+        if token_valido:
+            rol_usuario = get_rol(token_valido, db)
+            usuario = db.query(Usuario).filter(
+                Usuario.id_usuario == token_valido).first()
+            users = db.query(Usuario)
+            if rol_usuario in [SUPER_ADMIN, ADMIN]:
+                vivienda = get_datos_vivienda(id_vivienda, db)
+                return template.TemplateResponse("EditarVivienda.html", {"request": request, "vivienda": vivienda, "usuario": usuario, "users": users})
+            else:
+                raise HTTPException(status_code=403, detail="No puede entrar")
+        else:
+            return RedirectResponse("/", status_code=status.HTTP_303_SEE_OTHER)
+    else:
+        return RedirectResponse("/", status_code=status.HTTP_303_SEE_OTHER)
+
+
+# --- FUNCION PARA EDITAR LA VIVIENDA SIN USUARIO
+
+@app.post("/updateViviendaNoOwner", tags=["Operaciones Viviendas"])
+def updateViviendaNoOwner(
+    request: Request,
+    id_vivienda: int = Form(...),
+    id_usuario: str = Form(default=None),
+    drcViviendaEdit: str = Form(...),
+    estratoEdit: int = Form(...),
+    tipoViviendaEdit: str = Form(...),
+    numPersonasEdit: int = Form(...),
+    token: str = Cookie(None),
+    db: Session = Depends(get_database),
+):
+    if token:
+        token_valido = verificar_token(token, db)
+    if token_valido:
+        rol_usuario = get_rol(token_valido, db)
+
+        if rol_usuario in [SUPER_ADMIN, ADMIN]:
+            vivienda = db.query(Vivienda).filter(
+                Vivienda.id_inmueble == id_vivienda).first()
+            usuario = db.query(Usuario).filter(
+                Usuario.id_usuario == token_valido).first()
+            if vivienda:
+                if id_usuario is None:
+                    pass
+                else:
+                    vivienda.id_usuario = id_usuario
+                vivienda.direccion = drcViviendaEdit
+                vivienda.estrato = estratoEdit
+                vivienda.uso = tipoViviendaEdit
+                vivienda.numero_residentes = numPersonasEdit
+                db.commit()
+                query_viviendas = db.query(Vivienda).filter(
+                    Vivienda.id_usuario == None)
+                alerta = {
+                    "mensaje": "Vivienda actualizada exitosamente",
+                    "color": "success",
+                }
+                return template.TemplateResponse("consultar_viviendas.html", {"request": request, "usuario": usuario, "viviendas": query_viviendas, "alerta": alerta})
+            else:
+                alerta = {
+                    "mensaje": "Vivienda no encontrada",
+                    "color": "error",
+                }
+                return template.TemplateResponse("consultar_viviendas.html", {"request": request, "usuario": usuario, "viviendas": query_viviendas, "alerta": alerta})
+        else:
+            raise HTTPException(
+                status_code=403, detail="nada")
+    else:
+        return RedirectResponse("/", status_code=status.HTTP_303_SEE_OTHER)
+
+
+# --- FUNCION PARA ELIMINAR LA VIVIENDA SIN USUARIO
+
+
+@app.post("/deleteViviendaNoOwner", tags=["Operaciones Viviendas"], response_class=HTMLResponse)
+def eliminarViviendaNoOwner(
+    request: Request,
+    id_vivienda: int = Form(...),
+    token: str = Cookie(None),
+    db: Session = Depends(get_database),
+):
+    if token:
+        token_valido = verificar_token(token, db)
+    if token_valido:
+        rol_usuario = get_rol(token_valido, db)
+
+        if rol_usuario in [SUPER_ADMIN, ADMIN]:
+            vivienda = db.query(Vivienda).filter(
+                Vivienda.id_inmueble == id_vivienda).first()
+            usuario = db.query(Usuario).filter(
+                Usuario.id_usuario == token_valido).first()
+            if vivienda:
+                db.delete(vivienda)
+                db.commit()
+                query_viviendas = db.query(Vivienda).filter(
+                    Vivienda.id_usuario == None)
+                alerta = {
+                    "mensaje": "Vivienda eliminada exitosamente",
+                    "color": "success",
+                }
+                return template.TemplateResponse("consultar_viviendas.html", {"request": request, "usuario": usuario, "viviendas": query_viviendas, "alerta": alerta})
+            else:
+                alerta = {
+                    "mensaje": "Vivienda no encontrada",
+                    "color": "error",
+                }
+                return template.TemplateResponse("consultar_viviendas.html", {"request": request, "usuario": usuario, "viviendas": query_viviendas, "alerta": alerta})
+        else:
+            raise HTTPException(
+                status_code=403, detail="nada")
+    else:
+        return RedirectResponse("/", status_code=status.HTTP_303_SEE_OTHER)
