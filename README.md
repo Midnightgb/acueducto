@@ -1,4 +1,3 @@
-# Acueducto-Grupo-2
 
 ## CONFIGURACIÓN DEL ENTORNO CONDA
 
