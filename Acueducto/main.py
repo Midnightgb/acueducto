@@ -1194,6 +1194,7 @@ def desactivarVivienda(
     token: str = Cookie(None),
     db: Session = Depends(get_database),
 ):
+
     if token:
         token_valido = verificar_token(token, db)
     if token_valido:
