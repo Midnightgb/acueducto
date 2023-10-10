@@ -63,7 +63,7 @@
 
                   <h2 class="text-center mb-4">Estas modificando la empresa <b>{{ empresa.nom_empresa }}</b></h2>
 
-                  <form action="/updateEmpresa" method="POST" onsubmit="return validarFormulario()">
+                  <form action="/updateEmpresa/" method="POST" onsubmit="return validarFormulario()">
                     <input type="hidden" name="id_empresa" value="{{ empresa.id_empresa }}">
 
                     <div class="form-group">

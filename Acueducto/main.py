@@ -1169,14 +1169,14 @@ def crearVivienda(
                     "color": "success",
                 }
                 viviendas = get_viviendas(id_usuario, db)
-                return template.TemplateResponse("EditarUsuario.html", {"request": request, "user": user, "usuario": usuario, "viviendas": viviendas, "alerta": alerta})
+                return template.TemplateResponse("crud-usuarios/EditarUsuario.html", {"request": request, "user": user, "usuario": usuario, "viviendas": viviendas, "alerta": alerta})
             except Exception as e:
                 db.rollback()
                 alerta = {
                     "mensaje": "Error al registrar la vivienda",
                     "color": "error",
                 }
-                return template.TemplateResponse("EditarUsuario.html", {"request": request, "user": user, "usuario": usuario, "viviendas": viviendas, "alerta": alerta})
+                return template.TemplateResponse("crud-usuarios/EditarUsuario.html", {"request": request, "user": user, "usuario": usuario, "viviendas": viviendas, "alerta": alerta})
         else:
             raise HTTPException(
                 status_code=403, detail="nada")
@@ -1214,13 +1214,13 @@ def desactivarVivienda(
                     "mensaje": "Vivienda desactivada exitosamente",
                     "color": "success",
                 }
-                return template.TemplateResponse("EditarUsuario.html", {"request": request, "user": user, "usuario": usuario, "viviendas": viviendas, "alerta": alerta})
+                return template.TemplateResponse("crud-usuarios/EditarUsuario.html", {"request": request, "user": user, "usuario": usuario, "viviendas": viviendas, "alerta": alerta})
             else:
                 alerta = {
                     "mensaje": "Vivienda no encontrada",
                     "color": "error",
                 }
-                return template.TemplateResponse("EditarUsuario.html", {"request": request, "user": user, "usuario": usuario, "viviendas": viviendas, "alerta": alerta})
+                return template.TemplateResponse("crud-usuarios/EditarUsuario.html", {"request": request, "user": user, "usuario": usuario, "viviendas": viviendas, "alerta": alerta})
         else:
             raise HTTPException(
                 status_code=403, detail="nada")
@@ -1264,13 +1264,13 @@ def updateVivienda(
                     "mensaje": "Vivienda actualizada exitosamente",
                     "color": "success",
                 }
-                return template.TemplateResponse("EditarUsuario.html", {"request": request, "user": user, "usuario": usuario, "viviendas": viviendas, "alerta": alerta})
+                return template.TemplateResponse("crud-usuarios/EditarUsuario.html", {"request": request, "user": user, "usuario": usuario, "viviendas": viviendas, "alerta": alerta})
             else:
                 alerta = {
                     "mensaje": "Vivienda no encontrada",
                     "color": "error",
                 }
-                return template.TemplateResponse("EditarUsuario.html", {"request": request, "user": user, "usuario": usuario, "viviendas": viviendas, "alerta": alerta})
+                return template.TemplateResponse("crud-usuarios/EditarUsuario.html", {"request": request, "user": user, "usuario": usuario, "viviendas": viviendas, "alerta": alerta})
         else:
             raise HTTPException(
                 status_code=403, detail="nada")
@@ -1293,7 +1293,7 @@ def consultarVivienda(request: Request, token: str = Cookie(None), db: Session =
                 query_viviendas = db.query(Vivienda).filter(
                     Vivienda.id_usuario == None)
                 if query_viviendas:
-                    return template.TemplateResponse("consultar_viviendas.html", {"request": request, "viviendas": query_viviendas, "usuario": usuario})
+                    return template.TemplateResponse("crud-viviendas/consultar_viviendas.html", {"request": request, "viviendas": query_viviendas, "usuario": usuario})
                 else:
                     raise HTTPException(
                         status_code=403, detail="No hay viviendas que consultar")
@@ -1324,7 +1324,7 @@ def Editar_Viviendas(
             users = db.query(Usuario)
             if rol_usuario in [SUPER_ADMIN, ADMIN]:
                 vivienda = get_datos_vivienda(id_vivienda, db)
-                return template.TemplateResponse("EditarVivienda.html", {"request": request, "vivienda": vivienda, "usuario": usuario, "users": users})
+                return template.TemplateResponse("crud-viviendas/EditarVivienda.html", {"request": request, "vivienda": vivienda, "usuario": usuario, "users": users})
             else:
                 raise HTTPException(status_code=403, detail="No puede entrar")
         else:
@@ -1416,13 +1416,13 @@ def eliminarViviendaNoOwner(
                     "mensaje": "Vivienda eliminada exitosamente",
                     "color": "success",
                 }
-                return template.TemplateResponse("consultar_viviendas.html", {"request": request, "usuario": usuario, "viviendas": query_viviendas, "alerta": alerta})
+                return template.TemplateResponse("crud-viviendas/consultar_viviendas.html", {"request": request, "usuario": usuario, "viviendas": query_viviendas, "alerta": alerta})
             else:
                 alerta = {
                     "mensaje": "Vivienda no encontrada",
                     "color": "error",
                 }
-                return template.TemplateResponse("consultar_viviendas.html", {"request": request, "usuario": usuario, "viviendas": query_viviendas, "alerta": alerta})
+                return template.TemplateResponse("crud-viviendas/consultar_viviendas.html", {"request": request, "usuario": usuario, "viviendas": query_viviendas, "alerta": alerta})
         else:
             raise HTTPException(
                 status_code=403, detail="nada")
