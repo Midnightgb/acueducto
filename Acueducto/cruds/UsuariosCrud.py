@@ -396,9 +396,6 @@ def getPerfilUsuario(
             if rol_usuario:
                 empresa = get_empresa(is_token_valid, db)
                 datos_empresa = get_datos_empresa(empresa, db)
-                print("\n", "id usuario", is_token_valid)
-                print("\n", "empresa", datos_empresa)
-                print("\n", datos_usuario)
                 response = template.TemplateResponse(
                     "crud-usuarios/perfil_usuario.html",
                     {"request": request, "usuario": datos_usuario,
