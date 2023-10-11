@@ -185,3 +185,14 @@ def get_viviendas(id_usuario, db):
             return None
     else:
         return None
+    
+def get_viviendas_empresa(id_empresa, db):
+    if id_empresa:
+        viviendas = db.query(Vivienda).join(Usuario).filter(
+            Usuario.empresa == id_empresa).all()
+        if viviendas:
+            return viviendas
+        else:
+            return None
+    else:
+        return None

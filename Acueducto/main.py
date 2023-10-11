@@ -1306,6 +1306,7 @@ def consultarVivienda(request: Request, token: str = Cookie(None), db: Session =
     else:
         return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
 
+
 # --- FUNCION PARA MOSTRAR LA PAGINA DONDE SE EDITA LA VIVIENDA
 
 
@@ -1390,6 +1391,7 @@ def updateViviendaNoOwner(
 
 # --- FUNCION PARA ELIMINAR LA VIVIENDA SIN USUARIO
 
+
 @app.post("/deleteViviendaNoOwner", tags=["Operaciones Viviendas"], response_class=HTMLResponse)
 def eliminarViviendaNoOwner(
     request: Request,
@@ -1440,24 +1442,24 @@ def consultarVivienda(request: Request, token: str = Cookie(None), db: Session =
             rol_usuario = get_rol(token_valido, db)
             usuario = db.query(Usuario).filter(
                 Usuario.id_usuario == token_valido).first()
-            if rol_usuario in [SUPER_ADMIN, ADMIN]:
+            if rol_usuario in [ADMIN]:
+                query_viviendas = get_viviendas_empresa(usuario.empresa, db)
+            elif rol_usuario in [SUPER_ADMIN]:
                 query_viviendas = db.query(Vivienda).filter(
                     Vivienda.id_usuario != None)
-                viviendas_con_usuario = query_viviendas.all()
-                if viviendas_con_usuario:
-                    return template.TemplateResponse("crud-viviendas/consultarViviendasVinculadas.html", {"request": request, "viviendas": viviendas_con_usuario, "usuario": usuario})
-                else:
-                    raise HTTPException(
-                        status_code=403, detail="No hay viviendas con usuarios que consultar")
             else:
-                raise HTTPException(status_code=403, detail="No puede entrar")
+                return RedirectResponse(url="/index", status_code=status.HTTP_303_SEE_OTHER)
+            
+            if query_viviendas:
+                return template.TemplateResponse("crud-viviendas/consultarViviendasVinculadas.html", {"request": request, "viviendas": query_viviendas, "usuario": usuario})
+            else:
+                raise HTTPException(status_code=403, detail="No hay viviendas con usuarios que consultar")
         else:
             return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
     else:
         return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
 
 # -- FUNCION PARA MOSTRAR DESVINCULAR LA VIVIENDA
-
 @app.post("/desvincularVivienda", tags=["Operaciones Viviendas"], response_class=HTMLResponse)
 def desvincularVivienda(
     request: Request,
