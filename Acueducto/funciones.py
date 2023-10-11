@@ -126,6 +126,7 @@ def get_datos_empresa(id_empresa, db):
             datos_empresa = {
                 "id_empresa": empresa.id_empresa,
                 "nom_empresa": empresa.nom_empresa,
+                "direccion_empresa": empresa.direccion_empresa,
                 "tel_fijo": empresa.tel_fijo,
                 "tel_cel": empresa.tel_cel,
                 "email": empresa.email,
