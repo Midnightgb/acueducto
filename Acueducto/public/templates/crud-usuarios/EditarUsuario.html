@@ -201,8 +201,11 @@
                   </div>
                   <div class="text-center">
                     <a href="/usuarios" class="btn btn-danger">CANCELAR</a>
+                    
+                    {% if user.estado == "Activo" %}
                     <button type="button" data-bs-toggle="modal" data-bs-target="#modalAddVivienda"
                       class="btn btn-info">AGREGAR VIVIENDA</button>
+                    {% endif %}
                     <button onclick="validarUpdate()" type="button" class="btn btn-success">ACTUALIZAR</button>
                   </div>
 
@@ -234,6 +237,7 @@
   </script>
   {% endif %}
 
+  {% if user.estado == "Activo" %}
   <!-- Modal editar vivienda-->
   <div class="modal fade" id="modalEditVivienda" tabindex="-1" role="dialog" aria-labelledby="modalTitleId"
     aria-hidden="true">
@@ -340,6 +344,8 @@
       </div>
     </div>
   </div>
+  {% endif %}
+
   <script src="https://cdn.jsdelivr.net/npm/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 
   <script>    
