@@ -866,6 +866,7 @@ def updateUser(
 def cambiar_estado_usuario(
     id_usuario: str, token: str = Cookie(None), db: Session = Depends(get_database)
 ):
+    
     respuesta = cambiarEstadoUsuario(id_usuario, token, db)
     return respuesta
 
