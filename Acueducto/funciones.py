@@ -197,3 +197,5 @@ def get_viviendas_empresa(id_empresa, db):
             return None
     else:
         return None
+    
+    # comentario
