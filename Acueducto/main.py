@@ -1367,19 +1367,19 @@ def updateViviendaNoOwner(
                 vivienda.uso = tipoViviendaEdit
                 vivienda.numero_residentes = numPersonasEdit
                 db.commit()
-                query_viviendas = db.query(Vivienda).filter(
-                    Vivienda.id_usuario == None)
+                query_viviendas = db.query(Vivienda).join(
+                    Usuario, Vivienda.id_usuario == Usuario.id_usuario).filter(Vivienda.id_usuario == None)
                 alerta = {
                     "mensaje": "Vivienda actualizada exitosamente",
                     "color": "success",
                 }
-                return template.TemplateResponse("consultar_viviendas.html", {"request": request, "usuario": usuario, "viviendas": query_viviendas, "alerta": alerta})
+                return template.TemplateResponse("crud-viviendas/consultar_viviendas.html", {"request": request, "usuario": usuario, "viviendas": query_viviendas, "alerta": alerta})
             else:
                 alerta = {
                     "mensaje": "Vivienda no encontrada",
                     "color": "error",
                 }
-                return template.TemplateResponse("consultar_viviendas.html", {"request": request, "usuario": usuario, "viviendas": query_viviendas, "alerta": alerta})
+                return template.TemplateResponse("crud-viviendas/consultar_viviendas.html", {"request": request, "usuario": usuario, "viviendas": query_viviendas, "alerta": alerta})
         else:
             raise HTTPException(
                 status_code=403, detail="nada")
