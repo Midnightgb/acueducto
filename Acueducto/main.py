@@ -866,7 +866,6 @@ def updateUser(
 def cambiar_estado_usuario(
     id_usuario: str, token: str = Cookie(None), db: Session = Depends(get_database)
 ):
-    
     respuesta = cambiarEstadoUsuario(id_usuario, token, db)
     return respuesta
 
@@ -1306,6 +1305,7 @@ def consultarVivienda(request: Request, token: str = Cookie(None), db: Session =
     else:
         return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
 
+
 # --- FUNCION PARA MOSTRAR LA PAGINA DONDE SE EDITA LA VIVIENDA
 
 
@@ -1368,19 +1368,19 @@ def updateViviendaNoOwner(
                 vivienda.uso = tipoViviendaEdit
                 vivienda.numero_residentes = numPersonasEdit
                 db.commit()
-                query_viviendas = db.query(Vivienda).join(
-                    Usuario, Vivienda.id_usuario == Usuario.id_usuario).filter(Vivienda.id_usuario == None)
+                query_viviendas = db.query(Vivienda).filter(
+                    Vivienda.id_usuario == None)
                 alerta = {
                     "mensaje": "Vivienda actualizada exitosamente",
                     "color": "success",
                 }
-                return template.TemplateResponse("crud-viviendas/consultar_viviendas.html", {"request": request, "usuario": usuario, "viviendas": query_viviendas, "alerta": alerta})
+                return template.TemplateResponse("consultar_viviendas.html", {"request": request, "usuario": usuario, "viviendas": query_viviendas, "alerta": alerta})
             else:
                 alerta = {
                     "mensaje": "Vivienda no encontrada",
                     "color": "error",
                 }
-                return template.TemplateResponse("crud-viviendas/consultar_viviendas.html", {"request": request, "usuario": usuario, "viviendas": query_viviendas, "alerta": alerta})
+                return template.TemplateResponse("consultar_viviendas.html", {"request": request, "usuario": usuario, "viviendas": query_viviendas, "alerta": alerta})
         else:
             raise HTTPException(
                 status_code=403, detail="nada")
@@ -1389,6 +1389,7 @@ def updateViviendaNoOwner(
 
 
 # --- FUNCION PARA ELIMINAR LA VIVIENDA SIN USUARIO
+
 
 @app.post("/deleteViviendaNoOwner", tags=["Operaciones Viviendas"], response_class=HTMLResponse)
 def eliminarViviendaNoOwner(
@@ -1440,24 +1441,24 @@ def consultarVivienda(request: Request, token: str = Cookie(None), db: Session =
             rol_usuario = get_rol(token_valido, db)
             usuario = db.query(Usuario).filter(
                 Usuario.id_usuario == token_valido).first()
-            if rol_usuario in [SUPER_ADMIN, ADMIN]:
+            if rol_usuario in [ADMIN]:
+                query_viviendas = get_viviendas_empresa(usuario.empresa, db)
+            elif rol_usuario in [SUPER_ADMIN]:
                 query_viviendas = db.query(Vivienda).filter(
                     Vivienda.id_usuario != None)
-                viviendas_con_usuario = query_viviendas.all()
-                if viviendas_con_usuario:
-                    return template.TemplateResponse("crud-viviendas/consultarViviendasVinculadas.html", {"request": request, "viviendas": viviendas_con_usuario, "usuario": usuario})
-                else:
-                    raise HTTPException(
-                        status_code=403, detail="No hay viviendas con usuarios que consultar")
             else:
-                raise HTTPException(status_code=403, detail="No puede entrar")
+                return RedirectResponse(url="/index", status_code=status.HTTP_303_SEE_OTHER)
+            
+            if query_viviendas:
+                return template.TemplateResponse("crud-viviendas/consultarViviendasVinculadas.html", {"request": request, "viviendas": query_viviendas, "usuario": usuario})
+            else:
+                raise HTTPException(status_code=403, detail="No hay viviendas con usuarios que consultar")
         else:
             return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
     else:
         return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
 
 # -- FUNCION PARA MOSTRAR DESVINCULAR LA VIVIENDA
-
 @app.post("/desvincularVivienda", tags=["Operaciones Viviendas"], response_class=HTMLResponse)
 def desvincularVivienda(
     request: Request,
