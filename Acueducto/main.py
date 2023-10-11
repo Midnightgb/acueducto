@@ -1305,7 +1305,6 @@ def consultarVivienda(request: Request, token: str = Cookie(None), db: Session =
     else:
         return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
 
-
 # --- FUNCION PARA MOSTRAR LA PAGINA DONDE SE EDITA LA VIVIENDA
 
 
@@ -1390,7 +1389,6 @@ def updateViviendaNoOwner(
 
 # --- FUNCION PARA ELIMINAR LA VIVIENDA SIN USUARIO
 
-
 @app.post("/deleteViviendaNoOwner", tags=["Operaciones Viviendas"], response_class=HTMLResponse)
 def eliminarViviendaNoOwner(
     request: Request,
@@ -1424,6 +1422,76 @@ def eliminarViviendaNoOwner(
                     "color": "error",
                 }
                 return template.TemplateResponse("crud-viviendas/consultar_viviendas.html", {"request": request, "usuario": usuario, "viviendas": query_viviendas, "alerta": alerta})
+        else:
+            raise HTTPException(
+                status_code=403, detail="nada")
+    else:
+        return RedirectResponse("/", status_code=status.HTTP_303_SEE_OTHER)
+
+
+# --- FUNCION PARA MOSTRAR TODAS LAS VIVIENDAS CON USUARIO  
+
+@app.get("/viviendasConUsuario", response_class=HTMLResponse, tags=["Operaciones Viviendas"])
+def consultarVivienda(request: Request, token: str = Cookie(None), db: Session = Depends(get_database)):
+    if token:
+        token_valido = verificar_token(token, db)
+        if token_valido:
+            rol_usuario = get_rol(token_valido, db)
+            usuario = db.query(Usuario).filter(
+                Usuario.id_usuario == token_valido).first()
+            if rol_usuario in [SUPER_ADMIN, ADMIN]:
+                query_viviendas = db.query(Vivienda).filter(
+                    Vivienda.id_usuario != None)
+                viviendas_con_usuario = query_viviendas.all()
+                if viviendas_con_usuario:
+                    return template.TemplateResponse("crud-viviendas/consultarViviendasVinculadas.html", {"request": request, "viviendas": viviendas_con_usuario, "usuario": usuario})
+                else:
+                    raise HTTPException(
+                        status_code=403, detail="No hay viviendas con usuarios que consultar")
+            else:
+                raise HTTPException(status_code=403, detail="No puede entrar")
+        else:
+            return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
+    else:
+        return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
+
+# -- FUNCION PARA MOSTRAR DESVINCULAR LA VIVIENDA
+
+@app.post("/desvincularVivienda", tags=["Operaciones Viviendas"], response_class=HTMLResponse)
+def desvincularVivienda(
+    request: Request,
+    id_vivienda: int = Form(...),
+    token: str = Cookie(None),
+    db: Session = Depends(get_database),
+):
+    if token:
+        token_valido = verificar_token(token, db)
+    if token_valido:
+        rol_usuario = get_rol(token_valido, db)
+
+        if rol_usuario in [SUPER_ADMIN, ADMIN]:
+            vivienda = db.query(Vivienda).filter(
+                Vivienda.id_inmueble == id_vivienda).first()
+            usuario = db.query(Usuario).filter(
+                Usuario.id_usuario == token_valido).first()
+            if vivienda:
+                vivienda.id_usuario = None
+                vivienda.numero_residentes = 0
+                db.commit()
+                query_viviendas = db.query(Vivienda).filter(
+                    Vivienda.id_usuario != None)
+                viviendas_con_usuario = query_viviendas.all()
+                alerta = {
+                    "mensaje": "Vivienda desvinculada exitosamente",
+                    "color": "success",
+                }
+                return template.TemplateResponse("crud-viviendas/consultarViviendasVinculadas.html", {"request": request, "usuario": usuario, "viviendas": viviendas_con_usuario, "alerta": alerta})
+            else:
+                alerta = {
+                    "mensaje": "Vivienda no encontrada",
+                    "color": "error",
+                }
+                return template.TemplateResponse("crud-viviendas/consultarViviendasVinculadas.html", {"request": request, "usuario": usuario, "viviendas": viviendas_con_usuario, "alerta": alerta})
         else:
             raise HTTPException(
                 status_code=403, detail="nada")
