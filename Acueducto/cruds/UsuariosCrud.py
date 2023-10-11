@@ -19,6 +19,7 @@ from fastapi.responses import JSONResponse, RedirectResponse
 
 from sqlalchemy.orm import Session
 from funciones import *
+from cruds.EmpresasCrud import *
 from models import Usuario
 
 SUPER_ADMIN = "SuperAdmin"
@@ -307,7 +308,7 @@ def verificar_existencia(campos, valores, db):
 
 
 def consultarUsuarios(
-    request: Request, token: str, db: Session
+    request: Request, token: str, db: Session,id_empresa:str
 ):
     if token:
         token_valido = verificar_token(token, db)
@@ -320,10 +321,16 @@ def consultarUsuarios(
             headers = elimimar_cache()
             if rol_usuario in [SUPER_ADMIN, ADMIN]:
                 if rol_usuario == SUPER_ADMIN:
+                    empresas = obtenerEmpresas(token,db)
                     query_usuarios = db.query(Usuario, Empresa.nom_empresa).join(
                         Empresa, Usuario.empresa == Empresa.id_empresa
-                    ).filter(Usuario.id_usuario != token_valido)
+                    ).filter(
+                        (Usuario.id_usuario != token_valido)
+                        & (Usuario.empresa == id_empresa)
+                        
+                        )
                 if rol_usuario == ADMIN:
+                    empresas = None
                     query_usuarios = (
                         db.query(Usuario, Empresa.nom_empresa)
                         .join(Empresa, Usuario.empresa == Empresa.id_empresa)
@@ -334,7 +341,7 @@ def consultarUsuarios(
                         )
                     )
                 if query_usuarios.all():
-                    print(query_usuarios)
+                    #print(query_usuarios)
 
                     response = template.TemplateResponse(
                         "crud-usuarios/consultar_usuario.html",
@@ -342,14 +349,23 @@ def consultarUsuarios(
                             "request": request,
                             "usuarios": query_usuarios,
                             "usuario": usuario,
+                            "empresas":empresas,
                         },
                     )
                     response.headers.update(headers)
                     return response
                 else:
-                    raise HTTPException(
-                        status_code=403, detail="No hay usuarios para consultar"
+                    response = template.TemplateResponse(
+                        "crud-usuarios/consultar_usuario.html",
+                        {
+                            "request": request,
+                            "usuarios": query_usuarios,
+                            "usuario": usuario,
+                            "empresas":empresas,
+                        },
                     )
+                    response.headers.update(headers)
+                    return response
             else:
                 raise HTTPException(
                     status_code=403, detail="No cuenta con los permisos"
@@ -501,4 +517,9 @@ def get_formUsuario(
             return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
     else:
         return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
-#pr
+
+
+def obtenerUsuariosEmpresa(
+    db:Session
+):
+    query_usuarios = db.query(Usuario, Empresa.nom_empresa).join(Empresa, Usuario.empresa == Empresa.id_empresa).filter(Usuario.id_usuario != token_valido)
