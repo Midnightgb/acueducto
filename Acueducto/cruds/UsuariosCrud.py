@@ -19,7 +19,6 @@ from fastapi.responses import JSONResponse, RedirectResponse
 
 from sqlalchemy.orm import Session
 from funciones import *
-from cruds.EmpresasCrud import *
 from models import Usuario
 
 SUPER_ADMIN = "SuperAdmin"
@@ -34,49 +33,42 @@ app.mount("/static", StaticFiles(directory="public/dist"), name="static")
 
 template = Jinja2Templates(directory="public/templates")
 
-
 def actualizarPerfil(
-    nom_usuario: str,
-    apellido_usuario: str,
-    tipo_doc: str,
-    num_doc: str,
-    email: str,
-    direccion: str,
-    token: str,
-    db: Session
-):
-
+        nom_usuario: str,
+        apellido_usuario: str,
+        tipo_doc: str,
+        num_doc: str,
+        email: str,
+        direccion: str ,
+        token: str ,
+        db: Session
+    ):
+    
     if not nom_usuario:
         raise HTTPException(status_code=400, detail="El nombre es requerido")
-
+    
     if not apellido_usuario:
         raise HTTPException(status_code=400, detail="El apellido es requerido")
-
+    
     if not tipo_doc:
-        raise HTTPException(
-            status_code=400, detail="El tipo de documento es requerido")
-
+        raise HTTPException(status_code=400, detail="El tipo de documento es requerido")
+    
     if not num_doc:
-        raise HTTPException(
-            status_code=400, detail="El número de documento es requerido")
-
+        raise HTTPException(status_code=400, detail="El número de documento es requerido")
+    
     if not email:
-        raise HTTPException(
-            status_code=400, detail="El correo electrónico es requerido")
-
+        raise HTTPException(status_code=400, detail="El correo electrónico es requerido")
+    
     if not direccion:
-        raise HTTPException(
-            status_code=400, detail="La dirección es requerida")
-
+        raise HTTPException(status_code=400, detail="La dirección es requerida")
+    
     if not nom_usuario or not apellido_usuario or not tipo_doc or not num_doc or not email or not direccion:
-        raise HTTPException(
-            status_code=400, detail="Todos los campos son requeridos")
-
+        raise HTTPException(status_code=400, detail="Todos los campos son requeridos")
+    
     if token:
         token_valido = verificar_token(token, db)
         if token_valido:
-            usuario = db.query(Usuario).filter(
-                Usuario.id_usuario == token_valido).first()
+            usuario = db.query(Usuario).filter(Usuario.id_usuario == token_valido).first()
             if usuario:
                 # Validar si alguno de los campos está vacío o lleno de espacios
 
@@ -84,10 +76,10 @@ def actualizarPerfil(
                 usuario.apellido_usuario = apellido_usuario
                 usuario.tipo_doc = tipo_doc
                 usuario.num_doc = num_doc
-                usuario.correo = email
+                usuario.correo = email 
                 usuario.direccion = direccion
-
-                db.commit()
+                
+                db.commit() 
 
                 # Redireccionar al perfil actualizado
                 return RedirectResponse(url="/perfil_usuario", status_code=status.HTTP_303_SEE_OTHER)
@@ -97,11 +89,12 @@ def actualizarPerfil(
             return RedirectResponse("/", status_code=status.HTTP_303_SEE_OTHER)
     else:
         return RedirectResponse("/", status_code=status.HTTP_303_SEE_OTHER)
+    
 
 
 def cambiarEstadoUsuario(
-        id_usuario: str,
-        token: str,
+        id_usuario: str, 
+        token: str , 
         db: Session):
     try:
         # Comprueba si hay un token
@@ -118,19 +111,13 @@ def cambiarEstadoUsuario(
             if rol_usuario not in {SUPER_ADMIN, ADMIN}:
                 raise HTTPException(
                     status_code=403, detail="No cuenta con los permisos para cambiar el estado")
-            viviendas = db.query(Vivienda).filter(Vivienda.id_usuario == id_usuario).first()
-            
+
             # Cambia el estado del usuario a "Inactivo"
             usuario_a_cambiar = db.query(Usuario).filter_by(
                 id_usuario=id_usuario).first()
             if not usuario_a_cambiar:
                 raise HTTPException(
                     status_code=404, detail="Usuario no encontrado")
-            
-            if viviendas:
-                raise HTTPException(
-                    status_code=403, detail="No se puede cambiar el estado del usuario porque tiene viviendas asociadas")
-
 
             # CAMBIAR ESTADO ACTIVO O INACTIVO
             nuevoEstado = 'Inactivo'
@@ -147,7 +134,7 @@ def cambiarEstadoUsuario(
     except Exception as e:
         # Captura cualquier error inesperado
         return JSONResponse(status_code=500, content={"error": f"Error interno: {str(e)}"})
-
+    
 
 def actualizarUsuario(
 
@@ -163,7 +150,8 @@ def actualizarUsuario(
     token: str,
     db: Session,
 ):
-
+    
+    
     if token:
         token_valido = verificar_token(token, db)
 
@@ -175,7 +163,7 @@ def actualizarUsuario(
                     Usuario).filter_by(id_usuario=id_usuario).first()
 
                 if usuario_actualizar:
-
+                    
                     # Actualiza los campos con los nuevos valores
                     usuario_actualizar.nom_usuario = nom_usuario
                     usuario_actualizar.apellido_usuario = apellido_usuario
@@ -187,11 +175,13 @@ def actualizarUsuario(
                     # Guarda los cambios en la base de datos
                     db.commit()
                     # Compara los valores actuales con los nuevos valores
-
+                    
+                    
                     return RedirectResponse(url="/usuarios", status_code=status.HTTP_303_SEE_OTHER)
+                    
 
                 else:
-
+                    
                     return RedirectResponse(url="/usuarios", status_code=status.HTTP_303_SEE_OTHER)
         else:
 
@@ -199,6 +189,8 @@ def actualizarUsuario(
     else:
 
         return RedirectResponse("/", status_code=status.HTTP_303_SEE_OTHER)
+    
+
 
 
 def createUsuario(
@@ -212,9 +204,9 @@ def createUsuario(
     direccion: str,
     municipio: str,
     contrasenia: str,
-    token: str,
+    token: str ,
     db: Session,
-
+    
 ):
 
     empresa_existente = db.query(Empresa).filter(
@@ -286,13 +278,13 @@ def createUsuario(
                     db.add(usuario_db)
                     db.commit()
                     db.refresh(usuario_db)
-
-                    # falta mostra el mensaje para cuando se almacene correctamnete el usuario
+                    
+                    #falta mostra el mensaje para cuando se almacene correctamnete el usuario
                     """ alerta = {
                         "mensaje": "creado correctamente",
                         "color": "success",
                     } """
-
+                   
                     return RedirectResponse(url="/form_registro_usuario", status_code=status.HTTP_303_SEE_OTHER)
                 except Exception as e:
                     db.rollback()  # Realiza un rollback en caso de error para deshacer cambios
@@ -302,7 +294,7 @@ def createUsuario(
             raise HTTPException(status_code=401, detail="No autorizado")
     else:
         raise HTTPException(status_code=401, detail="No autorizado")
-
+    
 
 def verificar_existencia(campos, valores, db):
     query = db.query(Usuario)
@@ -312,40 +304,33 @@ def verificar_existencia(campos, valores, db):
 
 
 def consultarUsuarios(
-    request: Request, token: str, db: Session,id_empresa:str
+    request: Request, token: str , db: Session
 ):
     if token:
         token_valido = verificar_token(token, db)
         if token_valido:
             rol_usuario = get_rol(token_valido, db)
             usuario = (
-                db.query(Usuario).filter(
-                    Usuario.id_usuario == token_valido).first()
+                db.query(Usuario).filter(Usuario.id_usuario == token_valido).first()
             )
             headers = elimimar_cache()
             if rol_usuario in [SUPER_ADMIN, ADMIN]:
                 if rol_usuario == SUPER_ADMIN:
-                    empresas = obtenerEmpresas(token,db)
                     query_usuarios = db.query(Usuario, Empresa.nom_empresa).join(
                         Empresa, Usuario.empresa == Empresa.id_empresa
-                    ).filter(
-                        (Usuario.id_usuario != token_valido)
-                        & (Usuario.empresa == id_empresa)
-                        
-                        )
+                    ).filter(Usuario.id_usuario != token_valido)
                 if rol_usuario == ADMIN:
-                    empresas = None
                     query_usuarios = (
                         db.query(Usuario, Empresa.nom_empresa)
                         .join(Empresa, Usuario.empresa == Empresa.id_empresa)
                         .filter(
                             (Usuario.id_usuario != token_valido)
-                            & (Usuario.rol != SUPER_ADMIN)
+                            & (Usuario.rol != SUPER_ADMIN )
                             & (Usuario.empresa == usuario.empresa)
                         )
                     )
                 if query_usuarios.all():
-                    #print(query_usuarios)
+                    print(query_usuarios)
 
                     response = template.TemplateResponse(
                         "crud-usuarios/consultar_usuario.html",
@@ -353,23 +338,14 @@ def consultarUsuarios(
                             "request": request,
                             "usuarios": query_usuarios,
                             "usuario": usuario,
-                            "empresas":empresas,
                         },
                     )
                     response.headers.update(headers)
                     return response
                 else:
-                    response = template.TemplateResponse(
-                        "crud-usuarios/consultar_usuario.html",
-                        {
-                            "request": request,
-                            "usuarios": query_usuarios,
-                            "usuario": usuario,
-                            "empresas":empresas,
-                        },
+                    raise HTTPException(
+                        status_code=403, detail="No hay usuarios para consultar"
                     )
-                    response.headers.update(headers)
-                    return response
             else:
                 raise HTTPException(
                     status_code=403, detail="No cuenta con los permisos"
@@ -391,22 +367,18 @@ def EditarUsuarios(
         if token_valido:
             rol_usuario = get_rol(token_valido, db)
             usuario = (
-                db.query(Usuario).filter(
-                    Usuario.id_usuario == token_valido).first()
+                db.query(Usuario).filter(Usuario.id_usuario == token_valido).first()
             )
             headers = elimimar_cache()
             if rol_usuario in [SUPER_ADMIN, ADMIN]:
                 user = get_datos_usuario(id_usuario, db)
-                viviendas = get_viviendas(id_usuario, db)
                 response = template.TemplateResponse(
                     "crud-usuarios/EditarUsuario.html",
-                    {"request": request, "user": user,
-                        "usuario": usuario, "viviendas": viviendas},
+                    {"request": request, "user": user, "usuario": usuario},
                 )
                 response.headers.update(headers)
                 return response
-    raise HTTPException(
-        status_code=403, detail="No tiene los permisos necesarios")
+    raise HTTPException(status_code=403, detail="No tiene los permisos necesarios")
 
 
 def getPerfilUsuario(
@@ -420,12 +392,9 @@ def getPerfilUsuario(
             rol_usuario = get_rol(is_token_valid, db)
 
             if rol_usuario:
-                empresa = get_empresa(is_token_valid, db)
-                datos_empresa = get_datos_empresa(empresa, db)
                 response = template.TemplateResponse(
                     "crud-usuarios/perfil_usuario.html",
-                    {"request": request, "usuario": datos_usuario,
-                        "empresa": datos_empresa},
+                    {"request": request, "usuario": datos_usuario},
                 )
                 response.headers.update(headers)
                 return response
@@ -445,7 +414,7 @@ def getPerfilUsuario(
             return RedirectResponse("/", status_code=status.HTTP_303_SEE_OTHER)
     else:
         return RedirectResponse("/", status_code=status.HTTP_303_SEE_OTHER)
-
+    
 
 def EditarUsuarioPerfil(
     request: Request,
@@ -466,7 +435,6 @@ def EditarUsuarioPerfil(
             return response
     raise HTTPException(status_code=403, detail="Ha ocurrido un error.")
 
-
 def get_formUsuario(
     request: Request, token: str, db: Session
 ):
@@ -479,8 +447,7 @@ def get_formUsuario(
             headers = elimimar_cache()
             datos_usuario = get_datos_usuario(is_token_valid, db)
             if rol_usuario == SUPER_ADMIN:
-                empresas = db.query(Empresa).filter(
-                    Empresa.estado == 'Activo').all()
+                empresas = db.query(Empresa).filter(Empresa.estado == 'Activo').all()
                 response = template.TemplateResponse(
                     "crud-usuarios/registro_usuario.html",
                     {
@@ -492,9 +459,8 @@ def get_formUsuario(
                 response.headers.update(headers)
                 return response
             elif rol_usuario == ADMIN:
-                id_empresa_user = get_empresa(is_token_valid, db)
-                empresa = db.query(Empresa).filter_by(
-                    id_empresa=id_empresa_user).scalar()
+                id_empresa_user = get_empresa(is_token_valid,db)
+                empresa = db.query(Empresa).filter_by(id_empresa=id_empresa_user).scalar()
                 response = template.TemplateResponse(
                     "crud-usuarios/registro_usuario.html",
                     {
@@ -521,11 +487,3 @@ def get_formUsuario(
             return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
     else:
         return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
-
-
-
-def obtenerUsuariosEmpresa(
-    db:Session
-):
-    query_usuarios = db.query(Usuario, Empresa.nom_empresa).join(Empresa, Usuario.empresa == Empresa.id_empresa).filter(Usuario.id_usuario != token_valido)
-
