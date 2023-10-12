@@ -40,7 +40,7 @@
                   </div>
                   {% endif %}
                   <h2 class="text-center mb-4">Registro Usuario</h2>
-                  <form action="/crearUser" method="POST">
+                  <form action="" method="POST" id="registroForm">
                     <!-- Agregamos action y method para enviar datos al servidor -->
                     <div class="form-group">
                       <label for="nom_usuario">Nombres</label>
@@ -116,7 +116,8 @@
                     </div>
                     <div class="text-center">
                       <a href="/usuarios" class="btn btn-danger">Cancelar</a>
-                      <button type="submit" class="btn btn-success">Registrar</button>
+                      <button type="button" class="btn btn-success" onclick="enviarFormulario()">Registrar</button>
+
                     </div>
                   </form>
                 </div>
@@ -145,6 +146,62 @@
     {% block scripts %}
     {% include 'scripts.html' %}
     {% endblock %}
+    <script>
+      function enviarFormulario() {
+        // Obtén los valores del formulario
+        var nomUsuario = document.getElementById('nom_usuario').value;
+        var apellidoUsuario = document.getElementById('apellido_usuario').value;
+        var tipoDoc = document.getElementById('tipo_doc').value;
+        var numDoc = document.getElementById('num_doc').value;
+        var correo = document.getElementById('correo').value;
+        var municipio = document.getElementById('municipio').value;
+        var direccion = document.getElementById('direccion').value;
+        var empresa = document.getElementById('empresa').value;
+        var rol = document.getElementById('rol').value;
+        var contrasenia = document.getElementById('contrasenia').value;
+    
+        
+        if (!nomUsuario || !apellidoUsuario || !tipoDoc || !numDoc || !correo || !municipio || !direccion || !empresa || !rol || !contrasenia) {
+          mostrarAlerta("Error", "Por favor, complete todos los campos.");
+          return;
+        }
+    
+        
+        var formData = {
+          nom_usuario: nomUsuario,
+          apellido_usuario: apellidoUsuario,
+          tipo_doc: tipoDoc,
+          num_doc: numDoc,
+          correo: correo,
+          municipio: municipio,
+          direccion: direccion,
+          empresa: empresa,
+          rol: rol,
+          contrasenia: contrasenia
+        };
+    
+        
+        $.ajax({
+          url: '/crearUser', 
+          type: 'POST',
+          data: formData,
+          success: function(response) {
+            mostrarAlerta("Éxito", "Usuario registrado exitosamente");
+            limpiarFormulario();
+          },
+          error: function(error) {
+            mostrarAlerta("Error", "Hubo un error al registrar el usuario es posible que el documento o el correo ya exista.");
+          }
+        });
+      }
+    
+      
+    
+      function limpiarFormulario() {
+        document.getElementById("registroForm").reset();
+      }
+    </script>
+    
 </body>
 
 </html>
