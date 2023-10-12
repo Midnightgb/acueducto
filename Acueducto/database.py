@@ -3,7 +3,7 @@ from sqlalchemy.orm import sessionmaker
 
 
 # DATABASE_URL = "mysql+pymysql:/manolos740:Manolos22!@207.246.65.47/acueducto"
-DATABASE_URL = "mysql+pymysql://adso:Manolosyes!!@45.77.161.32:3306/acueducto"
+DATABASE_URL = "mysql+pymysql://root:@localhost:3306/acueducto"
 
 
 engine = create_engine(DATABASE_URL)

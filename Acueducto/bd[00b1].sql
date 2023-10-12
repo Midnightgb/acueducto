@@ -86,7 +86,6 @@ CREATE TABLE trazabilidad(
 
 CREATE TABLE tokens(
     id_token INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    token VARCHAR(255),
-    
+    token VARCHAR(255)
 )
     

@@ -1,4 +1,4 @@
-<nav class="pcoded-navbar shadow ">
+<nav class="pcoded-navbar  ">
     <div class="navbar-wrapper  ">
         <div class="navbar-content scroll-div ">
 
@@ -17,11 +17,9 @@
                 </div>
                 <div class="collapse" id="nav-user-link">
                     <ul class="list-unstyled">
-                        <li class="list-group-item">
-                            <a href="/perfil_usuario">
-                                <i class="feather icon-user icono-perfil m-r-5"></i>
-                                Perfil
-                            </a>
+                        <li class="list-group-item"><a href="/perfil_usuario"><i
+                                    class="feather icon-user icono-perfil m-r-5"></i>Perfil</a></li>
+                        <li class="list-group-item"><a href="#!"><i class="feather icon-settings m-r-5"></i>Settings</a>
                         </li>
 
                         <li>
@@ -300,37 +298,27 @@
     </div>
     <div class="collapse navbar-collapse">
         <ul class="navbar-nav mr-auto">
-            {% if usuario.rol == 'SuperAdmin' %}
-                <li class="nav-item">
-                    <a class="text-dark" href="/form_registro_usuario" target="_self">Registrar usuario</a>
-                </li>
-                <li class="nav-item">
-                    <a class="text-dark" href="/registro_empresa" target="_self">Registrar empresa</a>
-                </li>
-                <li class="nav-item">
-                    <form action="/usuarios" method="post" class="btnUsuarios">
-                        <button class="btnUsuarios text-dark" type="submit" target="_self">Usuarios</button>
-                    </form>
-                </li>
-                <li class="nav-item">
-                    <a class="text-dark" href="/empresas/1" target="_self">Empresas</a>
-                </li>
-                <li class="nav-item">
-                    <a class="text-dark" href="/viviendas" target="_self">Viviendas</a>
-                </li>
-            {% elif usuario.rol == 'Admin' %}
-                <li class="nav-item">
-                    <a class="text-dark" href="/form_registro_usuario" target="_self">Registrar usuario</a>
-                </li>
-                <li class="nav-item">
-                    <form action="/usuarios" method="post" class="btnUsuarios">
-                        <button class="btnUsuarios text-dark" type="submit" target="_self">Usuarios</button>
-                    </form>
-                </li>
-                <li class="nav-item">
-                    <a class="text-dark" href="/viviendas" target="_self">Viviendas</a>
-                </li>
+            {% if usuario.rol == 'SuperAdmin' or usuario.rol == 'Admin': %}
+            <li class="nav-item">
+                <a class="text-dark" href="/form_registro_usuario" target="_self">Registrar
+                    usuario</a>
+            </li>
+            <li class="nav-item">
+                <a class="text-dark" href="/registro_empresa" target="_self">Registrar
+                    empresa</a>
+            </li>
+
+            <li class="nav-item">
+                <a class="text-dark" href="/usuarios" target="_self">Usuarios</a>
+            </li>
+            <li class="nav-item">
+                <a class="text-dark" href="/empresas" target="_self">Empresas</a>
+            </li>
+            <li class="nav-item">
+                <a class="text-dark" href="/reuniones" target="_self">Reunion</a>
+            </li>
             {% endif %}
         </ul>
+
     </div>
 </header>
