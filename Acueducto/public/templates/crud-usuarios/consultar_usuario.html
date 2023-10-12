@@ -61,6 +61,15 @@
                     </div>
                 </div>
                 {% endif %}
+                <div class="div">
+                    {% if usuarios[0]: %}
+                    {% set empresa = usuarios[0][1] %}
+                    <h3>Consultando usuarios empresa: {{ empresa }}</h3>
+                    <!-- {% for user in usuarios %}
+                    <h3>Consultando usuarios empresa: {{ user.nom_empresa }}</h3>
+                    {% endfor %} -->
+                    {% endif %}
+                </div>
                 <table class="table table-striped
             table-hover	
             table-borderless
