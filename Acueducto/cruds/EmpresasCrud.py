@@ -175,4 +175,36 @@ def cambiarEstadoEmpresa(
     except Exception as e:
         # Captura cualquier error inesperado
         return JSONResponse(status_code=500, content={"error": f"Error interno: {str(e)}"})
-    
+
+def obtenerEmpresas(
+        token: str ,
+        db: Session,
+    ):
+    try:
+        # Comprueba si hay un token
+        if token:
+            # Verifica la validez del token
+            token_valido = verificar_token(token, db)
+            if not token_valido:
+                raise HTTPException(status_code=403, detail="Token inválido")
+
+            # Obtiene el rol del usuario a partir del token
+            rol_usuario = get_rol(token_valido, db)
+
+            # Validar que Super admin y admin puedan cambiar el estado
+            if rol_usuario not in {SUPER_ADMIN, ADMIN}:
+                raise HTTPException(
+                    status_code=403, detail="No cuenta con los permisos para cambiar el estado")
+
+            # Cambia el estado del usuario a "Inactivo"
+            empresa = db.query(Empresa).all()
+            if not empresa:
+                return None
+
+            return empresa
+        else:
+            raise HTTPException(
+                status_code=403, detail="Token no proporcionado")
+    except Exception as e:
+        # Captura cualquier error inesperado
+        return JSONResponse(status_code=500, content={"error": f"Error interno: {str(e)}"})
