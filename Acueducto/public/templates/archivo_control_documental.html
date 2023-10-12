@@ -30,14 +30,18 @@
                                 <img src="{{ url_for('static', path='assets/images/logo-sena.ico') }}" width="40px" height="43px" alt="">
                             </div>
                             <h1 class="fw-bolder">Control Documental!</h1>
-                            <p class="lead fw-normal text-muted mb-0">Ingresa los datos para obtener tu documento</p>
+                            <p class="lead fw-normal text-muted mb-0">Ingresa los datos para obtener tus documentos</p>
                         </div>
                         <div class="row gx-5 justify-content-center">
-                            <div class="col-lg-8 col-xl-6">
+                            <div class="">
                                 <form action="/generar_pdf_P01_F_03/" method="post">
                                     <div class="form-floating mb-3">
                                         <input class="form-control" id="nombre_de_la_asociacion" name="nombre_de_la_asociacion" type="text" placeholder="" required />
                                         <label for="nombre_de_la_asociacion">Nombre de la Asociación</label>
+                                    </div>
+                                    <div class="form-floating mb-3">
+                                        <input class="form-control" id="nombre_de_la_asociacion" name="presidente_de_la_asociacion" type="text" placeholder="" required />
+                                        <label for="presidente_de_la_asociacion">Presidente de la Asociación</label>
                                     </div>
                                     <div class="form-floating mb-3">
                                         <input class="form-control" id="nit" name="nit" type="text" placeholder="" required/>
