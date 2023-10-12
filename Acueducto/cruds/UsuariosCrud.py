@@ -217,11 +217,11 @@ def createUsuario(
             "color": "danger",
         }
         return RedirectResponse(url="/form_registro_usuario", status_code=status.HTTP_303_SEE_OTHER, alerta=alerta) """
-        return
+        raise HTTPException(status_code=403, detail="La empresa seleccionada, no existe.")
     campos = ['correo', 'num_doc']
     valores = [correo, num_doc]
     if verificar_existencia(campos, valores, db):
-        return
+        raise HTTPException(status_code=403, detail="El correo o el número de documento ya existe.")
 
     if token:
         is_valid = verificar_token(token, db)
@@ -233,12 +233,16 @@ def createUsuario(
                 existing_user = db.query(Usuario).filter(
                     Usuario.correo == correo).first()
                 if existing_user:
-                    return {"error": "Usuario ya existe"}
+                    raise HTTPException(
+                        status_code=400, detail="Correo electrónico ya registrado"
+                    )
 
                 verificar_documento = db.query(Usuario).filter(
                     Usuario.num_doc == num_doc).first()
                 if verificar_documento:
-                    return {"no exitoso": "documento ya existente"}
+                    raise HTTPException(
+                        status_code=400, detail="Número de documento ya registrado"
+                    )
 
                 # Genera un ID de usuario aleatorio
                 id_usuario = generar_random_id()

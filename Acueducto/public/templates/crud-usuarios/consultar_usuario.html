@@ -203,18 +203,32 @@
                             title: 'El estado del usuario ha sido cambiado',
                             showConfirmButton: false,
                             timer: 1500
+                            
+
+                            
                         });
 
                         location.reload();
                     },
                     error: function (error) {
-
-                        console.error('Error al cambiar el estado del Usuario:', error);
+                        $('#confirmDeleteModal').modal('hide');
+                        Swal.fire({
+                            position: 'center',
+                            icon: 'error',
+                            title: 'Error al cambiar el estado del usuario ',
+                            showConfirmButton: false,
+                            
+                        });
+                        console.log('Error al cambiar el estado del usuario:', error);
                         // Puedes mostrar un mensaje de error al user si es necesario
                     }
                 });
             });
         }
+        
+    </script>
+    <script>
+        
     </script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"
