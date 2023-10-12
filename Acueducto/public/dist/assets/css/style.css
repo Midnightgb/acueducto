@@ -2491,6 +2491,12 @@ textarea.form-control {
     color: black;
 }
 
+.btnUsuarios {
+    border: none;
+    outline: none;
+    text-decoration: none;
+    background: whitesmoke;
+}
 
 .invalid-tooltip {
     position: absolute;
