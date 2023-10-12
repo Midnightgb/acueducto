@@ -519,7 +519,9 @@ def get_formUsuario(
         return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
 
 
+
 def obtenerUsuariosEmpresa(
     db:Session
 ):
     query_usuarios = db.query(Usuario, Empresa.nom_empresa).join(Empresa, Usuario.empresa == Empresa.id_empresa).filter(Usuario.id_usuario != token_valido)
+
