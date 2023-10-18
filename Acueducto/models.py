@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Enum, ForeignKey, Float
+from sqlalchemy import Column, Integer, String, Enum, ForeignKey, Float, Date, Boolean
 from sqlalchemy.orm import declarative_base, relationship
 from sqlalchemy.sql import func
 from enum import Enum as PyEnum
@@ -57,6 +57,15 @@ class Documento(Base):
     update_at = Column(String, server_default=func.now(),
                        onupdate=func.now(), nullable=False)
     url = Column(String(200))
+
+class Reunion(Base):
+    __tablename__ = "reuniones"
+    id_reunion = Column(Integer, primary_key=True, autoincrement=True)
+    id_empresa = Column(Integer)
+    nom_reunion = Column(String(120))
+    fecha = Column(Date)
+    url_asistencia = Column(String(200))
+    cuorum = Column(Boolean)
 
 class Token(Base):
     __tablename__ = "tokens"
