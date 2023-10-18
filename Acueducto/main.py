@@ -526,7 +526,7 @@ def PagAprobacion_acta_constitucion(
 
 # FIN 1.2
 
-@app.get("/archivo_control_documental", response_class=HTMLResponse, tags=["Operaciones Documentos"])
+@app.get("/archivo_control_documental", response_class=HTMLResponse)
 def PagArchivo_control_documental(
     request: Request, token: str = Cookie(None), db: Session = Depends(get_database)
 ):
@@ -535,13 +535,17 @@ def PagArchivo_control_documental(
 
         if is_token_valid:
             rol_usuario = get_rol(is_token_valid, db)
-            print(rol_usuario)
             datos_usuario = get_datos_usuario(is_token_valid, db)
+            documentos = db.query(Documento).filter(Documento.id_usuario == is_token_valid).all()
+            arreglo_rutas_pdf = []
+            for documento in documentos:
+                arreglo_rutas_pdf.append(documento.url)
+            print(arreglo_rutas_pdf)
             headers = elimimar_cache()
             if rol_usuario == SUPER_ADMIN or rol_usuario == ADMIN:
                 response = template.TemplateResponse(
                     "paso-1/paso1-3/archivo_control_documental.html",
-                    {"request": request, "usuario": datos_usuario},
+                    {"request": request, "usuario": datos_usuario, "rutas_pdf": arreglo_rutas_pdf},
                 )
                 response.headers.update(headers)  # Actualiza las cabeceras
                 return response
@@ -714,37 +718,44 @@ async def una_ruta(token: str = Cookie(None), db: Session = Depends(get_database
 
 
 # GENERAR DOCUMENTOS PERSONALIZADOS
-@app.post("/generar_docx_P01_F_03/", tags=["Operaciones Documentos"])
-async def generar_docx_P01_F_03(
-    nombre_de_la_asociacion: str = Form(...),
+@app.post("/generar_docx_P01_F_03/")
+def generar_docx_P01_F_03(
+    request: Request,
+    token: str = Cookie(None),
+    db: Session = Depends(get_database),
     nit: str = Form(...),
-    direccion: str = Form(...),
+    presidente: str = Form(...),
+    patrimonio: str = Form(...),
     municipio: str = Form(...),
     departamento: str = Form(...),
-    telefono: str = Form(...),
     web: str = Form(...),
-    correo: str = Form(...),
     horario: str = Form(...),
     vereda: str = Form(...),
     sigla: str = Form(...),
     fecha: str = Form(...),
+    especificaciones: str = Form(...),
+    diametro: str = Form(...),
+    caudal_permanente: str = Form(...),
+    rango_medicion: str = Form(...)
 ):
     respuesta = generarDocx_P01_F_03(
         request,
         token,
         db,
-        nombre_de_la_asociacion,
         nit,
-        direccion,
+        presidente,
+        patrimonio,
         municipio,
         departamento,
-        telefono,
         web,
-        correo,
         horario,
         vereda,
         sigla,
         fecha,
+        especificaciones,
+        diametro,
+        caudal_permanente,
+        rango_medicion,
     )
     return respuesta
 
