@@ -418,13 +418,30 @@ def pagLlamado(
             print(rol_usuario)
             datos_usuario = get_datos_usuario(is_token_valid, db)
             headers = elimimar_cache()
-            if rol_usuario == SUPER_ADMIN or rol_usuario == ADMIN:
+            if rol_usuario == SUPER_ADMIN:
                 response = template.TemplateResponse(
                     "paso-1/paso1-2/llamado_lista.html",
                     {"request": request, "usuario": datos_usuario},
                 )
                 response.headers.update(headers)  # Actualiza las cabeceras
                 return response
+            elif rol_usuario == ADMIN:
+                id_empresa = get_empresa(is_token_valid,db)
+                reuniones = obtenerReuAdmin(id_empresa,db)
+                if reuniones:
+                    response = template.TemplateResponse(
+                        "paso-1/paso1-2/llamado_lista.html",
+                        {"request": request, "usuario": datos_usuario,"reuniones":reuniones},
+                    )
+                    response.headers.update(headers)  # Actualiza las cabeceras
+                    return response
+                else:
+                    response = template.TemplateResponse(
+                        "paso-1/paso1-2/llamado_lista.html",
+                        {"request": request, "usuario": datos_usuario,"reuniones":None},
+                    )
+                    response.headers.update(headers)  # Actualiza las cabeceras
+                    return response
             else:
                 alerta = {
                     "mensaje": "No tiene los permisos para esta acción",
@@ -440,6 +457,13 @@ def pagLlamado(
             return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
     else:
         return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
+
+# RUTA PARA ENVIAR DATOS DE LA ASISTENCIA
+@app.post("/datosAsistencia",response_class=HTMLResponse)
+def procesar_datos(request: Request, token: str = Cookie(None), db: Session = Depends(get_database)):
+    is_token_valid = verificar_token(token, db)
+    suscriptores = obtenerSuscriptoresEmpresa(db,is_token_valid,request)
+    return suscriptores
 
 
 # VERIFICACION DEL CUORUM

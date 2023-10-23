@@ -32,80 +32,58 @@
                         </div>
                         <div class="row col-12">
                             <div class="col-3 form-group">
-                                <form action="" method="POST"></form>
-                                    <label class="mt-2" for="Reunion_1">Seleccione la reunion:</label>
+                                <form action="/datosAsistencia" method="POST" id="formAsistencia">
+                                    <label class="mt-2" for="">Seleccione la reunion:</label>
+                                    
                                     <select class="form-select" name="Reunion_1" id="Reunion_1" required>
-                                        <option value="Reunion_1">Reunion 1</option>
-                                        <option value="Reunion_1">Reunion 2</option>
-                                        <option value="Reunion_1">Reunion 3</option>
-                                        <option value="Reunion_1">Reunion 4</option>
+                                        <option value=""></option>
+                                        {% if reuniones: %}
+                                            {% for reunion in reuniones %}
+                                                <option value=" {{reunion.id_reunion}} "> {{reunion.nom_reunion}} </option>
+                                            {%endfor%}
+                                        {% else: %}
+                                            <option value="">No hay reuniones </option>
+                                        {%endif%}
                                     </select><br>
                                 </form>    
                             </div>  
                             <div class="col-1 form-group">
-                                <label class="mt-2" for="Reunion_1">cuorum</label>
+                                <label class="mt-2" for="">cuorum</label>
                                 <input type="text" class="form-control" name="cuorum" id="cuorum" placeholder="No" readonly  required>
+                            </div>
+                            <div class="col-4 form-group">
+                                <button class="btn btn-primary mt-5" id="calcularCuorum">Calcular Cuorum</button>
                             </div>
                         </div>                           
                         <div class="table-responsive">
                             <table class="table table-hover">
                                 <thead>
+                                    
                                     <tr>
-                                        <th scope="col">#</th>
+                                        
                                         <th scope="col">Nombre</th>
                                         <th scope="col">Apellido</th>
                                         <th scope="col">No. Documento</th>
-                                        <th scope="col">Teléfono</th>
+                                        <th scope="col">Dirección</th>
                                         <th scope="col">Correo Electronico</th>
                                         <th scope="col">Asistencia</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                <tr>
-                                    <td>1</td>
-                                    <td>Juan</td>
-                                    <td>Pérez</td>
-                                    <td>DNI: 12345678</td>  
-                                    <td>555-1234</td>
-                                    <td>juan@example.com</td>
-                                    <td><input class="ml-4" type="checkbox" id="miCheckbox" name="miCheckbox"></td>
-                                </tr>
-                                <tr>
-                                    <td>2</td>
-                                    <td>María</td>
-                                    <td>Gómez</td>
-                                    <td>DNI: 23456789</td>
-                                    <td>555-5678</td>
-                                    <td>maria@example.com</td>
-                                     <td><input class="ml-4" type="checkbox" id="miCheckbox" name="miCheckbox"></td>
-                                </tr>
-                                <tr>
-                                    <td>3</td>
-                                    <td>Carlos</td>
-                                    <td>López</td>
-                                    <td>DNI: 34567890</td>
-                                    <td>555-9876</td>
-                                    <td>carlos@example.com</td>
-                                     <td><input class="ml-4" type="checkbox" id="miCheckbox" name="miCheckbox"></td>
-                                </tr>
-                                <tr>
-                                    <td>4</td>
-                                    <td>Sofía</td>
-                                    <td>Rodríguez</td>
-                                    <td>DNI: 45678901</td>
-                                    <td>555-5432</td>
-                                    <td>sofia@example.com</td>
-                                     <td><input class="ml-4" type="checkbox" id="miCheckbox" name="miCheckbox"></td>
-                                </tr>
-                                <tr>
-                                    <td>5</td>
-                                    <td>Andrés</td>
-                                    <td>Martínez</td>
-                                    <td>DNI: 56789012</td>
-                                    <td>555-8765</td>
-                                    <td>andres@example.com</td>
-                                     <td><input class="ml-4" type="checkbox" id="miCheckbox" name="miCheckbox"></td>
-                                </tr>
+                                    {% if suscriptores: %}
+                                        {% for suscrip in suscriptores %}
+                                        <tr>
+                                            
+                                            <td>{{suscrip.nom_usuario}}</td>
+                                            <td>{{suscrip.apellido_usuario}}</td>
+                                            <td>{{suscrip.tipo_doc}}:{{suscrip.num_doc}}</td>
+                                            <td>{{suscrip.direccion}}</td>  
+                                            <td>{{suscrip.correo}}</td>
+                                            <td><input class="ml-4" type="checkbox" id="miCheckbox" name="miCheckbox"></td>
+                                        </tr>
+                                        {%endfor%}
+                                    {%endif%}
+                                
                                 </tbody>
                             </table>
                         </div>
@@ -126,13 +104,31 @@
             <!-- End of Main Content -->
         </div>
     
-        
+        <script>
+            let formularioAsistencia = document.getElementById('formAsistencia');
+            let reunionSelect = document.getElementById('Reunion_1');
+            reunionSelect.addEventListener('change', () => {
+                console.log("se envio los datos");
+                formularioAsistencia.submit();
+            });
+
+            let miCheckbox = document.getElementById('miCheckbox');
+            miCheckbox.addEventListener('change', () => {
+                if (miCheckbox.checked) {
+                    console.log("aumenta el contador");
+                }else{
+                    console.log("se hice --");
+                }
+            });
+            
+
+        </script>
     <!-- BEGIN SCRIPTS -->
     {% block scripts %}
         {% include 'scripts.html' %}
     {% endblock %}
     <!-- END SCRIPTS -->
-
+    
     
     
 
