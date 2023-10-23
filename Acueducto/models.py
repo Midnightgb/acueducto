@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Enum, ForeignKey, Float, Date, Boolean
+from sqlalchemy import Column, Integer, String, Enum, ForeignKey, Float, Date, Boolean, Time
 from sqlalchemy.orm import declarative_base, relationship
 from sqlalchemy.sql import func
 from enum import Enum as PyEnum
@@ -64,6 +64,8 @@ class Reunion(Base):
     id_empresa = Column(Integer)
     nom_reunion = Column(String(120))
     fecha = Column(Date)
+    hora = Column(Time)
+    lugar = Column(String)
     url_asistencia = Column(String(200))
     cuorum = Column(Boolean)
 

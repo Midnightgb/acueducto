@@ -8,7 +8,7 @@
   {% endblock %}
 
   <script>
-    
+
     function validarFormulario() {
       var id_reunion = document.getElementById("id_reunion").value.trim();
       var nom_reunion = document.getElementById("nom_reunion").value.trim();
@@ -51,29 +51,40 @@
               <!-- Formulario Crear Reunion -->
               <div class="container-xxl d-flex justify-content-center align-items-center vh-90">
                 <div class="col-12 col-lg-6 bg-light rounded p-4 shadow">
-                  
+
                   <h2 class="text-center mb-4">Crear Reunion </h2>
 
                   <form id="formularioReunion" onsubmit="return validarFormulario()">
+                    {% if usuario: %}
                     <div class="form-group">
-                      <input type="hidden" class="form-control" name="id_empresa" id="id_empresa" value="1" required>
+                      <input type="hidden" class="form-control" name="id_empresa" id="id_empresa" value="{{usuario.empresa}}" required>
                     </div>
-
+                    {% endif %}
                     <div class="form-group">
                       <label for="nom_reunion">Nombre Reunion</label>
-                      <input type="text" class="form-control" name="nom_reunion" id="nom_reunion" placeholder="Nombre reunion" required>
+                      <input type="text" class="form-control" name="nom_reunion" id="nom_reunion"
+                        placeholder="Nombre reunion" required>
                     </div>
 
                     <div class="form-group">
                       <label for="fecha">Fecha</label>
                       <input type="date" class="form-control" name="fecha" id="fecha" placeholder="Fecha" required>
                     </div>
+                    <div class="form-group">
+                      <label for="hora">Hora</label>
+                      <input type="time" class="form-control" name="hora" id="hora" placeholder="Hora" required>
+                    </div>
+                    <div class="form-group">
+                      <label for="lugar">Lugar</label>
+                      <input type="text" class="form-control" name="lugar" id="lugar"
+                        placeholder="Lugar de la reunion" required>
+                    </div>
                     <div class="text-center">
                       <a href="/reuniones" class="btn btn-danger">Cancelar</a>
                       <button type="submit" class="btn btn-success">Crear</button>
                     </div>
                   </form>
-                  
+
                 </div>
 
               </div>
@@ -95,23 +106,23 @@
     <!-- place footer here -->
   </footer>
   <!-- Bootstrap JavaScript Libraries -->
-  <script >
+  <script>
     //funcion para valirdar que se creo
 
-    async function enviarSolicitud(formData){
+    async function enviarSolicitud(formData) {
       try {
         const reponse = await fetch("/crear_reunion", {
           method: "POST",
           body: formData,
         });
 
-        if(reponse.status === 201){
+        if (reponse.status === 201) {
           const data = await reponse.json;
-          return {success: true, data};
+          return { success: true, data };
 
         } else {
           const errorData = await reponse.json();
-          throw new Error(errorData.detail || "Error desconocido" );
+          throw new Error(errorData.detail || "Error desconocido");
         }
 
       } catch (error) {
@@ -120,31 +131,31 @@
     }
 
     //funcion  para mostrar alert
-    function mostrarAlert(message, type = "info"){
+    function mostrarAlert(message, type = "info") {
       Swal.fire({
-          title: "Aviso",
-          text: message,
-          icon: type,
+        title: "Aviso",
+        text: message,
+        icon: type,
       });
     }
 
-  document.getElementById("formularioReunion").addEventListener("submit", async function (event){
-    event.preventDefault();
-    try {
-      const formData = new FormData(this);
-      const response = await enviarSolicitud(formData);
+    document.getElementById("formularioReunion").addEventListener("submit", async function (event) {
+      event.preventDefault();
+      try {
+        const formData = new FormData(this);
+        const response = await enviarSolicitud(formData);
 
-      if (response.success) {
-        mostrarAlert("La reunion se registró con éxito.", "success");
+        if (response.success) {
+          mostrarAlert("La reunion se registró con éxito.", "success");
 
-        //Limpiamos el form
-        this.reset();
-        
+          //Limpiamos el form
+          this.reset();
+
+        }
+      } catch (error) {
+        mostrarAlert(`Error al registrar la reunion : ${error.message}`, "error");
       }
-    } catch (error) {
-      mostrarAlert(`Error al registrar la reunion : ${error.message}`, "error");
-    }
-  });
+    });
 
   </script>
   {% block scripts %}

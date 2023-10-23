@@ -265,9 +265,11 @@ def pagInvitacion_a_la_asamblea(
 
 @app.post("/crear_reunion")
 async def crearReunion(
-    id_empresa: int = Form(...),
+    id_empresa: str = Form(...),
     nom_reunion: str = Form(...),
     fecha: str = Form(...),
+    hora: str = Form(...),
+    lugar: str = Form(...),
     token: str = Cookie(None),
     db: Session = Depends(get_database),
 ):
@@ -277,6 +279,8 @@ async def crearReunion(
             id_empresa,
             nom_reunion,
             fecha,
+            hora,
+            lugar,
             url_asistencia,
             token,
             db,
