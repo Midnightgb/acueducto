@@ -335,9 +335,28 @@ def consultarReuniones(
                 db.query(Usuario).filter(Usuario.id_usuario == token_valido).first()
             )
             headers = elimimar_cache()
-            if rol_usuario in [SUPER_ADMIN, ADMIN]:
+            if rol_usuario == SUPER_ADMIN:
                 id_empresa = get_empresa(token_valido,db)
                 reuniones = obtenerReuAdmin(id_empresa,db)
+                empresas = obtenerEmpresas(token,db)
+                if reuniones:
+                    response = template.TemplateResponse(
+                        "crud-reuniones/consultar_reunion.html",
+                        {
+                            "request": request,
+                            "empresas": empresas,
+                            "usuario": usuario,
+                        },
+                    )
+                    response.headers.update(headers)
+                    return response
+                else:
+                    raise HTTPException(
+                        status_code=403, detail="No hay reuniones que consultar"
+                    )
+            elif rol_usuario == ADMIN:
+                id_empresa = get_empresa(token_valido,db)
+                reuniones = obtenerReuAdmin(id_empresa,db)                
                 if reuniones:
                     response = template.TemplateResponse(
                         "crud-reuniones/consultar_reunion.html",
@@ -359,6 +378,13 @@ def consultarReuniones(
             return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
     else:
         return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
+
+# --- RUTA PARA MOSTRAR LA INFO DE LA REUNION SOBRE UNA EMPRESA
+@app.post("/obtenerDatosReunionSuperAdmin")
+def procesar_datos(request: Request, id_empresa:int=Form(...),token: str = Cookie(None), db: Session = Depends(get_database)):
+    is_token_valid = verificar_token(token, db)
+    datosReunion = obtenerDatosReunion(db,id_empresa,is_token_valid,request)
+    return datosReunion
 
 # --- RUTA PARA MOSTRAR LA PAGUNA DONDE SE EDITA LA REUNION
 @app.post("/EditarReunion/", response_class=HTMLResponse)
