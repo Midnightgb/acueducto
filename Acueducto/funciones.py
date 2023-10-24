@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from jose import jwt
 from docx import Document
 from fpdf import FPDF
-from models import Token, Usuario, Empresa, Vivienda
+from models import Token, Usuario, Empresa, Vivienda, Reunion
 from docx2pdf import convert
 import PyPDF2
 
@@ -145,6 +145,24 @@ def get_datos_empresas(db) -> list[str]:
     nom_empresas = db.query(Empresa.nom_empresa).all()
     return [nombre[0] for nombre in nom_empresas]
 
+# OBTENER DATOS REUNIONES:
+def get_datos_reuniones(id_reunion, db):
+    if id_reunion:
+        reunion = db.query(Reunion).filter(
+            Reunion.id_reunion == id_reunion).first()
+        if reunion:
+            datos_reunion = {
+                "id_reunion": reunion.id_reunion,
+                "nom_reunion": reunion.nom_reunion,
+                "id_empresa": reunion.id_empresa,
+                "fecha": reunion.fecha,
+                "url_asistencia": reunion.url_asistencia,
+            }
+            return datos_reunion
+        else:
+            return None
+    else:
+        return None
 
 # FUNCION PARA ELIMINAR EL CACHE (HEADERS) 4/10/2023
 

@@ -20,6 +20,7 @@ from fastapi.responses import JSONResponse, RedirectResponse
 from sqlalchemy.orm import Session
 from funciones import *
 from cruds.EmpresasCrud import *
+from cruds.ReunionesCrud import obtenerReuAdmin
 from models import Usuario
 
 SUPER_ADMIN = "SuperAdmin"
@@ -225,11 +226,11 @@ def createUsuario(
             "color": "danger",
         }
         return RedirectResponse(url="/form_registro_usuario", status_code=status.HTTP_303_SEE_OTHER, alerta=alerta) """
-        return
+        raise HTTPException(status_code=403, detail="La empresa seleccionada, no existe.")
     campos = ['correo', 'num_doc']
     valores = [correo, num_doc]
     if verificar_existencia(campos, valores, db):
-        return
+        raise HTTPException(status_code=403, detail="El correo o el número de documento ya existe.")
 
     if token:
         is_valid = verificar_token(token, db)
@@ -241,12 +242,16 @@ def createUsuario(
                 existing_user = db.query(Usuario).filter(
                     Usuario.correo == correo).first()
                 if existing_user:
-                    return {"error": "Usuario ya existe"}
+                    raise HTTPException(
+                        status_code=400, detail="Correo electrónico ya registrado"
+                    )
 
                 verificar_documento = db.query(Usuario).filter(
                     Usuario.num_doc == num_doc).first()
                 if verificar_documento:
-                    return {"no exitoso": "documento ya existente"}
+                    raise HTTPException(
+                        status_code=400, detail="Número de documento ya registrado"
+                    )
 
                 # Genera un ID de usuario aleatorio
                 id_usuario = generar_random_id()
@@ -519,9 +524,57 @@ def get_formUsuario(
         return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
 
 
-
 def obtenerUsuariosEmpresa(
     db:Session
 ):
     query_usuarios = db.query(Usuario, Empresa.nom_empresa).join(Empresa, Usuario.empresa == Empresa.id_empresa).filter(Usuario.id_usuario != token_valido)
+
+def obtenerSuscriptoresEmpresa(
+    db:Session,
+    token_valido:str,
+    request:Request
+):
+    if token_valido:
+        empresas = None
+        usuario = (
+                db.query(Usuario).filter(
+                    Usuario.id_usuario == token_valido).first()
+            )
+        if usuario:
+            query_usuarios = (
+                db.query(Usuario)
+                .filter(
+                    (Usuario.id_usuario != token_valido)
+                    & (Usuario.rol != SUPER_ADMIN)
+                    & (Usuario.empresa == usuario.empresa)
+                ).all()
+            )
+
+            headers = elimimar_cache()
+            reuniones = obtenerReuAdmin(usuario.empresa,db)
+            if query_usuarios:
+                response = template.TemplateResponse(
+                    "paso-1/paso1-2/llamado_lista.html",
+                    {"request": request, "suscriptores": query_usuarios,"usuario":usuario,"reuniones":reuniones},
+                )
+                response.headers.update(headers)
+                return response
+            else:
+                alerta = {
+                    "mensaje": "No hay cosos",
+                    "color": "warning",
+                }
+
+                response = template.TemplateResponse(
+                    "index.html",
+                    {"request": request, "alerta": alerta, "suscriptores": None,"usuario":usuario,"reuniones":reuniones},
+                )
+                response.headers.update(headers)
+                return response
+        else:
+            return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
+    else:
+        return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
+
+
 

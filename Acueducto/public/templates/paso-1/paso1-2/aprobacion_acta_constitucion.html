@@ -62,9 +62,10 @@
                                                     data-target="#exampleModal"
                                                     style="background-color: #00af00; color: white;"> <b>Ver Acta</b>
                                                 </a>
-                                                <a href="" type="button" class="mx-3 mt-3 btn"
-                                                    style="background-color: #00af00; color: white;"> <b>Descargar
-                                                        Acta</b> </a>
+                                                <a href="" type="button" class="mx-3 mt-3 btn" data-toggle="modal"
+                                                    data-target="#modalVotos"
+                                                    style="background-color: #00af00; color: white;"> <b>Cargar Resultados</b>
+                                                </a>
                                             </div>
                                         </div>
 
@@ -75,7 +76,7 @@
 
                                 <!-- Modal con iframe -->
                                 <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog"
-                                    aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static">
                                     <div class="modal-dialog" role="document">
                                         <div class="modal-content">
                                             <div class="modal-header">
@@ -86,13 +87,34 @@
                                             </div>
                                             <div class="modal-body">
                                                 <!-- Agregar el iframe aquí -->
-                                                <iframe src="assets/pdf/acta.pdf" width="100%" height="500"
+                                                <iframe src="{{ url_for('static', path='ArchivosDescarga/P01-F-06_ActaConstitución.pdf') }}" width="100%" height="500"
                                                     frameborder="0"></iframe>
                                             </div>
                                             <div class="modal-footer">
-                                                <button class="btn" data-dismiss="modal"><i
-                                                        class="flaticon-cancel-12"></i> Cerrar</button>
-                                                <button type="button" class="btn btn-primary">Descargar</button>
+                                                <button class="btn" data-dismiss="modal"><i class="flaticon-cancel-12"></i> Cerrar</button>
+                                                <a href="{{ url_for('static', path='ArchivosDescarga/P01-F-06_ActaConstitución.pdf') }}" download="acta_constitucion.pdf" class="btn btn-primary">Descargar</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Modal de votos -->
+                                <div class="modal fade" id="modalVotos" tabindex="-1" role="dialog"
+                                    aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="exampleModalLabel">Ingrese los votos a favor y en contra</h5>
+                                                <button type="button" class="close" data-dismiss="modal"
+                                                    aria-label="Close">
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <p>formulario bacan &#129305;</p>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button class="btn" data-dismiss="modal"><i class="flaticon-cancel-12"></i> Cerrar</button>
+                                                <button class="btn" data-dismiss="modal"><i class="flaticon-cancel-12"></i> Enviar</button>
                                             </div>
                                         </div>
                                     </div>

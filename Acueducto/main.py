@@ -2,6 +2,7 @@ from fastapi import HTTPException, Depends, Cookie, Response
 from fastapi import HTTPException
 from typing import Optional
 from cruds.EmpresasCrud import *
+from cruds.ReunionesCrud import *
 from cruds.UsuariosCrud import *
 from cruds.SuperAdmin import *
 from pdfs.P01_F_03 import *
@@ -262,6 +263,151 @@ def pagInvitacion_a_la_asamblea(
 
 # -- 1.2 --
 
+@app.post("/crear_reunion")
+async def crearReunion(
+    id_empresa: str = Form(...),
+    nom_reunion: str = Form(...),
+    fecha: str = Form(...),
+    hora: str = Form(...),
+    lugar: str = Form(...),
+    token: str = Cookie(None),
+    db: Session = Depends(get_database),
+):
+    url_asistencia = "public/dist/ArchivoDescarga/P01-F-05_Listado de asistencia.xlsx - Hoja1.pdf"
+    try:
+        respuesta = createReunion(
+            id_empresa,
+            nom_reunion,
+            fecha,
+            hora,
+            lugar,
+            url_asistencia,
+            token,
+            db,
+        )
+
+        return respuesta
+    except Exception as e:
+        # Manejar cualquier excepción que pueda ocurrir
+        return {"error": f"Error al procesar la solicitud: {str(e)}"}
+
+# --- MOSTRAMOS LA PAGINA PARA CREAR UNA REUNION
+@app.get("/reunion", response_class=HTMLResponse)
+def MostrarFormReunion(
+    request: Request, token: str = Cookie(None), db: Session = Depends(get_database)
+):
+    if token:
+        token_valido = verificar_token(token, db)
+        if token_valido:
+            rol_usuario = get_rol(token_valido, db)
+            usuario = (
+                db.query(Usuario).filter(Usuario.id_usuario == token_valido).first()
+            )
+            headers = elimimar_cache()
+            if rol_usuario in [SUPER_ADMIN, ADMIN]:
+                response = template.TemplateResponse(
+                    "crud-reuniones/registro_reunion.html",
+                    {"request": request, "usuario": usuario},
+                )
+                response.headers.update(headers)
+                return response
+
+            else:
+                raise HTTPException(
+                    status_code=403,
+                    detail="NO TIENES LOS PERMISOS PARA ACCEDER A ESTA PAGINA ",
+                )
+        else:
+            return RedirectResponse("/", status_code=status.HTTP_303_SEE_OTHER)
+    else:
+        return RedirectResponse("/", status_code=status.HTTP_303_SEE_OTHER)
+
+#  Mostrar Reuniones
+@app.get("/reuniones", response_class=HTMLResponse)
+def consultarReuniones(
+    request: Request, token: str = Cookie(None), db: Session = Depends(get_database)
+):
+    if token:
+        token_valido = verificar_token(token, db)
+        if token_valido:
+            rol_usuario = get_rol(token_valido, db)
+            usuario = (
+                db.query(Usuario).filter(Usuario.id_usuario == token_valido).first()
+            )
+            headers = elimimar_cache()
+            if rol_usuario in [SUPER_ADMIN, ADMIN]:
+                query_reunion = db.query(Reunion)
+                if query_reunion:
+                    response = template.TemplateResponse(
+                        "crud-reuniones/consultar_reunion.html",
+                        {
+                            "request": request,
+                            "reunion": query_reunion,
+                            "usuario": usuario,
+                        },
+                    )
+                    response.headers.update(headers)
+                    return response
+                else:
+                    raise HTTPException(
+                        status_code=403, detail="No hay reuniones que consultar"
+                    )
+            else:
+                raise HTTPException(status_code=403, detail="No puede entrar")
+        else:
+            return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
+    else:
+        return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
+
+# --- RUTA PARA MOSTRAR LA PAGUNA DONDE SE EDITA LA REUNION
+@app.post("/EditarReunion/", response_class=HTMLResponse)
+def Editar_Reunion(
+    request: Request,
+    id_reunion: int = Form(...),
+    token: str = Cookie(None),
+    db: Session = Depends(get_database),
+):
+    if token:
+        token_valido = verificar_token(token, db)
+        if token_valido:
+            rol_usuario = get_rol(token_valido, db)
+            usuario = (
+                db.query(Usuario).filter(Usuario.id_usuario == token_valido).first()
+            )
+            headers = elimimar_cache()
+            if rol_usuario == SUPER_ADMIN or rol_usuario == ADMIN:
+                reunion = get_datos_reuniones(id_reunion, db)
+                response = template.TemplateResponse(
+                    "crud-reuniones/editar_reunion.html",
+                    {"request": request, "reunion": reunion, "usuario": usuario},
+                )
+                response.headers.update(headers)
+                return response
+            else:
+                raise HTTPException(status_code=403, detail="No puede entrar")
+        else:
+            return RedirectResponse("/", status_code=status.HTTP_303_SEE_OTHER)
+    else:
+        return RedirectResponse("/", status_code=status.HTTP_303_SEE_OTHER)
+
+
+# --- FUNCION PARA ACTUALIZAR LA REUNION
+@app.post("/updateReunion")
+def obtenerDatos(
+    id_reunion: int = Form(...),
+    nom_reunion: str = Form(...),
+    fecha: str = Form(...),
+    token: str = Cookie(None),
+    db: Session = Depends(get_database),
+):
+    respuesta = updateReunion(
+        id_reunion, nom_reunion, fecha, token, db
+    )
+    if respuesta:
+        return RedirectResponse("/reuniones", status_code=status.HTTP_303_SEE_OTHER)
+    else:
+        return RedirectResponse("/", status_code=status.HTTP_303_SEE_OTHER)
+
 
 # LLAMADO A LISTA
 @app.get("/llamado_lista", response_class=HTMLResponse, tags=["Operaciones Documentos"])
@@ -276,13 +422,30 @@ def pagLlamado(
             print(rol_usuario)
             datos_usuario = get_datos_usuario(is_token_valid, db)
             headers = elimimar_cache()
-            if rol_usuario == SUPER_ADMIN or rol_usuario == ADMIN:
+            if rol_usuario == SUPER_ADMIN:
                 response = template.TemplateResponse(
                     "paso-1/paso1-2/llamado_lista.html",
                     {"request": request, "usuario": datos_usuario},
                 )
                 response.headers.update(headers)  # Actualiza las cabeceras
                 return response
+            elif rol_usuario == ADMIN:
+                id_empresa = get_empresa(is_token_valid,db)
+                reuniones = obtenerReuAdmin(id_empresa,db)
+                if reuniones:
+                    response = template.TemplateResponse(
+                        "paso-1/paso1-2/llamado_lista.html",
+                        {"request": request, "usuario": datos_usuario,"reuniones":reuniones},
+                    )
+                    response.headers.update(headers)  # Actualiza las cabeceras
+                    return response
+                else:
+                    response = template.TemplateResponse(
+                        "paso-1/paso1-2/llamado_lista.html",
+                        {"request": request, "usuario": datos_usuario,"reuniones":None},
+                    )
+                    response.headers.update(headers)  # Actualiza las cabeceras
+                    return response
             else:
                 alerta = {
                     "mensaje": "No tiene los permisos para esta acción",
@@ -298,6 +461,13 @@ def pagLlamado(
             return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
     else:
         return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
+
+# RUTA PARA ENVIAR DATOS DE LA ASISTENCIA
+@app.post("/datosAsistencia",response_class=HTMLResponse)
+def procesar_datos(request: Request, token: str = Cookie(None), db: Session = Depends(get_database)):
+    is_token_valid = verificar_token(token, db)
+    suscriptores = obtenerSuscriptoresEmpresa(db,is_token_valid,request)
+    return suscriptores
 
 
 # VERIFICACION DEL CUORUM
@@ -526,7 +696,7 @@ def PagAprobacion_acta_constitucion(
 
 # FIN 1.2
 
-@app.get("/archivo_control_documental", response_class=HTMLResponse, tags=["Operaciones Documentos"])
+@app.get("/archivo_control_documental", response_class=HTMLResponse)
 def PagArchivo_control_documental(
     request: Request, token: str = Cookie(None), db: Session = Depends(get_database)
 ):
@@ -535,13 +705,17 @@ def PagArchivo_control_documental(
 
         if is_token_valid:
             rol_usuario = get_rol(is_token_valid, db)
-            print(rol_usuario)
             datos_usuario = get_datos_usuario(is_token_valid, db)
+            documentos = db.query(Documento).filter(Documento.id_usuario == is_token_valid).all()
+            arreglo_rutas_pdf = []
+            for documento in documentos:
+                arreglo_rutas_pdf.append(documento.url)
+            print(arreglo_rutas_pdf)
             headers = elimimar_cache()
             if rol_usuario == SUPER_ADMIN or rol_usuario == ADMIN:
                 response = template.TemplateResponse(
                     "paso-1/paso1-3/archivo_control_documental.html",
-                    {"request": request, "usuario": datos_usuario},
+                    {"request": request, "usuario": datos_usuario, "rutas_pdf": arreglo_rutas_pdf},
                 )
                 response.headers.update(headers)  # Actualiza las cabeceras
                 return response
@@ -714,37 +888,44 @@ async def una_ruta(token: str = Cookie(None), db: Session = Depends(get_database
 
 
 # GENERAR DOCUMENTOS PERSONALIZADOS
-@app.post("/generar_docx_P01_F_03/", tags=["Operaciones Documentos"])
-async def generar_docx_P01_F_03(
-    nombre_de_la_asociacion: str = Form(...),
+@app.post("/generar_docx_P01_F_03/")
+def generar_docx_P01_F_03(
+    request: Request,
+    token: str = Cookie(None),
+    db: Session = Depends(get_database),
     nit: str = Form(...),
-    direccion: str = Form(...),
+    presidente: str = Form(...),
+    patrimonio: str = Form(...),
     municipio: str = Form(...),
     departamento: str = Form(...),
-    telefono: str = Form(...),
     web: str = Form(...),
-    correo: str = Form(...),
     horario: str = Form(...),
     vereda: str = Form(...),
     sigla: str = Form(...),
     fecha: str = Form(...),
+    especificaciones: str = Form(...),
+    diametro: str = Form(...),
+    caudal_permanente: str = Form(...),
+    rango_medicion: str = Form(...)
 ):
     respuesta = generarDocx_P01_F_03(
         request,
         token,
         db,
-        nombre_de_la_asociacion,
         nit,
-        direccion,
+        presidente,
+        patrimonio,
         municipio,
         departamento,
-        telefono,
         web,
-        correo,
         horario,
         vereda,
         sigla,
         fecha,
+        especificaciones,
+        diametro,
+        caudal_permanente,
+        rango_medicion,
     )
     return respuesta
 
