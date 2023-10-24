@@ -36,6 +36,23 @@
   
   <main class="pcoded-main-container">
       <div class="pcoded-content">
+        <div class="row col-12">
+          <div class="col-3 form-group">
+              <form action="/datosAsistencia" method="POST" id="formAsistencia">
+                  <label class="mt-2" for="">Seleccione la reunion:</label>
+                  
+                  <select class="form-select" name="Reunion_1" id="Reunion_1" required>
+                      <option value=""></option>
+                      {% if reuniones: %}
+                          {% for reunion in reuniones %}
+                              <option value=" {{reunion.id_reunion}} "> {{reunion.nom_reunion}} </option>
+                          {%endfor%}
+                      {% else: %}
+                          <option value="">No hay reuniones </option>
+                      {%endif%}
+                  </select><br>
+              </form>    
+          </div>  
         <div class="d-flex justify-content-end">
           <a type="button" href="/reunion" class="btn btn-success">Crear Reunión</a>
         </div>
@@ -60,7 +77,7 @@
               </tr>
             </thead>
             <tbody>
-              {% for emp in reunion %}
+              {% for emp in reuniones %}
               <tr>
                 <td>{{ emp.id_reunion }}</td>
                 <td>{{ emp.nom_reunion }}</td>

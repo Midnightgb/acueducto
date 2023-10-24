@@ -336,13 +336,14 @@ def consultarReuniones(
             )
             headers = elimimar_cache()
             if rol_usuario in [SUPER_ADMIN, ADMIN]:
-                query_reunion = db.query(Reunion)
-                if query_reunion:
+                id_empresa = get_empresa(token_valido,db)
+                reuniones = obtenerReuAdmin(id_empresa,db)
+                if reuniones:
                     response = template.TemplateResponse(
                         "crud-reuniones/consultar_reunion.html",
                         {
                             "request": request,
-                            "reunion": query_reunion,
+                            "reuniones": reuniones,
                             "usuario": usuario,
                         },
                     )
