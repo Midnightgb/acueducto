@@ -142,3 +142,20 @@ def createReunion(
             raise HTTPException(status_code=401, detail="No autorizado")
     else:
         raise HTTPException(status_code=401, detail="No autorizado")
+
+def obtenerReuAdmin(
+    id_empresa:int,
+    db:Session
+):
+    query = db.query(Reunion).filter(Reunion.id_empresa == id_empresa).all()
+    if query:
+        return query
+    else:
+        return None
+
+
+
+def obtenerReuSuperAdmin(
+    db:Session
+):
+    pass
