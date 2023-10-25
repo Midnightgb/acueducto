@@ -33,6 +33,22 @@
                             <div>
                                 <div>
                                     <div class="row">
+                                        {% if usuario.rol == "SuperAdmin" %}
+                                        <div>
+                                           
+                                            <p>Seleciona la empresa que quieres gestionar</p>
+                                            <form id="formulario" action="/contrato_condiciones" method="GET">
+                                                <select name="id_empresa" id="selectEmpresa">
+                                                    <option selected>Elige una empresa</option>
+                                                    {% for empresa in datos_empresas %}
+                                                    <option value="{{empresa.id_empresa}}">{{empresa.nom_empresa}}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </form>
+                                         
+                                            
+                                        </div>
+                                        {% endif %}
                                         <div class="col-lg-3 col-md-5 pb-4">
                                             <img class="img-fluid rounded"
                                                 src="{{ url_for('static', path='assets/images/cortes.jpg') }}">
@@ -147,6 +163,9 @@
                                                 Acueducto</a></p>
                                     </div>
                                 </div>
+                                {% if ruta_pdf: %}
+                                <iframe src="{{ url_for('static', path=ruta_pdf) }}" style="width: 100%; height: 25em; border: none;"></iframe>
+                                {% endif %}
                             </div>
                         </div>
                     </div>
