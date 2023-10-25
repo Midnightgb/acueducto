@@ -449,14 +449,7 @@ def pagLlamado(
             print(rol_usuario)
             datos_usuario = get_datos_usuario(is_token_valid, db)
             headers = elimimar_cache()
-            if rol_usuario == SUPER_ADMIN:
-                response = template.TemplateResponse(
-                    "paso-1/paso1-2/llamado_lista.html",
-                    {"request": request, "usuario": datos_usuario},
-                )
-                response.headers.update(headers)  # Actualiza las cabeceras
-                return response
-            elif rol_usuario == ADMIN:
+            if  rol_usuario == ADMIN:
                 id_empresa = get_empresa(is_token_valid,db)
                 reuniones = obtenerReuAdmin(id_empresa,db)
                 if reuniones:
@@ -496,6 +489,12 @@ def procesar_datos(request: Request, token: str = Cookie(None), db: Session = De
     suscriptores = obtenerSuscriptoresEmpresa(db,is_token_valid,request)
     return suscriptores
 
+# CALCULAR EL CUORUM
+@app.post("/calcularCuorum", response_class=HTMLResponse)
+def calcularmCuorum(request: Request, token: str = Cookie(None), db: Session = Depends(get_database), cantidadAsistentes: Optional[int] = Form("")):
+    is_token_valid = verificar_token(token, db)
+    cuorumCalculado = calcularCuorum(db, is_token_valid, request, cantidadAsistentes)
+    return cuorumCalculado
 
 # VERIFICACION DEL CUORUM
 @app.get("/cuorum", response_class=HTMLResponse, tags=["Operaciones Documentos"])

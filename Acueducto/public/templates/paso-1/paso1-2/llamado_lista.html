@@ -28,15 +28,19 @@
         <div class="container py-4">
             <div class="col-lg-12 mb-4">
                 <!-- Approach -->
+                {% if alerta: %}
+                    <div class="alert alert-{{alerta.color}}" role="alert">
+                        {{alerta.mensaje}}
+                    </div>
+                {% endif %}
                 <div class="card shadow mb-4 rounded-2">
                     <div class="card-header py-3">
                         <h5 class="m-0 font-weight-bold text-primary">Registro de Asistencia</h5>
                     </div>
                     <div class="row col-12">
-                        <div class="col-3 form-group">
+                        <div class="col-6 form-group">
                             <form action="/datosAsistencia" method="POST" id="formAsistencia">
                                 <label class="mt-2" for="">Seleccione la reunion:</label>
-
                                 <select class="form-select" name="Reunion_1" id="Reunion_1" required>
                                     <option value="">Seleccione una reunion</option>
                                     {% if reuniones: %}
@@ -49,15 +53,30 @@
                                 </select><br>
                             </form>
                         </div>
-                        <div class="col-1 form-group">
-                            <label class="mt-2" for="">cuorum</label>
-                            <input type="text" class="form-control" name="cuorum" id="cuorum" placeholder="No" readonly
-                                required>
-                        </div>
-                        <div class="col-4 form-group">
-                            <button class="btn btn-primary mt-5" id="calcularCuorum">Calcular Cuorum</button>
+                        <div class="col-6 form-group">
+                            {%if suscriptores: %}
+                            <form action="/calcularCuorum" method="POST" id="Calcular">
+                                <div class="col form-group">
+                                    <label class="mt-2" for="">cuorum</label>
+                                    {%if cuorum:%}
+                                        <input value="hay cuorum" type="text" class="form-control" name="cuorum" id="cuorum" placeholder="" readonly
+                                        required>
+                                    {%else:%}
+                                        <input value="no hay cuorum" type="text" class="form-control" name="cuorum" id="cuorum" placeholder="" readonly
+                                        required>
+                                    {%endif%}
+                                    
+                                        <button type="submit" class="btn btn-primary mt-5" id="calcularCuorum" onclick="limpiar()">Calcular Cuorum</button>
+                                        <input type="hidden" name="cantidadAsistentes" id="cc">
+                                        <p class="mt-3" id="contador-checkboxes">Cantidad de asistentes: 0</p>
+                                </div>
+                                
+                            </form>
+                            {%endif%}
                         </div>
                     </div>
+                    
+
                     <div class="table-responsive">
                         <table class="table table-hover">
                             <thead>
@@ -110,27 +129,34 @@
 
     
     
-
     <script>
-
         let formularioAsistencia = document.getElementById('formAsistencia');
         let reunionSelect = document.getElementById('Reunion_1');
-
+    
+        // Agrega un contador para llevar el registro de los checkboxes marcados
+        let contadorCheckboxes = 0;
+    
         reunionSelect.addEventListener('change', () => {
-            console.log("se envió los datos");
             localStorage.setItem("opcionSeleccionada", reunionSelect.value);
             formularioAsistencia.submit();
         });
-
-        let miCheckbox = document.getElementById('miCheckbox');
-        miCheckbox.addEventListener('change', () => {
-            if (miCheckbox.checked) {
-                console.log("aumenta el contador");
-            } else {
-                console.log("se hizo --");
-            }
+    
+        let checkboxes = document.querySelectorAll('input[type="checkbox"]');
+    
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', () => {
+                if (checkbox.checked) {
+                    contadorCheckboxes++;
+                } else {
+                    contadorCheckboxes--;
+                }
+    
+                // Actualiza el elemento HTML con el contador
+                document.getElementById('contador-checkboxes').textContent = `Cantidad de asistentes: ${contadorCheckboxes}`;
+                document.getElementById('cc').value = contadorCheckboxes;
+            });
         });
-
+    
         window.addEventListener('load', () => {
             var opcionGuardada = localStorage.getItem("opcionSeleccionada");
             if (opcionGuardada) {
@@ -141,22 +167,23 @@
             }
         });
 
+        
         reunionSelect.addEventListener("change", function () {
             localStorage.setItem("opcionSeleccionada", this.value);
+            
         });
 
+        function limpiar() {
+            localStorage.clear();
+        }
+        
     </script>
 
-    </script>
     <!-- BEGIN SCRIPTS -->
     {% block scripts %}
     {% include 'scripts.html' %}
     {% endblock %}
     <!-- END SCRIPTS -->
-
-
-
-
 </body>
 
 </html>

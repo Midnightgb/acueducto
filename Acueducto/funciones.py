@@ -3,9 +3,31 @@ from datetime import datetime, timedelta
 from jose import jwt
 from docx import Document
 from fpdf import FPDF
+from fastapi import (
+    FastAPI,
+    Request,
+    Form,
+    status,
+    Depends,
+    HTTPException,
+    Cookie,
+    Query,
+)
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
+from cruds.ReunionesCrud import obtenerReuAdmin
+from fastapi.responses import JSONResponse, RedirectResponse
 from models import Token, Usuario, Empresa, Vivienda, Reunion
+from sqlalchemy.orm import Session
 from docx2pdf import convert
 import PyPDF2
+
+app = FastAPI()
+
+# Agregando los archivos estaticos que están en la carpeta dist del proyecto
+app.mount("/static", StaticFiles(directory="public/dist"), name="static")
+
+template = Jinja2Templates(directory="public/templates")
 
 SECRET_KEY = "sd45g4f45SWFGVHHuoyiad4F5SFD65V4SFDVOJWNHACUfwghdfvcguDCwfghezxhAzAKHGFBJYTFdkjfghtjkdgb"
 
@@ -217,3 +239,87 @@ def get_viviendas_empresa(id_empresa, db):
         return None
     
     # comentario
+
+#CALCULAR CUORUM
+
+def calcularCuorum(
+    db:Session,
+    token_valido:str,
+    request:Request,
+    cantidadAsistentes: int,
+
+):  
+    
+    if token_valido:
+        
+        usuario = (
+                db.query(Usuario).filter(
+                    Usuario.id_usuario == token_valido).first()
+            )
+        if usuario:
+            query_usuarios = (
+                db.query(Usuario)
+                .filter(
+                    (Usuario.id_usuario != token_valido)
+                    & (Usuario.rol == 'Suscriptor')
+                    & (Usuario.empresa == usuario.empresa)
+                ).all()
+            )
+            query_subs = db.query(Usuario).filter(Usuario.rol == "Suscriptor", Usuario.empresa == usuario.empresa).count()
+            if cantidadAsistentes > query_subs/2:
+                sacarCuorum = True
+            else:
+                sacarCuorum = False
+
+            if cantidadAsistentes == 0:
+                alerta = {
+                        "mensaje": "No hay suscriptores en la empresa",
+                        "color": "warning",
+                    }
+                headers = elimimar_cache()
+                response = template.TemplateResponse(
+                    "index.html",
+                    {"request": request, "alerta": alerta, "suscriptores": None,"usuario":usuario,"reuniones":reuniones},
+                )
+                response.headers.update(headers)
+
+                return response
+
+            if query_subs:
+                headers = elimimar_cache()
+                reuniones = obtenerReuAdmin(usuario.empresa,db)
+                if query_subs:
+                    response = template.TemplateResponse(
+                        "paso-1/paso1-2/llamado_lista.html",
+                        {"request": request, "suscriptores": query_usuarios,"usuario":usuario,"reuniones":reuniones, "cuorum":sacarCuorum},
+                    )
+                    response.headers.update(headers)
+                    return response
+                else:
+                    alerta = {
+                        "mensaje": "No hay suscriptores en la empresa",
+                        "color": "warning",
+                    }
+
+                    response = template.TemplateResponse(
+                        "index.html",
+                        {"request": request, "alerta": alerta, "suscriptores": None,"usuario":usuario,"reuniones":reuniones},
+                    )
+                    response.headers.update(headers)
+                    return response
+            else:
+                alerta = {
+                    "mensaje": "No hay cosos",
+                    "color": "warning",
+                }
+
+                response = template.TemplateResponse(
+                    "index.html",
+                    {"request": request, "alerta": alerta, "suscriptores": None,"usuario":usuario,"reuniones":reuniones},
+                )
+                response.headers.update(headers)
+                return response
+        else:
+            return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
+    else:
+        return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
