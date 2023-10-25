@@ -1,3 +1,5 @@
+from fastapi.templating import Jinja2Templates
+from fastapi.responses import JSONResponse, RedirectResponse
 from fastapi import HTTPException, Depends, Cookie, Response
 from fastapi import HTTPException
 from fastapi import (
@@ -11,6 +13,7 @@ from fastapi import (
     Cookie,
     Query,
 )
+template = Jinja2Templates(directory="public/templates")
 from fastapi.responses import JSONResponse
 
 from sqlalchemy.orm import Session
@@ -153,9 +156,46 @@ def obtenerReuAdmin(
     else:
         return None
 
-
-
-def obtenerReuSuperAdmin(
-    db:Session
+def obtenerDatosReunion(
+    db:Session,
+    id_empresa:int,
+    token_valido:str,
+    request:Request
 ):
-    pass
+    if token_valido:
+        empresas = db.query(Empresa).all()
+        usuario = (
+                db.query(Usuario).filter(
+                    Usuario.id_usuario == token_valido).first()
+            )
+        if usuario:
+            headers = elimimar_cache()
+            reuniones = obtenerReuAdmin(id_empresa,db)
+            if reuniones:
+                response = template.TemplateResponse(
+                    "crud-reuniones/consultar_reunion.html",
+                    {
+                        "request": request,
+                        "reuniones": reuniones,
+                        "empresas": empresas,
+                        "usuario": usuario,
+                    },
+                )
+                response.headers.update(headers)
+                return response
+            else:
+                alerta = {
+                    "mensaje": "No hay reuniones en la empresa",
+                    "color": "warning",
+                }
+
+                response = template.TemplateResponse(
+                    "crud-reuniones/consultar_reunion.html",
+                    {"request": request, "alerta": alerta, "empresas": empresas,"usuario":usuario,"reuniones":None},
+                )
+                response.headers.update(headers)
+                return response
+        else:
+            return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
+    else:
+        return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
