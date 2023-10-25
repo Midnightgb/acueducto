@@ -21,7 +21,7 @@ from sqlalchemy.orm import Session
 from funciones import *
 from cruds.EmpresasCrud import *
 from cruds.ReunionesCrud import obtenerReuAdmin
-from models import Usuario
+from models import Usuario,Reunion
 
 SUPER_ADMIN = "SuperAdmin"
 ADMIN = "Admin"
@@ -532,7 +532,8 @@ def obtenerUsuariosEmpresa(
 def obtenerSuscriptoresEmpresa(
     db:Session,
     token_valido:str,
-    request:Request
+    request:Request,
+    reunion_1:str,
 ):
     if token_valido:
         empresas = None
@@ -549,24 +550,24 @@ def obtenerSuscriptoresEmpresa(
                     & (Usuario.empresa == usuario.empresa)
                 ).all()
             )
-
+            reunion_select = db.query(Reunion).filter(Reunion.id_reunion == reunion_1).first()
             headers = elimimar_cache()
             reuniones = obtenerReuAdmin(usuario.empresa,db)
             if query_usuarios:
                 response = template.TemplateResponse(
                     "paso-1/paso1-2/llamado_lista.html",
-                    {"request": request, "suscriptores": query_usuarios,"usuario":usuario,"reuniones":reuniones},
+                    {"request": request, "suscriptores": query_usuarios,"usuario":usuario,"reuniones":reuniones,"reunionSelect":reunion_select},
                 )
                 response.headers.update(headers)
                 return response
             else:
                 alerta = {
-                    "mensaje": "No hay cosos",
+                    "mensaje": "No hay reuniones",
                     "color": "warning",
                 }
 
                 response = template.TemplateResponse(
-                    "index.html",
+                    "paso-1/paso1-2/llamado_lista.html",
                     {"request": request, "alerta": alerta, "suscriptores": None,"usuario":usuario,"reuniones":reuniones},
                 )
                 response.headers.update(headers)
