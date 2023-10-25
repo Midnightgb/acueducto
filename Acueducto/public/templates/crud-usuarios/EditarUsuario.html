@@ -176,8 +176,8 @@
                           <br>
                           <div class="row-fluid d-flex text-center">
                             <div class="col-6">
-                              <button type="button" class="btn btn-info" onclick="openModal('{{ vivienda.id_inmueble }}', '{{ vivienda.direccion }}', '{{vivienda.estrato}}', '{{vivienda.uso}}', '{{vivienda.numero_residentes}}')">
-                                <img src="{{ url_for('static', path='assets/images/icons8-editar-28.png') }}" alt="edit">
+                              <button type="button" class="btn btn-success" onclick="openModal('{{ vivienda.id_inmueble }}', '{{ vivienda.direccion }}', '{{vivienda.estrato}}', '{{vivienda.uso}}', '{{vivienda.numero_residentes}}')">
+                                Editar
                               </button>
                             </div>
                             <div class="col-6">
@@ -185,8 +185,7 @@
                                 <input type="hidden" name="id_usuario" value="{{ user.id_usuario }}">
                                 <input type="hidden" name="id_vivienda" value="{{ vivienda.id_inmueble }}">
                                 <button type="button" class="btn btn-danger" onclick="confirmar('{{vivienda.id_inmueble}}')">
-                                  <img src="{{ url_for('static', path='assets/images/icons8-remove-28.png') }}"
-                                    alt="delete">
+                                  Eliminar
                                 </button>
                               </form>
                             </div>

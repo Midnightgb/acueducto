@@ -24,35 +24,31 @@
 </style>
 
 <body>
-
     <!-- [ navigation menu ] start -->
     {% block nav %}
     {% include 'nav.html' %}
     {% endblock %}
     <!-- [  navigation menu ] end -->
-
     <!-- BEGIN LOADER -->
     {% block loader %}
     {% include 'loader.html' %}
     {% endblock %}
     <!--  END LOADER -->
-
     <!-- DEFINIENDO VARIABLES PARA ACTIVAR Y DESACTIVAS USUARIOS -->
     {% set texto = 'Activar' %}
     {% set colorBoton = 'success' %}
-
     <main class="pcoded-main-container">
         <div class="pcoded-content">
             <div class="table-responsive">
                 {% if empresas: %}
                 <div class="row">
                     <div class="col-auto mt-3">
-                        <label for="" class="form-label">Seleccione una empresa: </label>
+                        <label for="" class="form-label">Seleccione una empresa:</label>
                     </div>
                     <div class="col-auto">
                         <form action="/usuarios" method="post" id="formulario">
                             <select class="form-select mt-2 mb-3" name="id_empresa" id="selectEmpresa" required>
-                                <option value=""></option>
+                                <option value="" disabled selected>Seleccione una empresa</option>
                                 {% for empresa in empresas %}
                                 <option value="{{ empresa.id_empresa }}">{{ empresa.nom_empresa }}</option>
                                 {% endfor %}
@@ -60,6 +56,7 @@
                         </form>
                     </div>
                 </div>
+                
                 {% endif %}
                 <div class="div">
                     {% if usuarios[0]: %}
@@ -73,26 +70,27 @@
                 <table class="table table-striped
             table-hover	
             table-borderless
-            table-primary
+            table-success
             align-middle responsive " id="dataUsers" class="display">
-                    <thead>
-                        <tr>
-                            <th>Nombre</th>
-                            <th>Apellido</th>
-                            <th>Empresa</th>
-                            <th>Correo</th>
-                            <th>Rol</th>
-                            <th>Tipo Documento</th>
-                            <th>Documento</th>
-                            <th>Ciudad</th>
-                            {% if usuario.rol == 'SuperAdmin' or usuario.rol == 'Admin' %}
-                            <th>estado</th>
-                            {% endif %}
-                            <th>Direccion</th>
-                            <th class="dt-no-sorting"></th>
-                            <th class="dt-no-sorting"></th>
-                        </tr>
-                    </thead>
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Apellido</th>
+                    <th>Empresa</th>
+                    <th>Correo</th>
+                    <th>Rol</th>
+                    <th>Tipo Documento</th>
+                    <th>Documento</th>
+                    <th>Ciudad</th>
+                    {% if usuario.rol == 'SuperAdmin' or usuario.rol == 'Admin' %}
+                    <th>Estado</th>
+                    {% endif %}
+                    <th>Direccion</th>
+                    <th class="dt-no-sorting"></th>
+                    <th class="dt-no-sorting"></th>
+                </tr>
+            </thead>
+            
                     <tbody>
                         {% if usuarios: %}
                         {% for user, nom_empresa in usuarios %}
@@ -114,7 +112,7 @@
                             <td>
                                 <form action="/EditarUsuarios/" method="POST">
                                     <input type="hidden" name="id_usuario" value="{{ user.id_usuario }}">
-                                    <button type="submit" class="btn btn-warning">Editar</button>
+                                    <button type="submit" class="btn btn-primary">Editar</button>
                                 </form>
                             <td>
                                 {% if user.estado == 'Activo' %}

@@ -32,23 +32,27 @@
     
                             <div>
                                 <div>
-                                    <div class="row">
+                                    <div class="row ">
                                         {% if usuario.rol == "SuperAdmin" %}
-                                        <div>
-                                           
-                                            <p>Seleciona la empresa que quieres gestionar</p>
+                                        <div class="col-lg-6 col-md-6 col-sm-12 mt-3">
+                                            <label for="" class="form-label">Seleciona la empresa que quieres gestionar: </label>
+                                        </div>
+                                        <div class="col-lg-6 col-md-6 col-sm-12">
+
                                             <form id="formulario" action="/contrato_condiciones" method="GET">
-                                                <select name="id_empresa" id="selectEmpresa">
+                                                <select class="form-select mt-2 mb-3" name="id_empresa" id="selectEmpresa">
                                                     <option selected>Elige una empresa</option>
                                                     {% for empresa in datos_empresas %}
                                                     <option value="{{empresa.id_empresa}}">{{empresa.nom_empresa}}</option>
                                                     {% endfor %}
                                                 </select>
                                             </form>
-                                         
-                                            
+ 
                                         </div>
                                         {% endif %}
+                                    </div>
+                                    <div class="row">
+                                        
                                         <div class="col-lg-3 col-md-5 pb-4">
                                             <img class="img-fluid rounded"
                                                 src="{{ url_for('static', path='assets/images/cortes.jpg') }}">

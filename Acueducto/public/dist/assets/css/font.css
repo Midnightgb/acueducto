@@ -5,4 +5,9 @@ body{
 }
 .btn-primary{
   background: #00ab00 !important;
+  border-color: #00ab00 !important;
+  
+}
+th{
+  color: #007c00 !important;
 }

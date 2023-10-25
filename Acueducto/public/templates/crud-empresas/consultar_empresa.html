@@ -42,22 +42,23 @@
         <table class="table table-striped
             table-hover	
             table-borderless
-            table-primary
+            table-success
             align-middle responsive " id="dataEmpresas" class="display">
-          <thead>
-            <tr>
-              <th>Nombre</th>
-              <th>Correo</th>
-              <th>Teléfono fijo</th>
-              <th>Teléfono celular</th>
-              <th>Direccion</th>    
-              {% if usuario.rol == 'SuperAdmin' or usuario.rol == 'Admin' %}
-                <th>Estado</th>
-              {% endif %}
-              <th class="dt-no-sorting"></th>
-              <th class="dt-no-sorting"></th>
-            </tr>
+            <thead>
+              <tr>
+                  <th>Nombre</th>
+                  <th>Correo</th>
+                  <th>Teléfono fijo</th>
+                  <th>Teléfono celular</th>
+                  <th>Dirección</th>
+                  {% if usuario.rol == 'SuperAdmin' or usuario.rol == 'Admin' %}
+                  <th>Estado</th>
+                  {% endif %}
+                  <th class="dt-no-sorting"></th>
+                  <th class="dt-no-sorting"></th>
+              </tr>
           </thead>
+          
           <tbody>
             {% for emp in empresa %}
             <tr>
