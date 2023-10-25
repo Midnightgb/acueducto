@@ -1783,9 +1783,6 @@ def eliminarViviendaNoOwner(
     else:
         return RedirectResponse("/", status_code=status.HTTP_303_SEE_OTHER)
 
-# -- FUNCION PARA MOSTRAR DESVINCULAR LA VIVIENDA
-
-
 @app.post("/desvincularVivienda", tags=["Operaciones Viviendas"], response_class=HTMLResponse)
 def desvincularVivienda(
     request: Request,
