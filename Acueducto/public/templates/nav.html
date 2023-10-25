@@ -77,18 +77,14 @@
                                 <li><a href="/cuorum" target="_parent">Verificación del cuórum</a></li>
                                 <li><a href="/orden_dia" target="_parent">Orden del día</a></li>
                                 <li><a href="/eleccion_comision" target="_parent">Elección de la comisión</a></li>
+                                <li><a href="/archivo_control_documental" target="_parent">Archivo y control
+                                    documental</a></li>
                                 <li><a href="/aprobacion_estatutos" target="_parent">Aprobación de los estatutos</a>
                                 </li>
                                 <li><a href="/eleccion_junta_administradora" target="_parent">Elección junta
                                         administradora y comité de control</a></li>
                                 <li><a href="/aprobacion_acta_constitucion" target="_parent">Aprobación del acta de
-                                        consitución</a></li>
-                                <!--1.3 Después-->
-                                <li class="nav-item pcoded-menu-caption">
-                                    <label class="label-modulos">Paso 1.3: Despues</label>
-                                </li>
-                                <li><a href="/archivo_control_documental" target="_parent">Archivo y control
-                                        documental</a></li>
+                                        consitución</a></li>                                
                                 <!--Paso 2-->
                                 <li class="nav-item pcoded-menu-caption">
                                     <label class="label-modulos"><i class="feather icon-file-text"></i>Paso 2:
@@ -308,10 +304,15 @@
                     <a class="text-dark" href="/registro_empresa" target="_self">Registrar empresa</a>
                 </li>
                 <li class="nav-item">
-                    <a class="text-dark" href="/usuarios" target="_self">Usuarios</a>
+                    <form action="/usuarios" method="post" class="btnUsuarios">
+                        <button class="btnUsuarios text-dark" type="submit" target="_self">Usuarios</button>
+                    </form>
                 </li>
                 <li class="nav-item">
                     <a class="text-dark" href="/empresas/1" target="_self">Empresas</a>
+                </li>
+                <li class="nav-item">
+                    <a class="text-dark" href="/reuniones" target="_self">Reunion</a>
                 </li>
                 <li class="nav-item">
                     <a class="text-dark" href="/viviendas" target="_self">Viviendas</a>
@@ -321,7 +322,12 @@
                     <a class="text-dark" href="/form_registro_usuario" target="_self">Registrar usuario</a>
                 </li>
                 <li class="nav-item">
-                    <a class="text-dark" href="/usuarios" target="_self">Usuarios</a>
+                    <form action="/usuarios" method="post" class="btnUsuarios">
+                        <button class="btnUsuarios text-dark" type="submit" target="_self">Usuarios</button>
+                    </form>
+                </li>
+                <li class="nav-item">
+                    <a class="text-dark" href="/reuniones" target="_self">Reunion</a>
                 </li>
                 <li class="nav-item">
                     <a class="text-dark" href="/viviendas" target="_self">Viviendas</a>

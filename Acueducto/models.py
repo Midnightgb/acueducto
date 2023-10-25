@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Enum, ForeignKey, Float
+from sqlalchemy import Column, Integer, String, Enum, ForeignKey, Float, Date, Boolean
 from sqlalchemy.orm import declarative_base, relationship
 from sqlalchemy.sql import func
 from enum import Enum as PyEnum
@@ -46,6 +46,26 @@ class Usuario(Base):
     contrasenia = Column(String(180))
     estado = Column(Enum('Activo', 'Inactivo'), default='Activo')
 
+class Documento(Base):
+    __tablename__ = 'documentos'
+    id_doc = Column(Integer, primary_key=True)
+    id_usuario = Column(String(30), ForeignKey('usuarios.id_usuario'))
+    nom_doc = Column(String(80))
+    id_servicio = Column(Integer)
+    tipo = Column(Enum('pdf', 'docx', 'xlsx'))
+    create_at = Column(String, server_default=func.now(), nullable=False)
+    update_at = Column(String, server_default=func.now(),
+                       onupdate=func.now(), nullable=False)
+    url = Column(String(200))
+
+class Reunion(Base):
+    __tablename__ = "reuniones"
+    id_reunion = Column(Integer, primary_key=True, autoincrement=True)
+    id_empresa = Column(Integer)
+    nom_reunion = Column(String(120))
+    fecha = Column(Date)
+    url_asistencia = Column(String(200))
+    cuorum = Column(Boolean)
 
 class Token(Base):
     __tablename__ = "tokens"

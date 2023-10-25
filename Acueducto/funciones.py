@@ -1,11 +1,13 @@
 # FUNCION GENERAR TOKEN
 from datetime import datetime, timedelta
 from jose import jwt
-from docx import Document
 from fpdf import FPDF
-from models import Token, Usuario, Empresa, Vivienda
+from models import Token, Usuario, Empresa, Vivienda, Reunion
 from docx2pdf import convert
 import PyPDF2
+from docx import Document
+from docx.shared import Inches
+from docx.oxml import OxmlElement
 
 SECRET_KEY = "sd45g4f45SWFGVHHuoyiad4F5SFD65V4SFDVOJWNHACUfwghdfvcguDCwfghezxhAzAKHGFBJYTFdkjfghtjkdgb"
 
@@ -102,6 +104,14 @@ def reemplazar_texto(docx_path, datos):
             if campo in paragraph.text:
                 paragraph.text = paragraph.text.replace(campo, valor)
 
+    for table in document.tables:
+        for row in table.rows:
+            for cell in row.cells:
+                for paragraph in cell.paragraphs:
+                    for campo, valor in datos.items():
+                        if campo in paragraph.text:
+                            paragraph.text = paragraph.text.replace(campo, valor)
+
     return document
 
 # CONVIERTE EL DOCUMENTO DOCX A PDF
@@ -145,6 +155,25 @@ def get_datos_empresas(db) -> list[str]:
     nom_empresas = db.query(Empresa.nom_empresa).all()
     return [nombre[0] for nombre in nom_empresas]
 
+
+# OBTENER DATOS REUNIONES:
+def get_datos_reuniones(id_reunion, db):
+    if id_reunion:
+        reunion = db.query(Reunion).filter(
+            Reunion.id_reunion == id_reunion).first()
+        if reunion:
+            datos_reunion = {
+                "id_reunion": reunion.id_reunion,
+                "nom_reunion": reunion.nom_reunion,
+                "id_empresa": reunion.id_empresa,
+                "fecha": reunion.fecha,
+                "url_asistencia": reunion.url_asistencia,
+            }
+            return datos_reunion
+        else:
+            return None
+    else:
+        return None
 
 # FUNCION PARA ELIMINAR EL CACHE (HEADERS) 4/10/2023
 
@@ -197,3 +226,5 @@ def get_viviendas_empresa(id_empresa, db):
             return None
     else:
         return None
+    
+    # comentario
