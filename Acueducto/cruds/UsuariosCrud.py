@@ -545,7 +545,7 @@ def obtenerSuscriptoresEmpresa(
                 db.query(Usuario)
                 .filter(
                     (Usuario.id_usuario != token_valido)
-                    & (Usuario.rol != SUPER_ADMIN)
+                    & (Usuario.rol == 'Suscriptor')
                     & (Usuario.empresa == usuario.empresa)
                 ).all()
             )
