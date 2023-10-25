@@ -1,11 +1,35 @@
 # FUNCION GENERAR TOKEN
 from datetime import datetime, timedelta
 from jose import jwt
-from docx import Document
 from fpdf import FPDF
-from models import Token, Usuario, Empresa, Vivienda
+from fastapi import (
+    FastAPI,
+    Request,
+    Form,
+    status,
+    Depends,
+    HTTPException,
+    Cookie,
+    Query,
+)
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
+from cruds.ReunionesCrud import obtenerReuAdmin
+from fastapi.responses import JSONResponse, RedirectResponse
+from models import Token, Usuario, Empresa, Vivienda, Reunion
+from sqlalchemy.orm import Session
 from docx2pdf import convert
 import PyPDF2
+from docx import Document
+from docx.shared import Inches
+from docx.oxml import OxmlElement
+
+app = FastAPI()
+
+# Agregando los archivos estaticos que están en la carpeta dist del proyecto
+app.mount("/static", StaticFiles(directory="public/dist"), name="static")
+
+template = Jinja2Templates(directory="public/templates")
 
 SECRET_KEY = "sd45g4f45SWFGVHHuoyiad4F5SFD65V4SFDVOJWNHACUfwghdfvcguDCwfghezxhAzAKHGFBJYTFdkjfghtjkdgb"
 
@@ -102,6 +126,14 @@ def reemplazar_texto(docx_path, datos):
             if campo in paragraph.text:
                 paragraph.text = paragraph.text.replace(campo, valor)
 
+    for table in document.tables:
+        for row in table.rows:
+            for cell in row.cells:
+                for paragraph in cell.paragraphs:
+                    for campo, valor in datos.items():
+                        if campo in paragraph.text:
+                            paragraph.text = paragraph.text.replace(campo, valor)
+
     return document
 
 # CONVIERTE EL DOCUMENTO DOCX A PDF
@@ -145,6 +177,25 @@ def get_datos_empresas(db) -> list[str]:
     nom_empresas = db.query(Empresa.nom_empresa).all()
     return [nombre[0] for nombre in nom_empresas]
 
+
+# OBTENER DATOS REUNIONES:
+def get_datos_reuniones(id_reunion, db):
+    if id_reunion:
+        reunion = db.query(Reunion).filter(
+            Reunion.id_reunion == id_reunion).first()
+        if reunion:
+            datos_reunion = {
+                "id_reunion": reunion.id_reunion,
+                "nom_reunion": reunion.nom_reunion,
+                "id_empresa": reunion.id_empresa,
+                "fecha": reunion.fecha,
+                "url_asistencia": reunion.url_asistencia,
+            }
+            return datos_reunion
+        else:
+            return None
+    else:
+        return None
 
 # FUNCION PARA ELIMINAR EL CACHE (HEADERS) 4/10/2023
 
@@ -199,3 +250,87 @@ def get_viviendas_empresa(id_empresa, db):
         return None
     
     # comentario
+
+#CALCULAR CUORUM
+
+def calcularCuorum(
+    db:Session,
+    token_valido:str,
+    request:Request,
+    cantidadAsistentes: int,
+
+):  
+    
+    if token_valido:
+        
+        usuario = (
+                db.query(Usuario).filter(
+                    Usuario.id_usuario == token_valido).first()
+            )
+        if usuario:
+            query_usuarios = (
+                db.query(Usuario)
+                .filter(
+                    (Usuario.id_usuario != token_valido)
+                    & (Usuario.rol == 'Suscriptor')
+                    & (Usuario.empresa == usuario.empresa)
+                ).all()
+            )
+            query_subs = db.query(Usuario).filter(Usuario.rol == "Suscriptor", Usuario.empresa == usuario.empresa).count()
+            if cantidadAsistentes > query_subs/2:
+                sacarCuorum = True
+            else:
+                sacarCuorum = False
+
+            if cantidadAsistentes == 0:
+                alerta = {
+                        "mensaje": "No hay suscriptores en la empresa",
+                        "color": "warning",
+                    }
+                headers = elimimar_cache()
+                response = template.TemplateResponse(
+                    "index.html",
+                    {"request": request, "alerta": alerta, "suscriptores": None,"usuario":usuario,"reuniones":reuniones},
+                )
+                response.headers.update(headers)
+
+                return response
+
+            if query_subs:
+                headers = elimimar_cache()
+                reuniones = obtenerReuAdmin(usuario.empresa,db)
+                if query_subs:
+                    response = template.TemplateResponse(
+                        "paso-1/paso1-2/llamado_lista.html",
+                        {"request": request, "suscriptores": query_usuarios,"usuario":usuario,"reuniones":reuniones, "cuorum":sacarCuorum},
+                    )
+                    response.headers.update(headers)
+                    return response
+                else:
+                    alerta = {
+                        "mensaje": "No hay suscriptores en la empresa",
+                        "color": "warning",
+                    }
+
+                    response = template.TemplateResponse(
+                        "index.html",
+                        {"request": request, "alerta": alerta, "suscriptores": None,"usuario":usuario,"reuniones":reuniones},
+                    )
+                    response.headers.update(headers)
+                    return response
+            else:
+                alerta = {
+                    "mensaje": "No hay cosos",
+                    "color": "warning",
+                }
+
+                response = template.TemplateResponse(
+                    "index.html",
+                    {"request": request, "alerta": alerta, "suscriptores": None,"usuario":usuario,"reuniones":reuniones},
+                )
+                response.headers.update(headers)
+                return response
+        else:
+            return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
+    else:
+        return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
