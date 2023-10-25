@@ -73,7 +73,9 @@
                                 <li class="nav-item pcoded-menu-caption">
                                     <label class="label-modulos">Paso 1.2: Durante</label>
                                 </li>
-                                <li><a href="/llamado_lista" target="_parent">Llamado a lista</a></li>
+                                {%if usuario.rol == 'Admin':%}
+                                    <li><a href="/llamado_lista" target="_parent">Llamado a lista</a></li>
+                                {%endif%}
                                 <li><a href="/cuorum" target="_parent">Verificación del cuórum</a></li>
                                 <li><a href="/orden_dia" target="_parent">Orden del día</a></li>
                                 <li><a href="/eleccion_comision" target="_parent">Elección de la comisión</a></li>

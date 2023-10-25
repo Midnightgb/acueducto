@@ -84,18 +84,19 @@
 
                                 <div class="row justify-content-center mt-4">
                                     <div class="col-md-6 text-center">
-                                        <a href="#" class="btn btn-success mx-2">Descargar Estatutos</a>
-                                        <button type="button" class="btn btn-success" data-toggle="modal"
-                                            data-target="#exampleModal">Cargar Resultados</button>
+                                        <button class="btn btn-success mx-2" data-toggle="modal" data-target="#modalEstatutos">Ver Estatutos</button>
+                                        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#exampleModal">Cargar Resultados</button>
                                     </div>
                                 </div>
+
+
                                 <!--STAR MODAL-->
                                 <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog"
                                     aria-labelledby="exampleModalLabel" aria-hidden="true">
                                     <div class="modal-dialog" role="document">
                                         <div class="modal-content">
                                             <div class="modal-header">
-                                                <h5 class="modal-title" id="exampleModalLabel">Cargar Documento</h5>
+                                                <h5 class="modal-title" id="exampleModalLabel">Cargar Resultados</h5>
                                                 <button type="button" class="close" data-dismiss="modal"
                                                     aria-label="Close">
                                                     <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
@@ -109,11 +110,6 @@
                                             </div>
                                             <div class="modal-body">
                                                 <form>
-                                                    <div class="form-group mb-4">
-                                                        <span>Ubicacion:</span>
-                                                        <input type="email" class="form-control" id=""
-                                                            placeholder="Ubicacion *">
-                                                    </div>
                                                     <div class="form-group mb-4">
                                                         <input type="file"
                                                             class="custom-file-container__custom-file__custom-file-input"
@@ -157,6 +153,31 @@
                                     </div>
                                 </div>
                                 <!--END MODAL-->
+
+                                <!--MODA VER ESTATUTOS-->
+                                <div class="modal fade" id="modalEstatutos" tabindex="-1" role="dialog"
+                                    aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="exampleModalLabel">Preview PDF</h5>
+                                                <button type="button" class="close" data-dismiss="modal"
+                                                    aria-label="Close">
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <!-- Agregar el iframe aquí -->
+                                                <iframe src="{{ url_for('static', path='ArchivosDescarga/P01-F-03_Estatutos_Asociación_Suscriptores.pdf') }}" width="100%" height="500"
+                                                    frameborder="0"></iframe>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button class="btn" data-dismiss="modal"><i class="flaticon-cancel-12"></i> Cerrar</button>
+                                                <a href="{{ url_for('static', path='ArchivosDescarga/P01-F-03_Estatutos_Asociación_Suscriptores.pdf') }}" download="estatutos.pdf" class="btn btn-primary">Descargar</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--FIN DEL MODAL ESTATUTOS-->
                                 <div class="container">
                                     <div class="row">
                                         <div class="footer-wrapper col-xl-12">

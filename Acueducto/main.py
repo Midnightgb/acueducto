@@ -342,9 +342,11 @@ def pagInvitacion_a_la_asamblea(
 
 @app.post("/crear_reunion")
 async def crearReunion(
-    id_empresa: int = Form(...),
+    id_empresa: str = Form(...),
     nom_reunion: str = Form(...),
     fecha: str = Form(...),
+    hora: str = Form(...),
+    lugar: str = Form(...),
     token: str = Cookie(None),
     db: Session = Depends(get_database),
 ):
@@ -354,6 +356,8 @@ async def crearReunion(
             id_empresa,
             nom_reunion,
             fecha,
+            hora,
+            lugar,
             url_asistencia,
             token,
             db,
@@ -408,14 +412,34 @@ def consultarReuniones(
                 db.query(Usuario).filter(Usuario.id_usuario == token_valido).first()
             )
             headers = elimimar_cache()
-            if rol_usuario in [SUPER_ADMIN, ADMIN]:
-                query_reunion = db.query(Reunion)
-                if query_reunion:
+            if rol_usuario == SUPER_ADMIN:
+                id_empresa = get_empresa(token_valido,db)
+                reuniones = obtenerReuAdmin(id_empresa,db)
+                empresas = obtenerEmpresas(token,db)
+                if reuniones:
                     response = template.TemplateResponse(
                         "crud-reuniones/consultar_reunion.html",
                         {
                             "request": request,
-                            "reunion": query_reunion,
+                            "empresas": empresas,
+                            "usuario": usuario,
+                        },
+                    )
+                    response.headers.update(headers)
+                    return response
+                else:
+                    raise HTTPException(
+                        status_code=403, detail="No hay reuniones que consultar"
+                    )
+            elif rol_usuario == ADMIN:
+                id_empresa = get_empresa(token_valido,db)
+                reuniones = obtenerReuAdmin(id_empresa,db)                
+                if reuniones:
+                    response = template.TemplateResponse(
+                        "crud-reuniones/consultar_reunion.html",
+                        {
+                            "request": request,
+                            "reuniones": reuniones,
                             "usuario": usuario,
                         },
                     )
@@ -431,6 +455,13 @@ def consultarReuniones(
             return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
     else:
         return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
+
+# --- RUTA PARA MOSTRAR LA INFO DE LA REUNION SOBRE UNA EMPRESA
+@app.post("/obtenerDatosReunionSuperAdmin")
+def procesar_datos(request: Request, id_empresa:int=Form(...),token: str = Cookie(None), db: Session = Depends(get_database)):
+    is_token_valid = verificar_token(token, db)
+    datosReunion = obtenerDatosReunion(db,id_empresa,is_token_valid,request)
+    return datosReunion
 
 # --- RUTA PARA MOSTRAR LA PAGUNA DONDE SE EDITA LA REUNION
 @app.post("/EditarReunion/", response_class=HTMLResponse)
@@ -495,13 +526,23 @@ def pagLlamado(
             print(rol_usuario)
             datos_usuario = get_datos_usuario(is_token_valid, db)
             headers = elimimar_cache()
-            if rol_usuario == SUPER_ADMIN or rol_usuario == ADMIN:
-                response = template.TemplateResponse(
-                    "paso-1/paso1-2/llamado_lista.html",
-                    {"request": request, "usuario": datos_usuario},
-                )
-                response.headers.update(headers)  # Actualiza las cabeceras
-                return response
+            if  rol_usuario == ADMIN:
+                id_empresa = get_empresa(is_token_valid,db)
+                reuniones = obtenerReuAdmin(id_empresa,db)
+                if reuniones:
+                    response = template.TemplateResponse(
+                        "paso-1/paso1-2/llamado_lista.html",
+                        {"request": request, "usuario": datos_usuario,"reuniones":reuniones},
+                    )
+                    response.headers.update(headers)  # Actualiza las cabeceras
+                    return response
+                else:
+                    response = template.TemplateResponse(
+                        "paso-1/paso1-2/llamado_lista.html",
+                        {"request": request, "usuario": datos_usuario,"reuniones":None},
+                    )
+                    response.headers.update(headers)  # Actualiza las cabeceras
+                    return response
             else:
                 alerta = {
                     "mensaje": "No tiene los permisos para esta acción",
@@ -518,6 +559,19 @@ def pagLlamado(
     else:
         return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
 
+# RUTA PARA ENVIAR DATOS DE LA ASISTENCIA
+@app.post("/datosAsistencia",response_class=HTMLResponse)
+def procesar_datos(request: Request, token: str = Cookie(None), db: Session = Depends(get_database)):
+    is_token_valid = verificar_token(token, db)
+    suscriptores = obtenerSuscriptoresEmpresa(db,is_token_valid,request)
+    return suscriptores
+
+# CALCULAR EL CUORUM
+@app.post("/calcularCuorum", response_class=HTMLResponse)
+def calcularmCuorum(request: Request, token: str = Cookie(None), db: Session = Depends(get_database), cantidadAsistentes: Optional[int] = Form("")):
+    is_token_valid = verificar_token(token, db)
+    cuorumCalculado = calcularCuorum(db, is_token_valid, request, cantidadAsistentes)
+    return cuorumCalculado
 
 # VERIFICACION DEL CUORUM
 @app.get("/cuorum", response_class=HTMLResponse, tags=["Operaciones Documentos"])

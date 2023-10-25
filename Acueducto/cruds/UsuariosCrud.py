@@ -20,6 +20,7 @@ from fastapi.responses import JSONResponse, RedirectResponse
 from sqlalchemy.orm import Session
 from funciones import *
 from cruds.EmpresasCrud import *
+from cruds.ReunionesCrud import obtenerReuAdmin
 from models import Usuario
 
 SUPER_ADMIN = "SuperAdmin"
@@ -523,9 +524,57 @@ def get_formUsuario(
         return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
 
 
-
 def obtenerUsuariosEmpresa(
     db:Session
 ):
     query_usuarios = db.query(Usuario, Empresa.nom_empresa).join(Empresa, Usuario.empresa == Empresa.id_empresa).filter(Usuario.id_usuario != token_valido)
+
+def obtenerSuscriptoresEmpresa(
+    db:Session,
+    token_valido:str,
+    request:Request
+):
+    if token_valido:
+        empresas = None
+        usuario = (
+                db.query(Usuario).filter(
+                    Usuario.id_usuario == token_valido).first()
+            )
+        if usuario:
+            query_usuarios = (
+                db.query(Usuario)
+                .filter(
+                    (Usuario.id_usuario != token_valido)
+                    & (Usuario.rol == 'Suscriptor')
+                    & (Usuario.empresa == usuario.empresa)
+                ).all()
+            )
+
+            headers = elimimar_cache()
+            reuniones = obtenerReuAdmin(usuario.empresa,db)
+            if query_usuarios:
+                response = template.TemplateResponse(
+                    "paso-1/paso1-2/llamado_lista.html",
+                    {"request": request, "suscriptores": query_usuarios,"usuario":usuario,"reuniones":reuniones},
+                )
+                response.headers.update(headers)
+                return response
+            else:
+                alerta = {
+                    "mensaje": "No hay cosos",
+                    "color": "warning",
+                }
+
+                response = template.TemplateResponse(
+                    "index.html",
+                    {"request": request, "alerta": alerta, "suscriptores": None,"usuario":usuario,"reuniones":reuniones},
+                )
+                response.headers.update(headers)
+                return response
+        else:
+            return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
+    else:
+        return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
+
+
 

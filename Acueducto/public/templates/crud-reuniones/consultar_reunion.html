@@ -35,7 +35,30 @@
   <!--  END LOADER -->
   
   <main class="pcoded-main-container">
-      <div class="pcoded-content">
+    <div class="pcoded-content">
+      <div class="row col-12">
+        {% if alerta: %}
+          <div class="alert alert-{{alerta.color}}" role="alert">
+              {{alerta.mensaje}}
+          </div>
+        {% endif %}
+          <div class="col-3 form-group">
+            {%if usuario.rol == 'SuperAdmin': %}
+              <form action="/obtenerDatosReunionSuperAdmin" method="POST" id="formDatosReu">
+                <label class="mt-2" for="">Seleccione la empresa:</label>
+                <select class="form-select" name="id_empresa" id="selectEmpresa" required>
+                    <option value=""></option>
+                    {% if empresas: %}
+                      {% for empresa in empresas %}
+                        <option value="{{ empresa.id_empresa }}">{{ empresa.nom_empresa }}</option>
+                      {% endfor %}
+                    {% else: %}
+                        <option value="">No hay empresas </option>
+                    {%endif%}
+                </select><br>
+              </form>
+            {%endif%}
+          </div>  
         <div class="d-flex justify-content-end">
           <a type="button" href="/reunion" class="btn btn-success">Crear Reunión</a>
         </div>
@@ -48,7 +71,7 @@
             <thead>
               <tr>
                 <th>ID reunion</th>
-                <th>Nombre Empresa</th>
+                <th>Nombre Reunión</th>
                 <th>ID Empresa</th>
                 <th>Fecha</th>
                 <th>URL</th>    
@@ -60,28 +83,30 @@
               </tr>
             </thead>
             <tbody>
-              {% for emp in reunion %}
-              <tr>
-                <td>{{ emp.id_reunion }}</td>
-                <td>{{ emp.nom_reunion }}</td>
-                <td>{{ emp.id_empresa }}</td>
-                <td>{{ emp.fecha }}</td>
-                <td>{{ emp.url_asistencia }}</td>
-                {% if usuario.rol == 'SuperAdmin' or usuario.rol == 'Admin' %}
-                <td><img src="{{ url_for('static', path='assets/images/')}}{{emp.estado}}.png" alt="{{ emp.estado }}"></td>
-                {% endif %}
-                <td><form action="/EditarReunion/" method="POST">
-                  <input type="hidden" name="id_reunion" value="{{ emp.id_reunion  }}">
-                  <button type="submit" class="btn btn-warning">Editar</button>
-                </form>
-                  
-                <td>
-                  {% if emp.estado == 'Activo' %}
-                    <button type="button" class="btn btn-danger" onclick="confirmDeleteEmpresa('{{ emp.id_empresa }}')">Desactivar</button>
+              {% if reuniones: %}
+                {% for emp in reuniones %}
+                <tr>
+                  <td>{{ emp.id_reunion }}</td>
+                  <td>{{ emp.nom_reunion }}</td>
+                  <td>{{ emp.id_empresa }}</td>
+                  <td>{{ emp.fecha }}</td>
+                  <td>{{ emp.url_asistencia }}</td>
+                  {% if usuario.rol == 'SuperAdmin' or usuario.rol == 'Admin' %}
+                  <td><img src="{{ url_for('static', path='assets/images/')}}{{emp.estado}}.png" alt="{{ emp.estado }}"></td>
                   {% endif %}
-                </td>
-              </tr>
-              {% endfor %}
+                  <td><form action="/EditarReunion/" method="POST">
+                    <input type="hidden" name="id_reunion" value="{{ emp.id_reunion  }}">
+                    <button type="submit" class="btn btn-warning">Editar</button>
+                  </form>
+                    
+                  <td>
+                    {% if emp.estado == 'Activo' %}
+                      <button type="button" class="btn btn-danger" onclick="confirmDeleteEmpresa('{{ emp.id_empresa }}')">Desactivar</button>
+                    {% endif %}
+                  </td>
+                </tr>
+                {% endfor %}
+              {%endif%}
             </tbody>
           </table>
         </div>
@@ -197,6 +222,28 @@
         });
     });
 }
+
+  </script>
+
+  <script>
+    let formDatosReu = document.getElementById('formDatosReu');
+    let selectEmpresa = document.getElementById('selectEmpresa');
+
+    selectEmpresa.addEventListener('change',() => {
+      localStorage.setItem("opcionSeleccionada", selectEmpresa.value);
+      formDatosReu.submit();
+    });
+
+    window.addEventListener('load', () => {
+        var opcionGuardada = localStorage.getItem("opcionSeleccionada");
+        if (opcionGuardada) {
+            let optionToSelect = selectEmpresa.querySelector(`option[value="${opcionGuardada}"]`);
+            if (optionToSelect) {
+                optionToSelect.selected = true;
+            }
+        }
+    });
+
 
   </script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
