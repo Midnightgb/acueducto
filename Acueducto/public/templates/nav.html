@@ -1,8 +1,8 @@
-<nav class="pcoded-navbar shadow ">
+<nav class="pcoded-navbar shadow pt-3">
     <div class="navbar-wrapper  ">
-        <div class="navbar-content scroll-div ">
+        <div class="navbar-content scroll-div">
 
-            <div class="">
+            <div>
                 <div class="main-menu-header">
                     <img class="img-radius" src="{{ url_for('static', path='assets/images/user/avatar-2.jpg') }}"
                         alt="User-Profile-Image">
@@ -12,7 +12,6 @@
                             <span class="username">{{ usuario.rol }}</span>
                         </div>
                         <div id="more-details">Más detalles<i class="fa fa-chevron-down m-l-5"></i></div>
-
                     </div>
                 </div>
                 <div class="collapse" id="nav-user-link">
@@ -256,7 +255,7 @@
                         <li><a href="#" target="_parent">Descripción técnica de los procesos</a></li>
                         <li><a href="#" target="_parent">Costos de construcción y operación</a></li>
                         <li class="nav-item pcoded-menu-caption">
-                            <label class="label-modulos">Paso 4.4: Captación, conducción y distribución/label>
+                            <label class="label-modulos">Paso 4.4: Captación, conducción y distribución</label>
                         </li>
                         <li><a href="#" target="_parent">Descripción</a></li>
                         <li><a href="#" target="_parent">Costos de instalación - construcción</a></li>
@@ -289,7 +288,7 @@
         <a href="#!" class="b-brand text-dark text-decoration-none">
             <div class="logo-container">
                 <img src="{{ url_for('static', path='assets/images/logo-sena.ico') }}" alt="" class="logo" width="36px">
-                Proyecto Acueducto
+                <span style="font-size: 13px; margin-right: 2px;">Proyecto Acueducto</span>
             </div>
         </a>
         <a href="#!" class="mob-toggler">
@@ -317,7 +316,7 @@
                     <a class="text-dark" href="/reuniones" target="_self">Reunion</a>
                 </li>
                 <li class="nav-item">
-                    <a class="text-dark" href="/viviendas" target="_self">Viviendas</a>
+                    <a class="text-dark" href="/viviendas/1" target="_self">Viviendas</a>
                 </li>
             {% elif usuario.rol == 'Admin' %}
                 <li class="nav-item">
@@ -332,7 +331,7 @@
                     <a class="text-dark" href="/reuniones" target="_self">Reunion</a>
                 </li>
                 <li class="nav-item">
-                    <a class="text-dark" href="/viviendas" target="_self">Viviendas</a>
+                    <a class="text-dark" href="/viviendas/1" target="_self">Viviendas</a>
                 </li>
             {% endif %}
         </ul>
