@@ -441,6 +441,7 @@ def consultarReuniones(
                             "request": request,
                             "empresas": empresas,
                             "usuario": usuario,
+
                         },
                     )
                     response.headers.update(headers)
@@ -464,9 +465,18 @@ def consultarReuniones(
                     response.headers.update(headers)
                     return response
                 else:
-                    raise HTTPException(
-                        status_code=403, detail="No hay reuniones que consultar"
+                    alerta = {
+                        "mensaje": "No hay reuniones en la empresa",
+                        "color": "warning",
+                    }
+
+                    response = template.TemplateResponse(
+                        "crud-reuniones/consultar_reunion.html",
+                        {"request": request, "alerta": alerta,
+                            "usuario": usuario, "reuniones": None},
                     )
+                    response.headers.update(headers)
+                    return response
             else:
                 raise HTTPException(status_code=403, detail="No puede entrar")
         else:
@@ -482,6 +492,86 @@ def procesar_datos(request: Request, id_empresa: int = Form(...), token: str = C
     is_token_valid = verificar_token(token, db)
     datosReunion = obtenerDatosReunion(db, id_empresa, is_token_valid, request)
     return datosReunion
+
+
+def obtenerDatosReunion(
+    db: Session,
+    id_empresa: int,
+    token_valido: str,
+    request: Request
+):
+    if token_valido:
+        empresas = db.query(Empresa).all()
+        usuario = (
+            db.query(Usuario).filter(
+                Usuario.id_usuario == token_valido).first()
+        )
+        headers = elimimar_cache()
+        if usuario:
+            reuniones = obtenerReuAdmin(id_empresa, db)
+            if reuniones:
+                response = template.TemplateResponse(
+                    "crud-reuniones/consultar_reunion.html",
+                    {
+                        "request": request,
+                        "reuniones": reuniones,
+                        "empresas": empresas,
+                        "usuario": usuario,
+                    },
+                )
+                response.headers.update(headers)
+                return response
+            else:
+                alerta = {
+                    "mensaje": "No hay reuniones en la empresa",
+                    "color": "warning",
+                }
+
+                response = template.TemplateResponse(
+                    "crud-reuniones/consultar_reunion.html",
+                    {"request": request, "alerta": alerta, "empresas": empresas,
+                        "usuario": usuario, "reuniones": None},
+                )
+                response.headers.update(headers)
+                return response
+        else:
+            return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
+    else:
+        return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
+
+# --- REUNIONES POR FECHA
+
+
+@app.post("/reunionesFecha", response_class=HTMLResponse)
+async def reunionFecha(request: Request, fechaActual: str = Form(...), fechaHasta: str = Form(...), token: str = Cookie(None), db: Session = Depends(get_database)):
+    # Realiza la consulta para seleccionar reuniones entre las dos fechas
+    if token:
+        token_valido = verificar_token(token, db)
+        if token_valido:
+            usuario = (
+                db.query(Usuario).filter(
+                    Usuario.id_usuario == token_valido).first()
+            )
+            id_empresa = get_empresa(token_valido, db)
+            reuniones_entre_fechas = db.query(Reunion).filter(Reunion.fecha.between(
+                fechaActual, fechaHasta), Reunion.id_empresa == id_empresa).all()
+            headers = elimimar_cache()
+            if reuniones_entre_fechas:
+                alerta = {
+                    "mensaje": "Reuniones encontradas, seleccione la reunion.",
+                    "color": "success",
+                }
+                response = template.TemplateResponse(
+                    "paso-1/paso1-2/llamado_lista.html",
+                    {
+                        "request": request,
+                        "reuniones": reuniones_entre_fechas,
+                        "usuario": usuario,
+                        "alerta": alerta,
+                    },
+                )
+                response.headers.update(headers)
+                return response
 
 # --- RUTA PARA MOSTRAR LA PAGUNA DONDE SE EDITA LA REUNION
 
@@ -597,7 +687,9 @@ def procesar_datos(request: Request, token: str = Cookie(None), db: Session = De
 
 
 @app.post("/calcularCuorum", response_class=HTMLResponse)
-def calcularmCuorum(request: Request, token: str = Cookie(None), db: Session = Depends(get_database), cantidadAsistentes: Optional[int] = Form("")):
+def calcularmCuorum(request: Request, token: str = Cookie(None), db: Session = Depends(get_database), cantidadAsistentes: Optional[int] = Form(None), reunion_1: str = Form("")):
+    if cantidadAsistentes is None:
+        cantidadAsistentes = 0
     is_token_valid = verificar_token(token, db)
     cuorumCalculado = calcularCuorum(
         db, is_token_valid, request, cantidadAsistentes)
@@ -1782,6 +1874,7 @@ def eliminarViviendaNoOwner(
                 status_code=403, detail="nada")
     else:
         return RedirectResponse("/", status_code=status.HTTP_303_SEE_OTHER)
+
 
 @app.post("/desvincularVivienda", tags=["Operaciones Viviendas"], response_class=HTMLResponse)
 def desvincularVivienda(

@@ -21,7 +21,7 @@ from sqlalchemy.orm import Session
 from funciones import *
 from cruds.EmpresasCrud import *
 from cruds.ReunionesCrud import obtenerReuAdmin
-from models import Usuario
+from models import Usuario, Reunion
 
 SUPER_ADMIN = "SuperAdmin"
 ADMIN = "Admin"
@@ -553,7 +553,8 @@ def obtenerSuscriptoresEmpresa(
                     & (Usuario.empresa == usuario.empresa)
                 ).all()
             )
-
+            reunion_select = db.query(Reunion).filter(
+                Reunion.id_reunion == reunion_1).first()
             headers = elimimar_cache()
             reuniones = obtenerReuAdmin(usuario.empresa, db)
             if query_usuarios:
@@ -566,7 +567,7 @@ def obtenerSuscriptoresEmpresa(
                 return response
             else:
                 alerta = {
-                    "mensaje": "No hay cosos",
+                    "mensaje": "No hay reuniones",
                     "color": "warning",
                 }
 
