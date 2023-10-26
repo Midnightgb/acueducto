@@ -431,10 +431,9 @@ def consultarReuniones(
             )
             headers = elimimar_cache()
             if rol_usuario == SUPER_ADMIN:
-                id_empresa = get_empresa(token_valido, db)
-                reuniones = obtenerReuAdmin(id_empresa, db)
-                empresas = obtenerEmpresas(token, db)
-                if reuniones:
+
+                empresas = db.query(Empresa).all()
+                if empresas:
                     response = template.TemplateResponse(
                         "crud-reuniones/consultar_reunion.html",
                         {
@@ -641,23 +640,12 @@ def pagLlamado(
             headers = elimimar_cache()
             if rol_usuario == ADMIN:
                 id_empresa = get_empresa(is_token_valid, db)
-                reuniones = obtenerReuAdmin(id_empresa, db)
-                if reuniones:
-                    response = template.TemplateResponse(
-                        "paso-1/paso1-2/llamado_lista.html",
-                        {"request": request, "usuario": datos_usuario,
-                            "reuniones": reuniones},
-                    )
-                    response.headers.update(headers)  # Actualiza las cabeceras
-                    return response
-                else:
-                    response = template.TemplateResponse(
-                        "paso-1/paso1-2/llamado_lista.html",
-                        {"request": request, "usuario": datos_usuario,
-                            "reuniones": None},
-                    )
-                    response.headers.update(headers)  # Actualiza las cabeceras
-                    return response
+                response = template.TemplateResponse(
+                    "paso-1/paso1-2/llamado_lista.html",
+                    {"request": request, "usuario": datos_usuario},
+                )
+                response.headers.update(headers)  # Actualiza las cabeceras
+                return response
             else:
                 alerta = {
                     "mensaje": "No tiene los permisos para esta acción",
@@ -678,9 +666,10 @@ def pagLlamado(
 
 
 @app.post("/datosAsistencia", response_class=HTMLResponse)
-def procesar_datos(request: Request, token: str = Cookie(None), db: Session = Depends(get_database)):
+def procesar_datos(request: Request, token: str = Cookie(None), db: Session = Depends(get_database), reunion_1: str = Form("")):
     is_token_valid = verificar_token(token, db)
-    suscriptores = obtenerSuscriptoresEmpresa(db, is_token_valid, request)
+    suscriptores = obtenerSuscriptoresEmpresa(
+        db, is_token_valid, request, reunion_1)
     return suscriptores
 
 # CALCULAR EL CUORUM
@@ -692,7 +681,7 @@ def calcularmCuorum(request: Request, token: str = Cookie(None), db: Session = D
         cantidadAsistentes = 0
     is_token_valid = verificar_token(token, db)
     cuorumCalculado = calcularCuorum(
-        db, is_token_valid, request, cantidadAsistentes)
+        db, is_token_valid, request, cantidadAsistentes, reunion_1)
     return cuorumCalculado
 
 # VERIFICACION DEL CUORUM
