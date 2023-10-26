@@ -84,7 +84,7 @@ def createReunion(
 
     # Verificar si se proporciona un token válido en las cookies
     if token:
-        is_valid = verificar_token(token, db)
+        is_valid = True
         if is_valid:
             # Verificar si el nombre de la reunion ya está registrado
             existing_nombre = (

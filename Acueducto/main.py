@@ -356,7 +356,7 @@ def consultarReuniones(
                     )
             elif rol_usuario == ADMIN:
                 id_empresa = get_empresa(token_valido,db)
-                reuniones = obtenerReuAdmin(id_empresa,db)                
+                reuniones = obtenerReuAdmin(id_empresa,db)                               
                 if reuniones:
                     response = template.TemplateResponse(
                         "crud-reuniones/consultar_reunion.html",
