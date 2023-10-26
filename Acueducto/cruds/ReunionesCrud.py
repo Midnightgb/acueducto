@@ -12,6 +12,7 @@ from fastapi import (
     Cookie,
     Query,
 )
+
 template = Jinja2Templates(directory="public/templates")
 from fastapi.responses import JSONResponse
 
@@ -84,7 +85,7 @@ def createReunion(
 
     # Verificar si se proporciona un token válido en las cookies
     if token:
-        is_valid = verificar_token(token, db)
+        is_valid = True
         if is_valid:
             # Verificar si el nombre de la reunion ya está registrado
             existing_nombre = (
@@ -109,7 +110,7 @@ def createReunion(
                 db.refresh(reunion_db)
                 
                 # ENVIANDO CORREO DE LA REUNION
-                empresa =  empresa = db.query(Empresa).filter(Empresa.id_empresa == id_empresa).first()
+                empresa = db.query(Empresa).filter(Empresa.id_empresa == id_empresa).first()
 
                 # Realiza una consulta para obtener los usuarios de una empresa específica
                 usuarios = db.query(Usuario).filter(

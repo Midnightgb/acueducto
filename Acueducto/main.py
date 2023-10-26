@@ -304,7 +304,7 @@ def MostrarFormReunion(
                 db.query(Usuario).filter(Usuario.id_usuario == token_valido).first()
             )
             headers = elimimar_cache()
-            if rol_usuario in [SUPER_ADMIN, ADMIN]:
+            if rol_usuario in [ADMIN]:
                 response = template.TemplateResponse(
                     "crud-reuniones/registro_reunion.html",
                     {"request": request, "usuario": usuario},

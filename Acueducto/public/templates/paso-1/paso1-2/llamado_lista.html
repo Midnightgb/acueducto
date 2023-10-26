@@ -63,11 +63,9 @@
                                     {% if reuniones: %} 
                                         {% for reunion in reuniones %}
                                             <option id="" value=" {{reunion.id_reunion}} ">{{reunion.nom_reunion}}</option>
-                                        {%endfor%} 
-                                    {% else: %}
-                                        <option value="">No hay reuniones</option>
+                                        {%endfor%}
                                     {%endif%}
-                                </select><br />
+                                </select>
                             </form>
                             {% if reunionSelect: %}
                             <h5>Reunion seleccionada: {{reunionSelect.nom_reunion}}</h5>

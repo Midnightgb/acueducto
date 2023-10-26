@@ -58,10 +58,12 @@
                 </select><br>
               </form>
             {%endif%}
-          </div>  
-        <div class="d-flex justify-content-end">
-          <a type="button" href="/reunion" class="btn btn-success">Crear Reunión</a>
-        </div>
+          </div>
+        {%if usuario.rol == 'Admin'%}  
+          <div class="d-flex justify-content-end">
+            <a type="button" href="/reunion" class="btn btn-success">Crear Reunión</a>
+          </div>
+        {%endif%}
         <div class="table-responsive mt-3">
           <table class="table table-striped
               table-hover	
