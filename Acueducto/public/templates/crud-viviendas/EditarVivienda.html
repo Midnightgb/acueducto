@@ -6,10 +6,10 @@
   {% block meta %}
   {% include 'meta.html' %}
   {% endblock %}
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
-<body>
+<body class="container-fluid">
   <header>
     {% block nav %}
     {% include 'nav.html' %}
@@ -30,13 +30,13 @@
 
     <!--  BEGIN CONTENT AREA  -->
     <div id="content" class="main-content">
-      <a href="/viviendas" class="btn btn-success">⬅</a>
+      <a href="/viviendas/1" class="btn btn-success">⬅</a>
       <div class="layout-px-spacing">
         <div class="container-xxl">
           <div class="layout-top-spacing">
             <div class="col-left-content">
               <!-- Formulario edicion vivienda -->
-              <div class="container-xxl d-flex justify-content-center align-items-center vh-90">
+              <div class="container d-flex justify-content-center align-items-center vh-90">
                 <div class="col-12 col-lg-6 bg-light rounded p-4 shadow">
 
                   <h2 class="text-center mb-4">Estas modificando la vivienda en {{ vivienda.direccion }}</h2>
@@ -76,14 +76,17 @@
                     <div class="form-group">
                       <label for="id_usuario">Dueño:</label>
                       <select class="form-select" name="id_usuario" id="id_usuario">
-                        <option value="" selected>Seleccione un dueño</option> 
+                        <option value="">Seleccione un dueño</option>
                         {% for user in users %}
-                        <option value="{{ user.id_usuario }}">{{ user.nom_usuario }}</option>
+                          <option value="{{ user.id_usuario }}" {% if user.id_usuario == vivienda.id_usuario %}selected{% endif %}>
+                            {{ user.nom_usuario }}
+                          </option>
                         {% endfor %}
                       </select>
                     </div>
+                    
                     <div class="text-center">
-                      <a href="/viviendas" class="btn btn-danger" onclick="reset()">CANCELAR</a>
+                      <a href="/viviendas/1" class="btn btn-danger" onclick="reset()">CANCELAR</a>
                       <button type="submit" class="btn btn-success">ACTUALIZAR</button>
                     </div>
                   </form>

@@ -13,7 +13,7 @@
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
   <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.7.1/css/buttons.dataTables.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11">
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 </head>
 <style>
@@ -38,22 +38,36 @@
 
 
   <main class="pcoded-main-container">
+
+    <div class="d-flex justify-content-center mt-3 ">
+      {% if alter==1 %}
+      <form action="/viviendas/2" method="GET">
+        <button type="submit" class="btn btn-success me-4">Viviendas Asociadas</button>
+      </form>
+      {% else %}
+      <form action="/viviendas/1" method="GET">
+        <button type="submit" class="btn btn-success me-4">Viviendas Sin Asociar</button>
+      </form>
+      {% endif %}
+    </div>
+
     <div class="pcoded-content">
       <div class="table-responsive">
         <table class="table table-striped
             table-hover	
             table-borderless
-            table-primary
+            table-success
             align-middle responsive " id="dataViviendas" class="display">
-          <thead>
-            <tr>
-              <th>Direccion</th>
-              <th>Estrato</th>
-              <th>Tipo</th>
-              <th class="dt-no-sorting"></th>
-              <th class="dt-no-sorting"></th>
-            </tr>
+            <thead>
+              <tr>
+                  <th>Direccion</th>
+                  <th>Estrato</th>
+                  <th>Tipo</th>
+                  <th class="dt-no-sorting"></th>
+                  <th class="dt-no-sorting"></th>
+              </tr>
           </thead>
+          
           <tbody>
             {% for vivienda in viviendas %}
             <tr>
@@ -63,20 +77,27 @@
               <td class="text-center">
                 <form action="/EditarVivienda" method="post" id="editVivienda_{{ vivienda.id_inmueble }}">
                   <input type="hidden" name="id_vivienda" id="id_vivienda" value="{{ vivienda.id_inmueble }}">
-                  <button class="btn btn-warning" type="button" onclick="redirigirEditVivienda('{{ vivienda.id_inmueble }}')">
+                  <button class="btn btn-success" type="button" onclick="redirigirEditVivienda('{{ vivienda.id_inmueble }}')">
                     Editar
-                    <img src="{{ url_for('static', path='assets/images/icons8-editar-28.png') }}" alt="edit">
                   </button>
                 </form>
               </td>
               <td>
+                {% if alter==1 %}
                 <form action="/deleteViviendaNoOwner" method="post" id="deleteVivienda_{{ vivienda.id_inmueble }}">
                   <input type="text" hidden name="id_vivienda" id="id_vivienda" value="{{ vivienda.id_inmueble }}">
-                  <button type="button" class="btn btn-danger" onclick="confirmDelete('{{ vivienda.id_inmueble }}')">
+                  <button type="button" class="btn btn-danger" onclick="confirmDelete('{{ vivienda.id_inmueble }}', 'Borrar')">
                     Borrar
-                    <img src="{{ url_for('static', path='assets/images/icons8-remove-28.png') }}" alt="delete">
                   </button>
                 </form>
+                {% else %}
+                <form action="/desvincularVivienda" method="post" id="desvincularVivienda{{ vivienda.id_inmueble }}">
+                  <input type="text" hidden name="id_vivienda" id="id_vivienda" value="{{ vivienda.id_inmueble }}">
+                    <button type="button" class="btn btn-danger" onclick="confirmDelete('{{ vivienda.id_inmueble }}', 'Desvincular')">
+                      Desvincular
+                  </button>
+                </form>
+                {% endif %}
               </td>
             </tr>
             {% endfor %}
@@ -101,7 +122,7 @@
       document.getElementById(`editVivienda_${id}`).submit();
     }
 
-    function confirmDelete(id) {
+    function confirmDelete(id,txt) {
       Swal.fire({
         title: '¿Estás seguro?',
         text: 'No podrás revertir esta acción',
@@ -109,7 +130,7 @@
         showCancelButton: true,
         confirmButtonColor: '#d33',
         cancelButtonColor: '#3085d6',
-        confirmButtonText: 'Borrar',
+        confirmButtonText: txt,
         cancelButtonText: 'Cancelar'
       }).then((result) => {
         if (result.isConfirmed) {
