@@ -258,7 +258,7 @@ def calcularCuorum(
     token_valido:str,
     request:Request,
     cantidadAsistentes: int,
-
+    reunion_1:str,
 ):  
     
     if token_valido:
@@ -277,56 +277,48 @@ def calcularCuorum(
                 ).all()
             )
             query_subs = db.query(Usuario).filter(Usuario.rol == "Suscriptor", Usuario.empresa == usuario.empresa).count()
-            if cantidadAsistentes > query_subs/2:
-                sacarCuorum = True
-            else:
-                sacarCuorum = False
-
-            if cantidadAsistentes == 0:
+            
+            if cantidadAsistentes == 0 or cantidadAsistentes is None:
+                reuniones = obtenerReuAdmin(usuario.empresa,db)
                 alerta = {
-                        "mensaje": "No hay suscriptores en la empresa",
+                        "mensaje": "No ha seleccionado ningún asistente",
                         "color": "warning",
                     }
                 headers = elimimar_cache()
                 response = template.TemplateResponse(
-                    "index.html",
-                    {"request": request, "alerta": alerta, "suscriptores": None,"usuario":usuario,"reuniones":reuniones},
+                    "paso-1/paso1-2/llamado_lista.html",
+                    {"request": request, "suscriptores": query_usuarios,"usuario":usuario,"reuniones":reuniones, "cuorum":False,"alerta":alerta,"nombreReunion":reunion_1},
                 )
                 response.headers.update(headers)
 
                 return response
 
+            if cantidadAsistentes > query_subs/2:
+                sacarCuorum = True
+            else:
+                sacarCuorum = False
+
+
             if query_subs:
                 headers = elimimar_cache()
                 reuniones = obtenerReuAdmin(usuario.empresa,db)
-                if query_subs:
-                    response = template.TemplateResponse(
-                        "paso-1/paso1-2/llamado_lista.html",
-                        {"request": request, "suscriptores": query_usuarios,"usuario":usuario,"reuniones":reuniones, "cuorum":sacarCuorum},
-                    )
-                    response.headers.update(headers)
-                    return response
-                else:
-                    alerta = {
-                        "mensaje": "No hay suscriptores en la empresa",
-                        "color": "warning",
-                    }
-
-                    response = template.TemplateResponse(
-                        "index.html",
-                        {"request": request, "alerta": alerta, "suscriptores": None,"usuario":usuario,"reuniones":reuniones},
-                    )
-                    response.headers.update(headers)
-                    return response
+                
+                response = template.TemplateResponse(
+                    "paso-1/paso1-2/llamado_lista.html",
+                    {"request": request, "suscriptores": query_usuarios,"usuario":usuario,"reuniones":reuniones, "cuorum":sacarCuorum,"nombreReunion":reunion_1},
+                )
+                response.headers.update(headers)
+                print(reunion_1)
+                return response
             else:
                 alerta = {
-                    "mensaje": "No hay cosos",
+                    "mensaje": "No hay suscriptores",
                     "color": "warning",
                 }
 
                 response = template.TemplateResponse(
-                    "index.html",
-                    {"request": request, "alerta": alerta, "suscriptores": None,"usuario":usuario,"reuniones":reuniones},
+                    "paso-1/paso1-2/llamado_lista.html",
+                    {"request": request, "alerta": alerta, "suscriptores": None,"usuario":usuario,"reuniones":None},
                 )
                 response.headers.update(headers)
                 return response
@@ -334,3 +326,5 @@ def calcularCuorum(
             return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
     else:
         return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
+
+

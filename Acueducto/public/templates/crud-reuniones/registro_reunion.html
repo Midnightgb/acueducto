@@ -54,7 +54,7 @@
 
                   <h2 class="text-center mb-4">Crear Reunion </h2>
 
-                  <form id="formularioReunion" onsubmit="return validarFormulario()">
+                  <form action="/crear_reunion" id="formularioReunion" method="post">
                     {% if usuario: %}
                     <div class="form-group">
                       <input type="hidden" class="form-control" name="id_empresa" id="id_empresa" value="{{usuario.empresa}}" required>
