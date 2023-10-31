@@ -1,7 +1,6 @@
 # FUNCION GENERAR TOKEN
 from datetime import datetime, timedelta
 from jose import jwt
-from docx import Document
 from fpdf import FPDF
 from fastapi import (
     FastAPI,
@@ -21,6 +20,9 @@ from models import Token, Usuario, Empresa, Vivienda, Reunion
 from sqlalchemy.orm import Session
 from docx2pdf import convert
 import PyPDF2
+from docx import Document
+from docx.shared import Inches
+from docx.oxml import OxmlElement
 
 app = FastAPI()
 
@@ -124,6 +126,14 @@ def reemplazar_texto(docx_path, datos):
             if campo in paragraph.text:
                 paragraph.text = paragraph.text.replace(campo, valor)
 
+    for table in document.tables:
+        for row in table.rows:
+            for cell in row.cells:
+                for paragraph in cell.paragraphs:
+                    for campo, valor in datos.items():
+                        if campo in paragraph.text:
+                            paragraph.text = paragraph.text.replace(campo, valor)
+
     return document
 
 # CONVIERTE EL DOCUMENTO DOCX A PDF
@@ -166,6 +176,7 @@ def get_datos_empresa(id_empresa, db):
 def get_datos_empresas(db) -> list[str]:
     nom_empresas = db.query(Empresa.nom_empresa).all()
     return [nombre[0] for nombre in nom_empresas]
+
 
 # OBTENER DATOS REUNIONES:
 def get_datos_reuniones(id_reunion, db):

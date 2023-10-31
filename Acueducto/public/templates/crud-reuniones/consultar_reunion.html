@@ -66,22 +66,23 @@
           <table class="table table-striped
               table-hover	
               table-borderless
-              table-primary
+              table-success
               align-middle responsive " id="dataEmpresas" class="display">
-            <thead>
-              <tr>
-                <th>ID reunion</th>
-                <th>Nombre Reunión</th>
-                <th>ID Empresa</th>
-                <th>Fecha</th>
-                <th>URL</th>    
-                {% if usuario.rol == 'SuperAdmin' or usuario.rol == 'Admin' %}
-                  <th>Estado</th>
-                {% endif %}
-                <th class="dt-no-sorting"></th>
-                <th class="dt-no-sorting"></th>
-              </tr>
+              <thead>
+                <tr>
+                    <th>ID reunión</th>
+                    <th>Nombre Reunión</th>
+                    <th>ID Empresa</th>
+                    <th>Fecha</th>
+                    <th>URL</th>
+                    {% if usuario.rol == 'SuperAdmin' or usuario.rol == 'Admin' %}
+                    <th>Estado</th>
+                    {% endif %}
+                    <th class="dt-no-sorting"></th>
+                    <th class="dt-no-sorting"></th>
+                </tr>
             </thead>
+            
             <tbody>
               {% if reuniones: %}
                 {% for emp in reuniones %}
@@ -96,7 +97,7 @@
                   {% endif %}
                   <td><form action="/EditarReunion/" method="POST">
                     <input type="hidden" name="id_reunion" value="{{ emp.id_reunion  }}">
-                    <button type="submit" class="btn btn-warning">Editar</button>
+                    <button type="submit" class="btn btn-primary">Editar</button>
                   </form>
                     
                   <td>

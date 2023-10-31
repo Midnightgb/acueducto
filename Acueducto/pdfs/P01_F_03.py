@@ -20,6 +20,7 @@ from fastapi.responses import JSONResponse, RedirectResponse
 from sqlalchemy.orm import Session, aliased
 from funciones import *
 SUPER_ADMIN = "SuperAdmin"
+ADMIN = "Admin"
 datos_usuario = None
 
 app = FastAPI()
@@ -29,7 +30,7 @@ app.mount("/static", StaticFiles(directory="public/dist"), name="static")
 
 template = Jinja2Templates(directory="public/templates")
 
-def manejarDocumentos(nombre_documento, datos, nit, id_usuario, db):
+def manejarDocumentos(nombre_documento, datos, nit, id_usuario, db, id_servicio):
     archivo = 'public/dist/ArchivosDescarga/'+nombre_documento+'.docx'
     documento_modificado = reemplazar_texto(archivo, datos)
     documento_modificado.save('public/dist/ArchivosDescarga/Generados/'+nombre_documento+'_Editado' + nit + '.docx')
@@ -42,7 +43,7 @@ def manejarDocumentos(nombre_documento, datos, nit, id_usuario, db):
     nuevo_documento1 =   Documento(
         id_usuario=id_usuario,
         nom_doc= nombre_documento + nit,
-        id_servicio=1,
+        id_servicio=id_servicio,
         tipo='pdf',
         url='ArchivosDescarga/Generados/'+nombre_documento + nit + '.pdf'
     )
@@ -82,7 +83,16 @@ def generarDocx_P01_F_03(
             print(rol_usuario)
             headers = elimimar_cache()
             datos_usuario = get_datos_usuario(is_token_valid, db)
-            if rol_usuario == SUPER_ADMIN:
+            if rol_usuario == ADMIN:
+
+                # Realizar una consulta para seleccionar los documentos asociados al usuario
+                documentos_a_eliminar = db.query(Documento).filter(Documento.id_usuario == is_token_valid).all()
+
+                # Eliminar los documentos
+                for documento in documentos_a_eliminar:
+                    db.delete(documento)
+
+                db.commit()    
                 id_usuario = is_token_valid
 
             # Crea un alias para la tabla 'empresas' para la subconsulta
@@ -125,11 +135,11 @@ def generarDocx_P01_F_03(
                         }
                         arreglo_rutas = []
                         #crear, guardar y convertir a pdf archivo 1
-                        manejarDocumentos("P01-F-03_Estatutos_Asociación_Suscriptores", datos, nit, is_token_valid, db)
+                        manejarDocumentos("P01-F-03_Estatutos_Asociación_Suscriptores", datos, nit, is_token_valid, db,1)
                         arreglo_rutas.append('ArchivosDescarga/Generados/P01-F-03_Estatutos_Asociación_Suscriptores'+ nit + '.pdf')
-                        manejarDocumentos("P01-F-02_Formato_Contrato_Condiciones_Uniformes", datos, nit, is_token_valid, db)
+                        manejarDocumentos("P01-F-02_Formato_Contrato_Condiciones_Uniformes", datos, nit, is_token_valid, db, 2)
                         arreglo_rutas.append('ArchivosDescarga/Generados/P01-F-02_Formato_Contrato_Condiciones_Uniformes'+ nit + '.pdf')
-                        manejarDocumentos("P01-F-06_ActaConstitución", datos, nit, is_token_valid, db)
+                        manejarDocumentos("P01-F-06_ActaConstitución", datos, nit, is_token_valid, db, 3)
                         arreglo_rutas.append('ArchivosDescarga/Generados/P01-F-06_ActaConstitución'+ nit + '.pdf')
                         response = template.TemplateResponse(
                         "paso-1/paso1-3/archivo_control_documental.html", {"request": request, "usuario": datos_usuario, "rutas_pdf": arreglo_rutas}

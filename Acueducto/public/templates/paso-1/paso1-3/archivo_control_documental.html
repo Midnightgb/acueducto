@@ -21,94 +21,120 @@
         <!--  BEGIN CONTENT AREA  -->
         <div class="pcoded-main-container">
             <div class="pcoded-content">
-                <div class="container-xxl py-5">
+                <div class="container-xxl ">
                     <div class="container">
                         <div class="row g-5 align-items-end">
-                            <section class="py-1">
+                            <section class="py">
                                 <div class="container px-5">
                                     <!-- Contact form-->
+                                    .<div class="row">
+                                        {% if usuario.rol == "SuperAdmin" %}
+                                        <div class="col-lg-12 col-md-12 col-sm-12 mt-3">
+                                            <label for="selectEmpresa" class="form-label">Seleciona la empresa que quieres gestionar: </label>
+                                        </div>
+                                        <div class="col-lg-12 col-md-12 col-sm-12">
+                                            <form id="formulario" action="/archivo_control_documental" method="GET"> 
+                                                <select class="form-select mt-2 mb-3" name="id_empresa" id="selectEmpresa">
+                                                    <option selected>Elige una empresa</option>
+                                                    {% for empresa in datos_empresas %}
+                                                    <option value="{{empresa.id_empresa}}">{{empresa.nom_empresa}}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </form>  
+                                        </div>
+                                        {% endif %}
+                                    </div>
                                     <div class="row">
-                                        <div class="col-lg-6 col-sm-12 pt-2">
-                                            <div class="bg-light rounded p-4 shadow">
+                                        
+                                        {% if usuario.rol == "Admin" %}
+                                        <div class="col-lg-12 col-md-12 col-sm-12 pt-2">
+                                            <div class="bg-light rounded p-4 ">
                                                 <div class="text-center mb-5">
+                                                    
                                                     <div class="align-self-center py-1">
                                                         <img src="{{ url_for('static', path='assets/images/logo-sena.ico') }}" width="40px" height="43px" alt="">
                                                     </div>
                                                     <h1 class="fw-bolder">Control Documental</h1>
                                                     <p class="lead fw-normal text-muted mb-0">Ingresa los datos para obtener tus documentos</p>
                                                 </div>
+                                              
                                                 <div class="row gx-5 justify-content-center">
                                                     <div class="col-lg-12 col-xl-12">
-                                                        <form id="miFormulario" action="/generar_docx_P01_F_03/" method="POST">
-                                                            <div class="form-floating mb-3">
-                                                                <input class="form-control" id="nit" name="nit" type="text" placeholder="" required/>
-                                                                <label for="nit">NIT</label>
-                                                            </div>
-                                                            <div class="form-floating mb-3">
-                                                                <input class="form-control" id="presidente" name="presidente" type="text" placeholder="" required/>
-                                                                <label for="presidente">Presidente de la Asociación</label>
-                                                            </div>
-                                                            <div class="form-floating mb-3">
-                                                                <input class="form-control" id="patrimonio" name="patrimonio" type="text" placeholder="" required/>
-                                                                <label for="patrimonio">Patrimonio de la Asociación</label>
-                                                            </div>
-                                                            <div class="form-floating mb-3">
-                                                                <input class="form-control" id="municipio" name="municipio" type="text" placeholder="" required/>
-                                                                <label for="municipio">Municipio</label>
-                                                            </div>
-                                                            <div class="form-floating mb-3">
-                                                                <input class="form-control" id="departamento" name="departamento" type="text" placeholder=""/>
-                                                                <label for="departamento">Departamento</label>
-                                                            </div>
-                                                            <div class="form-floating mb-3">
-                                                                <input class="form-control" id="web" name="web" type="text" placeholder=""/>
-                                                                <label for="web">Página Web</label>
-                                                            </div>
-                                                            <div class="form-floating mb-3">
-                                                                <input class="form-control" id="horario" name="horario" type="text" placeholder=""/>
-                                                                <label for="horario">Horario de Atención</label>
-                                                            </div>
-                                                            <div class="form-floating mb-3">
-                                                                <input class="form-control" id="sigla" name="sigla" type="text" placeholder="" required/>
-                                                                <label for="sigla">Sigla</label>
-                                                            </div>
-                                                            <div class="form-floating mb-3">
-                                                                <input class="form-control" id="vereda" name="vereda" type="text" placeholder=""/>
-                                                                <label for="vereda">Vereda</label>
-                                                            </div>
-                                                            <div class="form-floating mb-3">
-                                                                <input class="form-control" id="fecha" name="fecha" type="date" placeholder=""/>
-                                                                <label for="fecha">Fecha de Constitución</label>
-                                                            </div>
-
-                                                            <div class="form-floating mb-3">
-                                                                <input class="form-control" id="especificaciones" name="especificaciones" type="text" placeholder=""/>
-                                                                <label for="especificaciones">Especificaciones del Tipo de Medidor</label>
-                                                            </div>
-                                                            <div class="form-floating mb-3">
-                                                                <input class="form-control" id="diametro" name="diametro" type="text" placeholder=""/>
-                                                                <label for="diametro">Diametro del Medidor</label>
-                                                            </div>
-                                                            <div class="form-floating mb-3">
-                                                                <input class="form-control" id="caudal_permanente" name="caudal_permanente" type="text" placeholder=""/>
-                                                                <label for="caudal_permanente">Caudal Permanente (Q3)</label>
-                                                            </div>
-                                                            <div class="form-floating mb-3">
-                                                                <input class="form-control" id="rango_medicion" name="rango_medicion" type="text" placeholder=""/>
-                                                                <label for="rango_medicion">Rango Medición (R)</label>
-                                                            </div>
-                                                            <!-- Submit Button-->
-                                                            <div class="d-grid"><button class="btn btn-success btn-lg" type="submit">Enviar</button></div>
-                                                        </form>
+                                                        <div >
+                                                            <form id="miFormulario" action="/generar_docx_P01_F_03/" method="POST" class="row form">
+                                                                <div class="col-lg-6 col-md-6 col-sm-12 mb-3  form-floating">
+                                                                    <input class="form-control" id="nit" name="nit" type="text" placeholder="" required/>
+                                                                    <label for="nit" class="form-label mx-3">NIT</label>
+                                                                </div>
+                                                                <div class="col-lg-6 col-md-6 col-sm-12 form-floating mb-3 ">
+                                                                    <input class="form-control" id="presidente" name="presidente" type="text" placeholder="" required/>
+                                                                    <label for="presidente" class="form-label mx-3">Presidente de la Asociación</label>
+                                                                </div>
+                                                                <div class="col-lg-6 col-md-6 col-sm-12 form-floating mb-3">
+                                                                    <input class="form-control" id="patrimonio" name="patrimonio" type="text" placeholder="" required/>
+                                                                    <label for="patrimonio" class="form-label mx-3">Patrimonio de la Asociación</label>
+                                                                </div>
+                                                                <div class="col-lg-6 col-md-6 col-sm-12 form-floating mb-3">
+                                                                    <input class="form-control" id="municipio" name="municipio" type="text" placeholder="" required/>
+                                                                    <label for="municipio" class="form-label mx-3">Municipio</label>
+                                                                </div>
+                                                                <div class="col-lg-6 col-md-6 col-sm-12 form-floating mb-3">
+                                                                    <input class="form-control" id="departamento" name="departamento" type="text" placeholder=""/>
+                                                                    <label for="departamento" class="form-label mx-3">Departamento</label>
+                                                                </div>
+                                                                <div class="col-lg-6 col-md-6 col-sm-12 form-floating mb-3">
+                                                                    <input class="form-control" id="web" name="web" type="text" placeholder=""/>
+                                                                    <label for="web" class="form-label mx-3">Página Web</label>
+                                                                </div>
+                                                                <div class="col-lg-6 col-md-6 col-sm-12 form-floating mb-3">
+                                                                    <input class="form-control" id="horario" name="horario" type="text" placeholder=""/>
+                                                                    <label for="horario" class="form-label mx-3">Horario de Atención</label>
+                                                                </div>
+                                                                <div class="col-lg-6 col-md-6 col-sm-12 form-floating mb-3">
+                                                                    <input class="form-control" id="sigla" name="sigla" type="text" placeholder="" required/>
+                                                                    <label for="sigla" class="form-label mx-3">Sigla</label>
+                                                                </div>
+                                                                <div class="col-lg-6 col-md-6 col-sm-12 form-floating mb-3">
+                                                                    <input class="form-control" id="vereda" name="vereda" type="text" placeholder=""/>
+                                                                    <label for="vereda" class="form-label mx-3">Vereda</label>
+                                                                </div>
+                                                                <div class="col-lg-6 col-md-6 col-sm-12 form-floating mb-3">
+                                                                    <input class="form-control" id="fecha" name="fecha" type="date" placeholder=""/>
+                                                                    <label for="fecha" class="form-label mx-3">Fecha de Constitución</label>
+                                                                </div>
+    
+                                                                <div class="col-lg-6 col-md-6 col-sm-12 form-floating mb-3">
+                                                                    <input class="form-control" id="especificaciones" name="especificaciones" type="text" placeholder=""/>
+                                                                    <label for="especificaciones" class="form-label mx-3">Especificaciones del Tipo de Medidor</label>
+                                                                </div>
+                                                                <div class="col-lg-6 col-md-6 col-sm-12 form-floating mb-3">
+                                                                    <input class="form-control" id="diametro" name="diametro" type="text" placeholder=""/>
+                                                                    <label for="diametro" class="form-label mx-3">Diametro del Medidor</label>
+                                                                </div>
+                                                                <div class="col-lg-6 col-md-6 col-sm-12 form-floating mb-3">
+                                                                    <input class="form-control" id="caudal_permanente" name="caudal_permanente" type="text" placeholder=""/>
+                                                                    <label for="caudal_permanente" class="form-label mx-3">Caudal Permanente (Q3)</label>
+                                                                </div>
+                                                                <div class="col-lg-6 col-md-6 col-sm-12 form-floating mb-3">
+                                                                    <input class="form-control" id="rango_medicion" name="rango_medicion" type="text" placeholder=""/>
+                                                                    <label for="rango_medicion" class="form-label mx-3">Rango Medición (R)</label>
+                                                                </div>
+                                                                <!-- Submit Button-->
+                                                                <div class="d-grid"><button class="btn btn-success btn-lg" type="submit">Enviar</button></div>
+                                                            </form>
+                                                        </div>
+                                                        
                                                         <div id="loader" class="loader"></div> 
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-lg-6 col-sm-12 pt-2">
+                                        {% endif %}
+                                        <div class="col-lg-12 col-md-12 col-sm-12 pt-2">
                                             <div class="bg-light rounded p-4 shadow">
                                                 <section>
                                                     <div class="text-center">
+
                                                         {% if rutas_pdf %}
                                                             <div class="align-self-center py-1">
                                                                 <img src="{{ url_for('static', path='assets/images/logo-sena.ico') }}" width="40px" height="43px" alt="">
