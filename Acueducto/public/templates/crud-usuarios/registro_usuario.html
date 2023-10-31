@@ -6,6 +6,39 @@
   {% block meta %}
   {% include 'meta.html' %}
   {% endblock %}
+  <script>
+    function validarFormulario() {
+      var nom_usuario = document.getElementById("nom_usuario").value.trim();
+      var apellido_usuario = document.getElementById("apellido_usuario").value.trim();
+      var tipo_doc = document.getElementById("tipo_doc").value.trim();
+      var num_doc = document.getElementById("num_doc").value.trim();
+      var correo = document.getElementById("correo").value.trim();
+      var municipio = document.getElementById("municipio").value.trim();
+      var direccion = document.getElementById("direccion").value.trim();
+      var empresa = document.getElementById("empresa").value.trim();
+      var rol = document.getElementById("rol").value.trim();
+      var contrasenia = document.getElementById("contrasenia").value.trim();
+    
+      if (
+        nom_usuario === "" ||
+        apellido_usuario === "" ||
+        tipo_doc === "" ||
+        num_doc === "" ||
+        correo === "" ||
+        municipio === "" ||
+        direccion === "" ||
+        empresa === "" ||
+        rol === "" ||
+        contrasenia === ""
+      ) {
+        alert("Por favor, ingresa valores válidos en todos los campos.");
+        return false;
+      }
+    
+      return true;
+    }
+    </script>
+    
 </head>
 <style>
   #tipo_doc,
@@ -14,6 +47,7 @@
     cursor: pointer;
   }
 </style>
+
 
 <body class="dashboard-analytics admin-header">
   <header>
@@ -47,7 +81,7 @@
                   </div>
                   {% endif %}
                   <h2 class="text-center mb-4 py-3">Registro Usuario</h2>
-                  <form action="/crearUser" method="POST" id="registroForm" class="row">
+                  <form  id="registroForm" class="row" onsubmit="return validarFormulario()">
                     <!-- Agregamos action y method para enviar datos al servidor -->
                     <div class="form-group  col-lg-6 col-md-6 col-sm-12 mb-3">
                       <label for="nom_usuario">Nombres</label>
@@ -120,13 +154,14 @@
                       <label for="contrasenia">Contraseña:</label>
                       <input type="password" class="form-control" name="contrasenia" id="contrasenia" required>
                     </div>
+                    <div class="text-center mt-2 ">
+                      <a href="/index"  class="btn btn-danger">Cancelar</a>
+                      <button type="submit" class="btn btn-success" onclick="insertUser()">Registrar</button>
+                    </div>
+                    
                   </form>
-                  <div class="text-center mt-2 ">
-                    <form action="/usuarios" method="POST">
-                      <button type="submit" class="btn btn-danger">Cancelar</button>
-                      <button type="button" class="btn btn-success" onclick="insertUser()">Registrar</button>
-                    </form>
-                  </div>
+                  
+                  
                 </div>
               </div>
               <br>
@@ -144,74 +179,74 @@
     {% block scripts %}
     {% include 'scripts.html' %}
     {% endblock %}
-    <script>
+    <!-- <script>
       function insertUser(){
         document.getElementById("registroForm").submit();
         document.getElementById("registroForm").reset();
       }
-    </script>
-    <!-- <script>
-      function enviarFormulario() {
-        // Obtén los valores del formulario
-        var nomUsuario = document.getElementById('nom_usuario').value;
-        var apellidoUsuario = document.getElementById('apellido_usuario').value;
-        var tipoDoc = document.getElementById('tipo_doc').value;
-        var numDoc = document.getElementById('num_doc').value;
-        var correo = document.getElementById('correo').value;
-        var municipio = document.getElementById('municipio').value;
-        var direccion = document.getElementById('direccion').value;
-        var empresa = document.getElementById('empresa').value;
-        var rol = document.getElementById('rol').value;
-        var contrasenia = document.getElementById('contrasenia').value;
-
-        if (!nomUsuario || !apellidoUsuario || !tipoDoc || !numDoc || !correo || !municipio || !direccion || !empresa ||
-          !rol || !contrasenia) {
-          mostrarAlerta("Error", "Por favor, complete todos los campos.");
-          return;
-        }
-
-        var formData = {
-          nom_usuario: nomUsuario,
-          apellido_usuario: apellidoUsuario,
-          tipo_doc: tipoDoc,
-          num_doc: numDoc,
-          correo: correo,
-          municipio: municipio,
-          direccion: direccion,
-          empresa: empresa,
-          rol: rol,
-          contrasenia: contrasenia
-        };
-
-        $.ajax({
-          url: '/crearUser',
-          type: 'POST',
-          data: formData,
-          success: function (response) {
-            mostrarAlerta("Éxito", "Usuario registrado exitosamente");
-            limpiarFormulario();
-          },
-          error: function (error) {
-            mostrarAlerta("Error",
-              "Hubo un error al registrar el usuario es posible que el documento o el correo ya exista.");
-          }
-        });
-      }
-
-      function limpiarFormulario() {
-        document.getElementById("registroForm").reset();
-      }
-
-      //funcion  para mostrar alert
-      function mostrarAlert(message, type = "info") {
-        Swal.fire({
-          title: "Aviso",
-          text: message,
-          icon: type,
-        });
-      }
     </script> -->
 
+    <script >
+      //funcion para valirdar que se creo
+  
+      async function enviarSolicitud(formData){
+        try {
+          const reponse = await fetch("/crearUser", {
+            method: "POST",
+            body: formData,
+          });
+  
+          console.log(reponse.status);
+          if(reponse.status === 201){
+            const data = await reponse.json();
+            return {success: true, data};
+  
+          } else {
+            const errorData = await reponse.json();
+            throw new Error(errorData.detail || "Error desconocido" );
+          }
+  
+        } catch (error) {
+          throw error;
+        }
+      }
+  
+      //funcion  para mostrar alert
+      function mostrarAlert(message, type = "info"){
+        Swal.fire({
+            title: "Aviso",
+            text: message,
+            icon: type,
+        });
+      } 
+  
+    document.getElementById("registroForm").addEventListener("submit", async function (event){
+      event.preventDefault();
+      console.log("SI ENTRAMOS PAPI");
+      try {
+        const formData = new FormData(this);
+  
+        const response = await enviarSolicitud(formData);
+  
+        if (response.success) {
+          mostrarAlert("Usuario regsitrado con exito.", "success");
+  
+          //Limpiamos el form
+          this.reset();
+  
+          document.getElementById("nom_usuario").focus();
+          
+          
+          setTimeout(function() {
+            window.location.href = "/form_registro_usuario";
+          }, 3000); // segundos
+        }
+      } catch (error) {
+        mostrarAlert(`Error al registrar el usuario: ${error.message}`, "error");
+      }
+    });
+  
+    </script>
 </body>
 
 </html>
