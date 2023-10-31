@@ -99,13 +99,13 @@
     border-radius: 100%;
     padding: 1em;
     background: #00af00;
-    transition: 1.3s ease-in-out;
+    transition: .3s ease-in-out;
     z-index: 1000;
   }
 
   .btnGoDown:hover {
     background: #00bf00;
-    animation: goDown 1s ease-in-out 0.5s infinite alternate;
+    animation: goDown 1s ease-in-out .5s infinite alternate;
   }
 
   @keyframes goDown {
@@ -144,7 +144,7 @@
         <div class="container-xl bg-light shadow rounded">
           <div class="layout-top-spacing">
             <div class="">
-              <a href="#act">
+              <a href="#" onclick="goDown()">
                 <div class="btnGoDown">
                   <img src="{{ url_for('static', path='assets/images/icons8-abajo-50.png') }}" width="26px" alt="">
                 </div>
@@ -220,7 +220,7 @@
                       </select>
                     </div>
                   </form>
-                  <div class="form-group  col-lg-12 col-md-12 col-sm-12">
+                  <div class="form-group col-lg-12 col-md-12 col-sm-12">
                     {% if viviendas %}
                     <label for="viviendas">Viviendas:</label>
                     <div class="row d-flex">
@@ -271,7 +271,10 @@
                     <button type="button" data-bs-toggle="modal" data-bs-target="#modalAddVivienda"
                       class="btn btn-info  my-2">AGREGAR VIVIENDA</button>
                     {% endif %}
-                    <a href="/usuarios" class="btn btn-danger my-2">CANCELAR</a>
+                    <form action="/usuarios" method="get">
+                      <input type="hidden" name="id_empresa" value="{{ user.empresa }}">
+                      <button type="submit" class="btn btn-danger my-2">CANCELAR</button>
+                    </form>
                   </div>
                 </div>
               </div>
@@ -399,8 +402,7 @@
               </div>
               <div class="form-group">
                 <label for="numPersonas">Número de residentes</label>
-                <input type="number" class="form-control" name="numPersonas" id="numPersonas" required max="2147483647"
-                  min="0">
+                <input type="number" class="form-control" name="numPersonas" id="numPersonas" required max="2147483647" min="0">
               </div>
             </div>
           </div>
@@ -450,21 +452,33 @@
     stateElement.addEventListener('change', (event) => {
         const selectedValue = event.target.value;
         stateChanged = true;
-        console.log(`Seleccionaste: ${selectedValue}`);
     });
     const rolElement = document.getElementById('rol');
     rolElement.addEventListener('change', (event) => {
         const selectedValue = event.target.value;
         rolChanged = true;
-        console.log(`Seleccionaste: ${selectedValue}`);
     });
     const typeDocElement = document.getElementById('tipo_doc');
     typeDocElement.addEventListener('change', (event) => {
         const selectedValue = event.target.value;
         typeDocChanged = true;
-        console.log(`Seleccionaste: ${selectedValue}`);
     });
-
+    let clickBtnGoDown = false;
+    function goDown() {
+      window.scrollTo({
+        top: document.body.scrollHeight,
+        behavior: 'smooth'
+      });
+      let img = document.querySelector('.btnGoDown img');
+      if (clickBtnGoDown) {
+        img.style.transform = 'rotate(0deg)';
+        clickBtnGoDown = false;
+      }else{
+        img.style.transform = 'rotate(180deg)';
+        clickBtnGoDown = true;
+      }
+      console.log(clickBtnGoDown);
+    }
   </script>
   <!-- BEGIN SCRIPTS -->
   {% block scripts %}

@@ -216,7 +216,6 @@ def createUsuario(
     contrasenia: str,
     token: str,
     db: Session,
-
 ):
 
     empresa_existente = db.query(Empresa).filter(
@@ -292,11 +291,9 @@ def createUsuario(
                     db.refresh(usuario_db)
 
                     # falta mostra el mensaje para cuando se almacene correctamnete el usuario
-                    """ alerta = {
-                        "mensaje": "creado correctamente",
-                        "color": "success",
-                    } """
+
                     print("Usuario creado exitosamente")
+
                     return RedirectResponse(url="/usuarios", status_code=status.HTTP_201_CREATED)
                 except Exception as e:
                     db.rollback()  # Realiza un rollback en caso de error para deshacer cambios
@@ -389,6 +386,7 @@ def EditarUsuarios(
     id_usuario: str,
     token: str,
     db: Session,
+    id_empresa: str,
 ):
     if token:
         token_valido = verificar_token(token, db)
@@ -405,7 +403,7 @@ def EditarUsuarios(
                 response = template.TemplateResponse(
                     "crud-usuarios/EditarUsuario.html",
                     {"request": request, "user": user,
-                        "usuario": usuario, "viviendas": viviendas},
+                        "usuario": usuario, "viviendas": viviendas, "id_empresa": id_empresa},
                 )
                 response.headers.update(headers)
                 return response

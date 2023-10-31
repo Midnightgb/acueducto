@@ -122,7 +122,7 @@ def insertarEmpresa(
                 try:
                     db.add(empresa_db)
                     db.commit()
-                    db.refresh(empresa_db)
+                    db.refresh(empresa_db) 
                     return JSONResponse(status_code=201, content={"mensaje": "Empresa creada exitosamente"})
                 except Exception as e:
                     db.rollback()

@@ -1209,8 +1209,12 @@ def create_usuario(
         token,
         db,
     )
-    return respuesta
 
+    if isinstance(respuesta, RedirectResponse):
+        return RedirectResponse(url="/usuarios", status_code=status.HTTP_201_CREATED)
+
+    if isinstance(respuesta, HTTPException):
+        raise respuesta
 
 # --- FUNCION PARA VERIFICAR CAMPOS EN LA CREACION DE USUARIOS
 
@@ -1247,8 +1251,9 @@ def Editar_Usuarios(
     id_usuario: str = Form(...),
     token: str = Cookie(None),
     db: Session = Depends(get_database),
+    id_empresa: str = Form(None)
 ):
-    respuesta = EditarUsuarios(request, id_usuario, token, db)
+    respuesta = EditarUsuarios(request, id_usuario, token, db, id_empresa)
     return respuesta
 
 
