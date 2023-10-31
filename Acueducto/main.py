@@ -1,4 +1,4 @@
-from fastapi import HTTPException, Depends, Cookie, Response
+from fastapi import HTTPException, Depends, Cookie, Response, Body
 from fastapi import HTTPException
 from typing import Optional
 from cruds.EmpresasCrud import *
@@ -25,7 +25,7 @@ from models import Empresa, Servicio, Usuario, Token, Vivienda
 import bcrypt
 from database import get_database
 from funciones import get_datos_empresa
-from typing import Union
+from typing import Union, List
 from sqlalchemy import and_
 
 
@@ -508,7 +508,10 @@ def obtenerDatosReunion(
         headers = elimimar_cache()
         if usuario:
             reuniones = obtenerReuAdmin(id_empresa, db)
+            empresa = db.query(Empresa).filter(Empresa.id_empresa == id_empresa).first()
             if reuniones:
+                #return {"reuniones": reuniones}
+                    
                 response = template.TemplateResponse(
                     "crud-reuniones/consultar_reunion.html",
                     {
@@ -516,6 +519,7 @@ def obtenerDatosReunion(
                         "reuniones": reuniones,
                         "empresas": empresas,
                         "usuario": usuario,
+                        "empresa":empresa,
                     },
                 )
                 response.headers.update(headers)
@@ -683,6 +687,22 @@ def calcularmCuorum(request: Request, token: str = Cookie(None), db: Session = D
     cuorumCalculado = calcularCuorum(
         db, is_token_valid, request, cantidadAsistentes, reunion_1)
     return cuorumCalculado
+
+@app.post("/listaAsistentes")
+async def recibirDatos(request:Request, db: Session = Depends(get_database)):
+    datos = await request.json()
+
+    
+    id_reunion = datos.get("id_reunion")
+    print(id_reunion)
+
+    if "datos" in datos:
+        for id_usuario in datos["datos"]:
+            insertarDatosReunion(id_usuario,id_reunion,db)
+    
+            
+
+
 
 # VERIFICACION DEL CUORUM
 

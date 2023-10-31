@@ -12,6 +12,9 @@ START TRANSACTION;
 SET time_zone = "+00:00";
 
 
+
+
+
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
@@ -67,6 +70,7 @@ CREATE TABLE `empresas` (
   `create_at` timestamp NULL DEFAULT current_timestamp(),
   `update_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 
 --
 -- Volcado de datos para la tabla `empresas`
@@ -403,6 +407,16 @@ INSERT INTO `usuarios` (`id_usuario`, `rol`, `empresa`, `nom_usuario`, `apellido
 ('XU8z2R0foWHrVQDg8pY28aaNwtZnRs', 'Suscriptor', 48, 'Esteban    ', 'Mesa', 'asdkasjdja@playcell.fun', 'CC', '1007212784', 'Calle 8', 'Pereira', '$2b$12$SrdPmZxYDM3y0EerRx6/5eeyHJRMCfRps5udch3Nu5utnQi7QFaqO', 'Activo', '2023-10-03 21:39:53', '2023-10-03 22:28:09'),
 ('yT2ioL9UZhCEhFpnJz5K0VhpPyIdY5', 'Tecnico', 2, 'Windows  ', 'Ro', 'aliasrastastas@gmail.com', 'CC', '108809', 'calle 7744', 'Pereira ', '$2b$12$JXt6u7141/DBC7Rm.ZG58ubW/Wgi7NG4iylsyWOtDVTI1ZFKjtdbW', 'Activo', '2023-09-17 13:36:56', '2023-09-28 18:48:35');
 
+CREATE TABLE listaAsistencia (
+  id_asistencia INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  id_usuario CHAR(30),
+  id_reunion INT UNSIGNED,
+  asistencia TINYINT DEFAULT 0,
+  FOREIGN KEY (id_usuario) REFERENCES usuarios (id_usuario),
+  FOREIGN KEY (id_reunion) REFERENCES reuniones (id_reunion)
+);
+
+-- SELECT usuarios.id_usuario, usuarios.nom_usuario, usuarios.apellido_usuario, usuarios.tipo_doc, usuarios.num_doc, usuarios.direccion, usuarios.correo, IFNULL(listaAsistencia.asistencia, 0) AS asistencia FROM usuarios LEFT JOIN listaAsistencia ON usuarios.id_usuario = listaAsistencia.id_usuario LEFT JOIN reuniones ON listaAsistencia.id_reunion = reuniones.id_reunion WHERE usuarios.empresa = 35 AND usuarios.rol = 'Suscriptor' AND (reuniones.id_reunion = 128 OR reuniones.id_reunion IS NULL);
 --
 -- Índices para tablas volcadas
 --

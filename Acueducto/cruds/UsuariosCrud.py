@@ -21,8 +21,7 @@ from sqlalchemy.orm import Session
 from funciones import *
 from cruds.EmpresasCrud import *
 from cruds.ReunionesCrud import obtenerReuAdmin
-from models import Usuario, Reunion
-from models import Usuario, Reunion
+from models import Usuario, Reunion,ListaAsistencia
 
 SUPER_ADMIN = "SuperAdmin"
 ADMIN = "Admin"
@@ -297,11 +296,11 @@ def createUsuario(
                         "color": "success",
                     } """
                     print("Usuario creado exitosamente")
-                    return RedirectResponse(url="/usuarios", status_code=status.HTTP_201_CREATED)
+                    return {"mensaje": "Usuario creado exitosamente"}
                 except Exception as e:
                     db.rollback()  # Realiza un rollback en caso de error para deshacer cambios
                     return {"mensaje": e}
-            return {"mensaje": "Usuario creado exitosamente"}
+            
         else:
             raise HTTPException(status_code=203, detail="No autorizado")
     else:
@@ -555,6 +554,7 @@ def obtenerSuscriptoresEmpresa(
                     & (Usuario.empresa == usuario.empresa)
                 ).all()
             )
+
             reunion_select = db.query(Reunion).filter(
                 Reunion.id_reunion == reunion_1).first()
             headers = elimimar_cache()
