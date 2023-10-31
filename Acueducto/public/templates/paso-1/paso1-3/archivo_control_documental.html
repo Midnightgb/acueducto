@@ -25,9 +25,25 @@
                     <div class="container">
                         <div class="row g-5 align-items-end">
                             <section class="py">
-                                <div class="container px-5">
+                                <div class="container px-5">     
+                                    
+                                    <div class="row">
+                                        <div class="col-lg-12 col-md-12 col-sm-12 pt-2">
+                                            <div class="bg-light rounded p-4 shadow">
+                                                <section>
+                                                    <h4>Estatutos</h4>
+                                                    <p>Un contrato de condiciones uniformes para el servicio de acueducto es un acuerdo legal entre un proveedor de agua y un usuario. Define los términos y responsabilidades de ambas partes para asegurar una relación justa y clara. Incluye detalles como la identificación de las partes, descripción del servicio, obligaciones del proveedor y usuario, tarifas, medición del consumo, suspensión del servicio y duración del contrato. Estos contratos pueden variar, pero su objetivo es establecer un marco legal para la prestación del servicio, protegiendo los derechos de ambas partes.</p>
+                                                </section>
+                                                <section class="mt-4">
+                                                    <h4>Contrato de condiciones uniformes</h4>
+                                                    <p>Un contrato de condiciones uniformes para el servicio de acueducto es un acuerdo legal entre un proveedor de agua y un usuario. Su propósito es asegurar una relación justa y clara, estableciendo los derechos y responsabilidades de ambas partes. Los elementos comunes incluyen la identificación de las partes, la descripción del servicio (suministro de agua potable, caudal, calidad del agua, etc.), las obligaciones del proveedor (mantener infraestructura, cumplir estándares) y del usuario (pago puntual, uso adecuado del agua, notificación de problemas). También abarca tarifas, métodos de pago, medición y facturación del consumo, suspensión del servicio por incumplimiento y duración del contrato con posibilidad de renovación. Los detalles específicos pueden variar según el proveedor y la jurisdicción.</p>
+                                                </section>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
                                     <!-- Contact form-->
-                                    .<div class="row">
+                                    <div class="row">
                                         {% if usuario.rol == "SuperAdmin" %}
                                         <div class="col-lg-12 col-md-12 col-sm-12 mt-3">
                                             <label for="selectEmpresa" class="form-label">Seleciona la empresa que quieres gestionar: </label>
@@ -44,11 +60,11 @@
                                         </div>
                                         {% endif %}
                                     </div>
-                                    <div class="row">
-                                        
+                                    <div class="row">                                        
                                         {% if usuario.rol == "Admin" %}
                                         <div class="col-lg-12 col-md-12 col-sm-12 pt-2">
                                             <div class="bg-light rounded p-4 ">
+                                                {% if visualizacion_form %}
                                                 <div class="text-center mb-5">
                                                     
                                                     <div class="align-self-center py-1">
@@ -127,6 +143,9 @@
                                                         <div id="loader" class="loader"></div> 
                                                     </div>
                                                 </div>
+                                                {% else %}
+                                                    <p>Formulario enviado correctamente. Gracias.</p>
+                                                {% endif %}                                                
                                             </div>
                                         </div>
                                         {% endif %}

@@ -148,7 +148,6 @@ def pagConceptosBasicos(
     else:
         return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
 
-
 # ESTATUTOS
 @app.get("/estatutos", response_class=HTMLResponse, tags=["Operaciones Documentos"])
 def pagEstatutos(
@@ -214,7 +213,7 @@ def pagEstatutos(
     else:
         return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
 
-
+'''
 # CONTRATO DE CONDICIONES UNIFORME
 @app.get("/contrato_condiciones", response_class=HTMLResponse, tags=["Operaciones Documentos"])
 def pagContrato_de_condiciones_uniformes(
@@ -280,6 +279,7 @@ def pagContrato_de_condiciones_uniformes(
     else:
         return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
 
+'''
 
 # INVITACION A LA ASAMBLEA
 @app.get("/invitacion_asamblea", response_class=HTMLResponse, tags=["Operaciones Documentos"])
@@ -796,7 +796,7 @@ def pagEleccion(
     else:
         return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
 
-
+'''
 # APROBACION ESTATUTOS
 @app.get("/aprobacion_estatutos", response_class=HTMLResponse, tags=["Operaciones Documentos"])
 def pagAprobacion_estatutos(
@@ -833,6 +833,7 @@ def pagAprobacion_estatutos(
     else:
         return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
 
+'''
 
 # ELECCION DE LA JUNTA
 @app.get("/eleccion_junta_administradora", response_class=HTMLResponse, tags=["Operaciones Documentos"])
@@ -1123,6 +1124,7 @@ async def una_ruta(token: str = Cookie(None), db: Session = Depends(get_database
 
 
 # GENERAR DOCUMENTOS PERSONALIZADOS
+visualizacion_form = True
 @app.post("/generar_docx_P01_F_03/")
 def generar_docx_P01_F_03(
     request: Request,
@@ -1143,6 +1145,7 @@ def generar_docx_P01_F_03(
     caudal_permanente: str = Form(...),
     rango_medicion: str = Form(...)
 ):
+    global visualizacion_form
     respuesta = generarDocx_P01_F_03(
         request,
         token,
@@ -1162,6 +1165,7 @@ def generar_docx_P01_F_03(
         caudal_permanente,
         rango_medicion,
     )
+    visualizacion_form = False
     return respuesta
 
 
