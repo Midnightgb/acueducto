@@ -1,4 +1,4 @@
-<nav class="pcoded-navbar shadow pt-3">
+<nav class="pcoded-navbar shadow pt-3" style="position: fixed;">
     <div class="navbar-wrapper  ">
         <div class="navbar-content scroll-div">
 
@@ -281,7 +281,7 @@
 <!-- [ navigation menu ] end -->
 
 <!-- [ Header ] start -->
-<header class="navbar pcoded-header navbar-expand-lg navbar-light header-dark" style="background: whitesmoke;">
+<header class="navbar pcoded-header navbar-expand-lg navbar-light" style="background: whitesmoke; position: fixed; margin-bottom: 20rem;">
 
     <div class="m-header">
         <a class="mobile-menu" id="mobile-collapse" href="#!"><span></span></a>
@@ -305,8 +305,8 @@
                     <a class="text-dark" href="/registro_empresa" target="_self">Registrar empresa</a>
                 </li>
                 <li class="nav-item">
-                    <form action="/usuarios" method="post" class="btnUsuarios">
-                        <button class="btnUsuarios text-dark" type="submit" target="_self">Usuarios</button>
+                    <form action="/usuarios" method="post" id="usersList">
+                        <a class="text-dark" onclick="users()" href="#" target="_self">Usuarios</button>
                     </form>
                 </li>
                 <li class="nav-item">
@@ -323,8 +323,8 @@
                     <a class="text-dark" href="/form_registro_usuario" target="_self">Registrar usuario</a>
                 </li>
                 <li class="nav-item">
-                    <form action="/usuarios" method="post" class="btnUsuarios">
-                        <button class="btnUsuarios text-dark" type="submit" target="_self">Usuarios</button>
+                    <form action="/usuarios" method="post" id="usersList">
+                        <a class="text-dark" onclick="users()" href="#" target="_self">Usuarios</button>
                     </form>
                 </li>
                 <li class="nav-item">
