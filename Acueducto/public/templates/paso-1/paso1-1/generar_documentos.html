@@ -63,8 +63,7 @@
                                     <div class="row">                                        
                                         {% if usuario.rol == "Admin" %}
                                         <div class="col-lg-12 col-md-12 col-sm-12 pt-2">
-                                            <div class="bg-light rounded p-4 ">
-                                                {% if visualizacion_form %}
+                                            <div class="bg-light rounded p-4 shadow">
                                                 <div class="text-center mb-5">
                                                     
                                                     <div class="align-self-center py-1">
@@ -77,7 +76,7 @@
                                                 <div class="row gx-5 justify-content-center">
                                                     <div class="col-lg-12 col-xl-12">
                                                         <div >
-                                                            <form id="miFormulario" action="/generar_docx_P01_F_03/" method="POST" class="row form">
+                                                            <form id="miFormulario" action="/generar_docx/" method="POST" class="row form">
                                                                 <div class="col-lg-6 col-md-6 col-sm-12 mb-3  form-floating">
                                                                     <input class="form-control" id="nit" name="nit" type="text" placeholder="" required/>
                                                                     <label for="nit" class="form-label mx-3">NIT</label>
@@ -142,10 +141,7 @@
                                                         
                                                         <div id="loader" class="loader"></div> 
                                                     </div>
-                                                </div>
-                                                {% else %}
-                                                    <p>Formulario enviado correctamente. Gracias.</p>
-                                                {% endif %}                                                
+                                                </div>                                            
                                             </div>
                                         </div>
                                         {% endif %}
@@ -162,6 +158,24 @@
                                                             <p class="lead fw-normal text-muted mb-0 pb-3">Estos son los documentos generados, puedes editarlos si deseas llenando el formulario nuevamente </p>
                                                             {% for ruta in rutas_pdf %}
                                                                 <iframe src="{{ url_for('static', path=ruta) }}" style="width: 100%; height: 25em; border: none;"></iframe>
+                                                                <div class="row pt-2 pb-2">
+                                                                    <div class="col-6">
+                                                                        <div class="d-grid">
+                                                                            <a href="{{ url_for('static', path=ruta) }}" download="Documento.pdf" class="btn btn-success btn-lg">Descargar Documento</a>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-6">
+                                                                        <div class="d-grid">
+                                                                            {% if loop.index == 1 %}
+                                                                                <a href="../../../dist/ArchivosDescarga/P01-F-03_Estatutos_Asociacion_Suscriptores.docx"  download="Estatutos_Asociacion_Suscriptores.docx" class="btn btn-success btn-lg">Descargar Formato</a>
+                                                                            {% elif loop.index == 2 %}
+                                                                                <a href="../../../dist/ArchivosDescarga/P01-F-02_Formato_Contrato_Condiciones_Uniformes.docx" download="Formato_Contrato_Condiciones_Uniformes.docx" class="btn btn-success btn-lg">Descargar Formato</a>
+                                                                            {% elif loop.index == 3 %}
+                                                                                <a href="ruta_especial_2" class="btn btn-success btn-lg">Descargar Formato</a>
+                                                                            {% endif %}
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
                                                             {% endfor %}
                                                         {% else %}
                                                             <div class="align-self-center py-1">
@@ -171,7 +185,6 @@
                                                             <p class="lead fw-normal text-muted mb-0 pb-3">Estos son los documentos que se van modificar</p>
                                                             <iframe src="{{ url_for('static', path='ArchivosDescarga/P01-F-02_Formato_Contrato_Condiciones_Uniformes.pdf') }}" style="width: 100%; height: 25em; border: none;"></iframe>
                                                             <iframe src="{{ url_for('static', path='ArchivosDescarga/P01-F-03_Estatutos_Asociación_Suscriptores.pdf') }}" style="width: 100%; height: 25em; border: none; "></iframe>
-                                                            <iframe src="{{ url_for('static', path='ArchivosDescarga/P01-F-06_ActaConstitución.pdf') }}" style="width: 100%; height: 25em; border: none;"></iframe>
                                                         {% endif %}
                                                     </div>
                                                 </section>
@@ -196,7 +209,12 @@
         </div>
         
 
-
+    <script>
+        document.getElementById('miFormulario').addEventListener('submit', function(event) {
+            var botonEnviar = this.querySelector('button[type="submit"]');
+            botonEnviar.disabled = true;
+        });
+    </script>
         
 
     <!-- BEGIN SCRIPTS -->
