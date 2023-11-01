@@ -115,7 +115,7 @@
                     </div>
                     <div class="pcoded-content">
                         <div class="table-responsive">
-                          <table class="table table-striped table-hover	 table-borderless table-success align-middle responsive" id="dataUsers" class="display" >
+                          <table class="table table-striped table-hover	 table-borderless align-middle responsive" id="dataUsers" class="display" >
                               <thead>
                                         <tr>
                                             <th scope="col">Nombre</th>
@@ -135,12 +135,27 @@
                                                 <td>{{suscrip.tipo_doc}}:{{suscrip.num_doc}}</td>
                                                 <td>{{suscrip.direccion}}</td>
                                                 <td>{{suscrip.correo}}</td>
-                                                <td>
-                                                    <input class="ml-4" type="checkbox" id="miCheckbox" name="miCheckbox" value= '{{ suscrip.id_usuario }}' />
-                                                </td>
+                                                {% set checked = False %}
+                                                {% if asistentes: %}
+                                                    {% for asis in asistentes %}
+                                                        {% if asis.id_usuario == suscrip.id_usuario %}
+                                                            {% set checked = True%}
+                                                        {% endif %}
+                                                    {% endfor %}
+
+                                                {% endif %}
+                                                {% if checked : %}
+                                                    <td>
+                                                        <input class="ml-4" type="checkbox" id="miCheckbox" name="miCheckbox" value= '{{ suscrip.id_usuario }}' checked />
+                                                    </td>
+                                                {% else %}
+                                                    <td>
+                                                        <input class="ml-4" type="checkbox" id="miCheckbox" name="miCheckbox" value= '{{ suscrip.id_usuario }}' />
+                                                    </td>
+                                                {% endif %}
                                             </tr>
-                                            {%endfor%} 
-                                        {%endif%}
+                                            {% endfor %} 
+                                        {% endif %}
                                     </tbody>
                           </table>
                         </div>

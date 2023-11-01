@@ -555,15 +555,20 @@ def obtenerSuscriptoresEmpresa(
                 ).all()
             )
 
+            
+
             reunion_select = db.query(Reunion).filter(
                 Reunion.id_reunion == reunion_1).first()
+
+            
             headers = elimimar_cache()
             reuniones = obtenerReuAdmin(usuario.empresa, db)
             if query_usuarios:
+                query_asistentes = db.query(ListaAsistencia).filter(ListaAsistencia.id_reunion == reunion_1).all()
                 response = template.TemplateResponse(
                     "paso-1/paso1-2/llamado_lista.html",
                     {"request": request, "suscriptores": query_usuarios, "usuario": usuario,
-                        "reuniones": reuniones, "reunionSelect": reunion_select},
+                        "reuniones": reuniones, "reunionSelect": reunion_select,"asistentes":query_asistentes},
                 )
                 response.headers.update(headers)
                 return response
