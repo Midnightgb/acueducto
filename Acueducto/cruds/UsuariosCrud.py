@@ -565,10 +565,11 @@ def obtenerSuscriptoresEmpresa(
             reuniones = obtenerReuAdmin(usuario.empresa, db)
             if query_usuarios:
                 query_asistentes = db.query(ListaAsistencia).filter(ListaAsistencia.id_reunion == reunion_1).all()
+                lista_combinada = zip(query_usuarios,query_asistentes)
                 response = template.TemplateResponse(
                     "paso-1/paso1-2/llamado_lista.html",
-                    {"request": request, "suscriptores": query_usuarios, "usuario": usuario,
-                        "reuniones": reuniones, "reunionSelect": reunion_select,"asistentes":query_asistentes},
+                    {"request": request, "lista_combinada": lista_combinada, "usuario": usuario,
+                        "reuniones": reuniones, "reunionSelect": reunion_select},
                 )
                 response.headers.update(headers)
                 return response

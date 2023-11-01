@@ -83,7 +83,7 @@
                             {%endif%}
                         </div>
                         <div class="col-6 form-group">
-                            {%if suscriptores: %}
+                            {%if lista_combinada %}
                             <form action="/calcularCuorum" method="POST" id="Calcular">
                                 <div class="col form-group">
                                     <label class="mt-2" for="">cuorum</label>
@@ -127,34 +127,27 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {% if suscriptores: %}
-                                            {% for suscrip in suscriptores %}
-                                            <tr>
-                                                <td>{{suscrip.nom_usuario}}</td>
-                                                <td>{{suscrip.apellido_usuario}}</td>
-                                                <td>{{suscrip.tipo_doc}}:{{suscrip.num_doc}}</td>
-                                                <td>{{suscrip.direccion}}</td>
-                                                <td>{{suscrip.correo}}</td>
-                                                {% set checked = False %}
-                                                {% if asistentes: %}
-                                                    {% for asis in asistentes %}
-                                                        {% if asis.id_usuario == suscrip.id_usuario %}
-                                                            {% set checked = True%}
-                                                        {% endif %}
-                                                    {% endfor %}
-
-                                                {% endif %}
-                                                {% if checked : %}
-                                                    <td>
-                                                        <input class="ml-4" type="checkbox" id="miCheckbox" name="miCheckbox" value= '{{ suscrip.id_usuario }}' checked />
-                                                    </td>
-                                                {% else %}
-                                                    <td>
-                                                        <input class="ml-4" type="checkbox" id="miCheckbox" name="miCheckbox" value= '{{ suscrip.id_usuario }}' />
-                                                    </td>
-                                                {% endif %}
-                                            </tr>
-                                            {% endfor %} 
+                                        {% if lista_combinada %}
+                                            {% for item in lista_combinada %}
+                                                {% set suscrip = item[0] %}
+                                                {% set asis = item[1] %}
+                                                <tr>
+                                                    <td>{{ suscrip.nom_usuario }}</td>
+                                                    <td>{{ suscrip.apellido_usuario }}</td>
+                                                    <td>{{ suscrip.tipo_doc }}:{{ suscrip.num_doc }}</td>
+                                                    <td>{{ suscrip.direccion }}</td>
+                                                    <td>{{ suscrip.correo }}</td>
+                                                    {% if asis and asis.id_usuario == suscrip.id_usuario %}
+                                                        <td>
+                                                            <input class="ml-4" type="checkbox" id="miCheckbox" name="miCheckbox" value="{{ suscrip.id_usuario }}" checked />
+                                                        </td>
+                                                    {% else %}
+                                                        <td>
+                                                            <input class="ml-4" type="checkbox" id="miCheckbox" name="miCheckbox" value="{{ suscrip.id_usuario }}" />
+                                                        </td>
+                                                    {% endif %}
+                                                </tr>
+                                            {% endfor %}
                                         {% endif %}
                                     </tbody>
                           </table>
