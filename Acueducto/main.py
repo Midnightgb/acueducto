@@ -1210,11 +1210,7 @@ def create_usuario(
         db,
     )
 
-    if isinstance(respuesta, RedirectResponse):
-        return RedirectResponse(url="/usuarios", status_code=status.HTTP_201_CREATED)
-
-    if isinstance(respuesta, HTTPException):
-        raise respuesta
+    return respuesta
 
 # --- FUNCION PARA VERIFICAR CAMPOS EN LA CREACION DE USUARIOS
 

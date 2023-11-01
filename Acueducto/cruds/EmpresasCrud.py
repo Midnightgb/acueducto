@@ -7,7 +7,7 @@ from fastapi import (
     status,
     Depends,
     HTTPException,
-    Cookie,
+    Cookie, 
     Query,
 )
 from fastapi.responses import JSONResponse
