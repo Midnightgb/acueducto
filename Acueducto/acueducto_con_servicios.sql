@@ -26,6 +26,9 @@ SET time_zone = "+00:00";
 --
 -- Estructura de tabla para la tabla `documentos`
 --
+DROP DATABASE IF EXISTS acueducto;
+CREATE DATABASE acueducto;
+USE acueducto;
 
 CREATE TABLE `documentos` (
   `id_doc` int(11) NOT NULL,
