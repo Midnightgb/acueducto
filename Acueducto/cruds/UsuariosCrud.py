@@ -7,7 +7,7 @@ from fastapi.templating import Jinja2Templates
 
 from fastapi import (
     FastAPI,
-    Request, 
+    Request,
     Form,
     status,
     Depends,
@@ -189,8 +189,9 @@ def actualizarUsuario(
                     # Guarda los cambios en la base de datos
                     db.commit()
                     # Compara los valores actuales con los nuevos valores
-
-                    return RedirectResponse(url="/usuarios", status_code=status.HTTP_303_SEE_OTHER)
+                    raise HTTPException(status_code=307, detail="Redireccionando...", headers={
+                                        "Location": "/usuarios"})
+                    # return RedirectResponse(url="/usuarios", status_code=status.HTTP_303_SEE_OTHER)
 
                 else:
 
@@ -293,12 +294,12 @@ def createUsuario(
                     # falta mostra el mensaje para cuando se almacene correctamnete el usuario
 
                     print("Usuario creado exitosamente")
-                    return JSONResponse (status_code=201, content={"mensaje": "Usuario creado exitosamente"})
-                    
+                    return JSONResponse(status_code=201, content={"mensaje": "Usuario creado exitosamente"})
+
                 except Exception as e:
                     db.rollback()  # Realiza un rollback en caso de error para deshacer cambios
                     return HTTPException(status_code=500, detail="Error al registrar el usuario")
-            
+
         else:
             raise HTTPException(status_code=203, detail="No autorizado")
     else:
