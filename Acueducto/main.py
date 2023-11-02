@@ -213,7 +213,7 @@ def pagEstatutos(
     else:
         return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
 
-'''
+
 # CONTRATO DE CONDICIONES UNIFORME
 @app.get("/contrato_condiciones", response_class=HTMLResponse, tags=["Operaciones Documentos"])
 def pagContrato_de_condiciones_uniformes(
@@ -279,7 +279,7 @@ def pagContrato_de_condiciones_uniformes(
     else:
         return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
 
-'''
+
 
 # INVITACION A LA ASAMBLEA
 @app.get("/invitacion_asamblea", response_class=HTMLResponse, tags=["Operaciones Documentos"])
