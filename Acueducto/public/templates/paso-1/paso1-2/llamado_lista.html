@@ -83,7 +83,7 @@
                             {%endif%}
                         </div>
                         <div class="col-6 form-group">
-                            {%if lista_combinada %}
+                            {%if usuarios %}
                             <form action="/calcularCuorum" method="POST" id="Calcular">
                                 <div class="col form-group">
                                     <label class="mt-2" for="">cuorum</label>
@@ -127,29 +127,27 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {% if lista_combinada %}
-                                            {% for item in lista_combinada %}
+                                        {% if usuarios %}
+                                            {% for item in usuarios["suscriptor"] %}
                                                 {% set suscrip = item[0] %}
-                                                {% set asis = item[1] %}
+                                                {% set estado = item[1] %}
                                                 <tr>
                                                     <td>{{ suscrip.nom_usuario }}</td>
                                                     <td>{{ suscrip.apellido_usuario }}</td>
                                                     <td>{{ suscrip.tipo_doc }}:{{ suscrip.num_doc }}</td>
                                                     <td>{{ suscrip.direccion }}</td>
                                                     <td>{{ suscrip.correo }}</td>
-                                                    {% if asis and asis.id_usuario == suscrip.id_usuario %}
-                                                        <td>
+                                                    <td>
+                                                        {% if estado %}
                                                             <input class="ml-4" type="checkbox" id="miCheckbox" name="miCheckbox" value="{{ suscrip.id_usuario }}" checked />
-                                                        </td>
-                                                    {% else %}
-                                                        <td>
+                                                        {% else %}
                                                             <input class="ml-4" type="checkbox" id="miCheckbox" name="miCheckbox" value="{{ suscrip.id_usuario }}" />
-                                                        </td>
-                                                    {% endif %}
+                                                        {% endif %}
+                                                    </td>
                                                 </tr>
                                             {% endfor %}
                                         {% endif %}
-                                    </tbody>
+                                    </tbody>                                    
                           </table>
                         </div>
                         <!-- modal de confirmacion de eliminacio de empresa -->
