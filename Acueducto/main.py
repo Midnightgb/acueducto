@@ -1239,8 +1239,8 @@ def create_usuario(
         token,
         db,
     )
-    return respuesta
 
+    return respuesta
 
 # --- FUNCION PARA VERIFICAR CAMPOS EN LA CREACION DE USUARIOS
 
@@ -1277,8 +1277,9 @@ def Editar_Usuarios(
     id_usuario: str = Form(...),
     token: str = Cookie(None),
     db: Session = Depends(get_database),
+    id_empresa: str = Form(None)
 ):
-    respuesta = EditarUsuarios(request, id_usuario, token, db)
+    respuesta = EditarUsuarios(request, id_usuario, token, db, id_empresa)
     return respuesta
 
 
