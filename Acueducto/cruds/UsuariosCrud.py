@@ -7,7 +7,7 @@ from fastapi.templating import Jinja2Templates
 
 from fastapi import (
     FastAPI,
-    Request,
+    Request, 
     Form,
     status,
     Depends,
@@ -21,7 +21,8 @@ from sqlalchemy.orm import Session
 from funciones import *
 from cruds.EmpresasCrud import *
 from cruds.ReunionesCrud import obtenerReuAdmin
-from models import Usuario,Reunion
+from models import Usuario, Reunion
+from models import Usuario, Reunion
 
 SUPER_ADMIN = "SuperAdmin"
 ADMIN = "Admin"
@@ -119,19 +120,19 @@ def cambiarEstadoUsuario(
             if rol_usuario not in {SUPER_ADMIN, ADMIN}:
                 raise HTTPException(
                     status_code=403, detail="No cuenta con los permisos para cambiar el estado")
-            viviendas = db.query(Vivienda).filter(Vivienda.id_usuario == id_usuario).first()
-            
+            viviendas = db.query(Vivienda).filter(
+                Vivienda.id_usuario == id_usuario).first()
+
             # Cambia el estado del usuario a "Inactivo"
             usuario_a_cambiar = db.query(Usuario).filter_by(
                 id_usuario=id_usuario).first()
             if not usuario_a_cambiar:
                 raise HTTPException(
                     status_code=404, detail="Usuario no encontrado")
-            
+
             if viviendas:
                 raise HTTPException(
                     status_code=403, detail="No se puede cambiar el estado del usuario porque tiene viviendas asociadas")
-
 
             # CAMBIAR ESTADO ACTIVO O INACTIVO
             nuevoEstado = 'Inactivo'
@@ -215,7 +216,6 @@ def createUsuario(
     contrasenia: str,
     token: str,
     db: Session,
-
 ):
 
     empresa_existente = db.query(Empresa).filter(
@@ -226,11 +226,13 @@ def createUsuario(
             "color": "danger",
         }
         return RedirectResponse(url="/form_registro_usuario", status_code=status.HTTP_303_SEE_OTHER, alerta=alerta) """
-        raise HTTPException(status_code=403, detail="La empresa seleccionada, no existe.")
+        raise HTTPException(
+            status_code=400, detail="La empresa seleccionada, no existe.")
     campos = ['correo', 'num_doc']
     valores = [correo, num_doc]
     if verificar_existencia(campos, valores, db):
-        raise HTTPException(status_code=403, detail="El correo o el número de documento ya existe.")
+        raise HTTPException(
+            status_code=400, detail="El correo o el número de documento ya existe.")
 
     if token:
         is_valid = verificar_token(token, db)
@@ -289,20 +291,18 @@ def createUsuario(
                     db.refresh(usuario_db)
 
                     # falta mostra el mensaje para cuando se almacene correctamnete el usuario
-                    """ alerta = {
-                        "mensaje": "creado correctamente",
-                        "color": "success",
-                    } """
 
-                    return RedirectResponse(url="/form_registro_usuario", status_code=status.HTTP_303_SEE_OTHER)
+                    print("Usuario creado exitosamente")
+                    return JSONResponse (status_code=201, content={"mensaje": "Usuario creado exitosamente"})
+                    
                 except Exception as e:
                     db.rollback()  # Realiza un rollback en caso de error para deshacer cambios
-                    return {"mensaje": e}
-            return {"mensaje": "Usuario creado exitosamente"}
+                    return HTTPException(status_code=500, detail="Error al registrar el usuario")
+            
         else:
-            raise HTTPException(status_code=401, detail="No autorizado")
+            raise HTTPException(status_code=203, detail="No autorizado")
     else:
-        raise HTTPException(status_code=401, detail="No autorizado")
+        raise HTTPException(status_code=203, detail="No autorizado")
 
 
 def verificar_existencia(campos, valores, db):
@@ -313,7 +313,7 @@ def verificar_existencia(campos, valores, db):
 
 
 def consultarUsuarios(
-    request: Request, token: str, db: Session,id_empresa:str
+    request: Request, token: str, db: Session, id_empresa: str
 ):
     if token:
         token_valido = verificar_token(token, db)
@@ -326,14 +326,14 @@ def consultarUsuarios(
             headers = elimimar_cache()
             if rol_usuario in [SUPER_ADMIN, ADMIN]:
                 if rol_usuario == SUPER_ADMIN:
-                    empresas = obtenerEmpresas(token,db)
+                    empresas = obtenerEmpresas(token, db)
                     query_usuarios = db.query(Usuario, Empresa.nom_empresa).join(
                         Empresa, Usuario.empresa == Empresa.id_empresa
                     ).filter(
                         (Usuario.id_usuario != token_valido)
                         & (Usuario.empresa == id_empresa)
-                        
-                        )
+
+                    )
                 if rol_usuario == ADMIN:
                     empresas = None
                     query_usuarios = (
@@ -346,7 +346,7 @@ def consultarUsuarios(
                         )
                     )
                 if query_usuarios.all():
-                    #print(query_usuarios)
+                    # print(query_usuarios)
 
                     response = template.TemplateResponse(
                         "crud-usuarios/consultar_usuario.html",
@@ -354,7 +354,7 @@ def consultarUsuarios(
                             "request": request,
                             "usuarios": query_usuarios,
                             "usuario": usuario,
-                            "empresas":empresas,
+                            "empresas": empresas,
                         },
                     )
                     response.headers.update(headers)
@@ -366,7 +366,7 @@ def consultarUsuarios(
                             "request": request,
                             "usuarios": query_usuarios,
                             "usuario": usuario,
-                            "empresas":empresas,
+                            "empresas": empresas,
                         },
                     )
                     response.headers.update(headers)
@@ -386,6 +386,7 @@ def EditarUsuarios(
     id_usuario: str,
     token: str,
     db: Session,
+    id_empresa: str,
 ):
     if token:
         token_valido = verificar_token(token, db)
@@ -402,7 +403,7 @@ def EditarUsuarios(
                 response = template.TemplateResponse(
                     "crud-usuarios/EditarUsuario.html",
                     {"request": request, "user": user,
-                        "usuario": usuario, "viviendas": viviendas},
+                        "usuario": usuario, "viviendas": viviendas, "id_empresa": id_empresa},
                 )
                 response.headers.update(headers)
                 return response
@@ -525,22 +526,24 @@ def get_formUsuario(
 
 
 def obtenerUsuariosEmpresa(
-    db:Session
+    db: Session
 ):
-    query_usuarios = db.query(Usuario, Empresa.nom_empresa).join(Empresa, Usuario.empresa == Empresa.id_empresa).filter(Usuario.id_usuario != token_valido)
+    query_usuarios = db.query(Usuario, Empresa.nom_empresa).join(
+        Empresa, Usuario.empresa == Empresa.id_empresa).filter(Usuario.id_usuario != token_valido)
+
 
 def obtenerSuscriptoresEmpresa(
-    db:Session,
-    token_valido:str,
-    request:Request,
-    reunion_1:str,
+    db: Session,
+    token_valido: str,
+    request: Request,
+    reunion_1: str,
 ):
     if token_valido:
         empresas = None
         usuario = (
-                db.query(Usuario).filter(
-                    Usuario.id_usuario == token_valido).first()
-            )
+            db.query(Usuario).filter(
+                Usuario.id_usuario == token_valido).first()
+        )
         if usuario:
             query_usuarios = (
                 db.query(Usuario)
@@ -550,13 +553,15 @@ def obtenerSuscriptoresEmpresa(
                     & (Usuario.empresa == usuario.empresa)
                 ).all()
             )
-            reunion_select = db.query(Reunion).filter(Reunion.id_reunion == reunion_1).first()
+            reunion_select = db.query(Reunion).filter(
+                Reunion.id_reunion == reunion_1).first()
             headers = elimimar_cache()
-            reuniones = obtenerReuAdmin(usuario.empresa,db)
+            reuniones = obtenerReuAdmin(usuario.empresa, db)
             if query_usuarios:
                 response = template.TemplateResponse(
                     "paso-1/paso1-2/llamado_lista.html",
-                    {"request": request, "suscriptores": query_usuarios,"usuario":usuario,"reuniones":reuniones,"reunionSelect":reunion_select},
+                    {"request": request, "suscriptores": query_usuarios, "usuario": usuario,
+                        "reuniones": reuniones, "reunionSelect": reunion_select},
                 )
                 response.headers.update(headers)
                 return response
@@ -568,7 +573,8 @@ def obtenerSuscriptoresEmpresa(
 
                 response = template.TemplateResponse(
                     "paso-1/paso1-2/llamado_lista.html",
-                    {"request": request, "alerta": alerta, "suscriptores": None,"usuario":usuario,"reuniones":reuniones},
+                    {"request": request, "alerta": alerta, "suscriptores": None,
+                        "usuario": usuario, "reuniones": reuniones},
                 )
                 response.headers.update(headers)
                 return response
@@ -576,6 +582,3 @@ def obtenerSuscriptoresEmpresa(
             return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
     else:
         return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
-
-
-

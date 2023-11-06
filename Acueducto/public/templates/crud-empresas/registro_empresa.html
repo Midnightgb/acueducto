@@ -48,51 +48,47 @@
           <div class="layout-top-spacing">
             <div class="col-left-content">
 
-
               <!-- Formulario Edición de empresa -->
               <div class="container-xxl d-flex justify-content-center align-items-center vh-90">
-                <div class="col-12 col-lg-6 bg-light rounded p-4 shadow">
+                <div class="col-lg-8 bg-light rounded p-4 shadow">
                   
                   <h2 class="text-center mb-4">Crear Empresa </h2>
-
-                  <form id="formularioEmpresa" onsubmit="return validarFormulario()">
-                    <div class="form-group">
-                      <label for="nom_empresa">Nombre</label>
-                      <input type="text" class="form-control" name="nom_empresa" id="nom_empresa" placeholder="Nombre empresa" required>
-                    </div>
-                    
-                    <div class="form-group">
-                      <label for="direccion_empresa">Direccion Empresa</label>
-                      <input type="text" class="form-control" name="direccion_empresa" id="direccion_empresa" placeholder="Direccion Empresa" required>
-                    </div>
-
-                    <div class="form-group">
-                      <label for="tel_fijo">Teléfono Fijo</label>
-                      <input type="text" class="form-control" name="tel_fijo" id="tel_fijo" placeholder="Teléfono fijo" required>
-                    </div>
-
-                    <div class="form-group">
-                      <label for="tel_cel">Teléfono Celular</label>
-                      <input type="text" class="form-control" name="tel_cel" id="tel_cel" placeholder="Teléfono celular" required>
-                    </div>  
-
-                    <div class="form-group">
-                      <label for="email">Correo electrónico</label>
-                      <input type="email" class="form-control" name="email" id="email" placeholder="Correo" required>
-                    </div>
-                    
-                    
-                    <div class="text-center">
-                      <a href="/index" class="btn btn-danger">Cancelar</a>
-                      <button type="submit" class="btn btn-success">Registrar</button>
-                    </div>
-                  </form>
                   
+                    <form id="formularioEmpresa" onsubmit="return validarFormulario()">
+                      <div class="form-group">
+                        <label for="nom_empresa">Nombre</label>
+                        <input type="text" class="form-control" name="nom_empresa" id="nom_empresa" placeholder="Nombre empresa" required>
+                      </div>
+                      
+                      <div class="form-group">
+                        <label for="direccion_empresa">Direccion Empresa</label>
+                        <input type="text" class="form-control" name="direccion_empresa" id="direccion_empresa" placeholder="Direccion Empresa" required>
+                      </div>
+  
+                      <div class="form-group">
+                        <label for="tel_fijo">Teléfono Fijo</label>
+                        <input type="text" class="form-control" name="tel_fijo" id="tel_fijo" placeholder="Teléfono fijo" required>
+                      </div>
+  
+                      <div class="form-group">
+                        <label for="tel_cel">Teléfono Celular</label>
+                        <input type="text" class="form-control" name="tel_cel" id="tel_cel" placeholder="Teléfono celular" required>
+                      </div>  
+  
+                      <div class="form-group ">
+                        <label for="email">Correo electrónico</label>
+                        <input type="email" class="form-control" name="email" id="email" placeholder="Correo" required>
+                      </div> 
+                    
+                    </form>
+                    <div class="text-center">
+                      <a href="/index" class="btn btn-danger mb-3">Cancelar</a>
+                      <button type="submit" class="btn btn-success mb-3">Registrar</button>
+                    </div>
                 </div>
-
               </div>
-              <div class="footer-wrapper col-xl-12">
-                <div class="footer-section f-section-1">
+              <div class="footer-wrapper col-xl-12 d-flex justify-content-center">
+                <div class="footer-section f-section-1" >
                   <p class="">&copy; 2023 <a target="_blank"
                       href="https://www.sena.edu.co/es-co/Paginas/default.aspx">SENA - Acueducto</a></p>
                 </div>
@@ -141,7 +137,7 @@
           text: message,
           icon: type,
       });
-    }
+    } 
 
   document.getElementById("formularioEmpresa").addEventListener("submit", async function (event){
     event.preventDefault();

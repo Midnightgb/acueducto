@@ -9,7 +9,7 @@
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
-<body>
+<body class="container-fluid">
   <header>
     {% block nav %}
     {% include 'nav.html' %}
@@ -30,13 +30,13 @@
 
     <!--  BEGIN CONTENT AREA  -->
     <div id="content" class="main-content">
-      <a href="/viviendas" class="btn btn-success">⬅</a>
+      <a href="/viviendas/1" class="btn btn-success">⬅</a>
       <div class="layout-px-spacing">
         <div class="container-xxl">
           <div class="layout-top-spacing">
             <div class="col-left-content">
               <!-- Formulario edicion vivienda -->
-              <div class="container-xxl d-flex justify-content-center align-items-center vh-90">
+              <div class="container d-flex justify-content-center align-items-center vh-90">
                 <div class="col-12 col-lg-6 bg-light rounded p-4 shadow">
 
                   <h2 class="text-center mb-4">Estas modificando la vivienda en {{ vivienda.direccion }}</h2>
@@ -86,7 +86,7 @@
                     </div>
                     
                     <div class="text-center">
-                      <a href="/viviendas" class="btn btn-danger" onclick="reset()">CANCELAR</a>
+                      <a href="/viviendas/1" class="btn btn-danger" onclick="reset()">CANCELAR</a>
                       <button type="submit" class="btn btn-success">ACTUALIZAR</button>
                     </div>
                   </form>

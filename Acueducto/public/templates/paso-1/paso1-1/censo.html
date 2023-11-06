@@ -19,8 +19,6 @@
     {% include 'loader.html' %}
     {% endblock %}
     <!--  END LOADER -->
-
-
     <!--  BEGIN MAIN CONTAINER  -->
     <!--  BEGIN CONTENT AREA  -->
     <div class="pcoded-main-container">
@@ -32,8 +30,7 @@
                             <div class="">
                                 <div class="row">
                                     <div class="col-lg-3 col-md-5 pb-4">
-                                        <img class="img-fluid rounded"
-                                            src="{{ url_for('static', path='assets/images/cortes.jpg') }}">
+                                        <img class="img-fluid rounded" src="{{ url_for('static', path='assets/images/cortes.jpg') }}">
                                     </div>
                                     <div class="col-lg-9">
                                         <div class="mb-5 mt-2">
@@ -45,7 +42,8 @@
                                                     registro detallado de todas las personas u hogares que forman
                                                     parte de una comunidad y desean ser usuarios del acueducto
                                                     comunitario. Es una herramienta fundamental para el
-                                                    establecimiento y gestión eficiente del acueducto. </h6>
+                                                    establecimiento y gestión eficiente del acueducto. 
+                                                </h6>
                                             </div>
                                         </div>
                                     </div>
@@ -58,7 +56,8 @@
                                                     cuántas personas utilizarán el servicio de agua. Esto es vital
                                                     para dimensionar adecuadamente la capacidad del acueducto y
                                                     asegurar que se pueda satisfacer la demanda de agua de manera
-                                                    adecuada.</span>
+                                                    adecuada.
+                                                </span>
                                             </div>
                                         </div>
                                     </div>
@@ -71,7 +70,8 @@
                                                     del acueducto. Al tener un registro actualizado de los
                                                     suscriptores, podemos determinar las tarifas de agua de manera
                                                     justa y equitativa, y que los costos sean compartidos de manera
-                                                    proporcional entre los usuarios.</span>
+                                                    proporcional entre los usuarios.
+                                                </span>
                                             </div>
                                         </div>
                                     </div>
@@ -85,7 +85,8 @@
                                                     distribución del agua de manera eficiente. Conociendo el número
                                                     de suscriptores y sus ubicaciones, podemos diseñar una red de
                                                     distribución que sea efectiva y garantice un suministro
-                                                    equitativo de agua a todos los usuarios. </span>
+                                                    equitativo de agua a todos los usuarios. 
+                                                </span>
                                             </div>
                                         </div>
                                     </div>
@@ -100,7 +101,8 @@
                                                     identificar áreas donde se requiere expandir la red de
                                                     distribución o mejorar la infraestructura existente,
                                                     garantizando así el crecimiento sostenible del acueducto
-                                                    comunitario.<span>
+                                                    comunitario.
+                                                <span>
                                             </div>
                                         </div>
                                     </div>
@@ -113,7 +115,8 @@
                                                     facilita la planificación financiera y operativa, y contribuye a
                                                     una gestión eficiente y equitativa del suministro de agua. Es
                                                     una base sólida para garantizar un servicio confiable y de
-                                                    calidad para toda la comunidad.</h6>
+                                                    calidad para toda la comunidad.
+                                                </h6>
                                             </div>
                                         </div>
                                     </div>
@@ -133,13 +136,7 @@
 
 
 
-                            <div class="footer-wrapper col-xl-12 d-flex justify-content-center mt-2">
-                                <div class="footer-section f-section-1">
-                                    <p class="">&copy; 2023 <a target="_blank"
-                                            href="https://www.sena.edu.co/es-co/Paginas/default.aspx">SENA -
-                                            Acueducto</a></p>
-                                </div>
-                            </div>
+                            
                         </div>
                     </div>
                 </div>
@@ -148,7 +145,19 @@
         </div>
         <!--  END CONTENT AREA  -->
     </div>
-
+    <div class="pcoded-main-container">
+        <div class="footer-wrapper col-xxl-12 d-flex justify-content-center ">
+            <div class="footer-section f-section-1">
+                <p class="">&copy; 2023 
+                    <a target="_blank"
+                        href="https://www.sena.edu.co/es-co/Paginas/default.aspx">SENA -
+                        Acueducto
+                    </a>
+                </p>
+            </div>
+        </div>
+    </div>
+    
     <!-- BEGIN SCRIPTS -->
     {% block scripts %}
     {% include 'scripts.html' %}
