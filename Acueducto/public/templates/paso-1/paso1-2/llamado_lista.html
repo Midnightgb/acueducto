@@ -42,44 +42,14 @@
 
                 <div class="card shadow mb-4 rounded-2">
                     <div class="card-header py-3">
-                        <h5 class="m-0 font-weight-bold text-primary">
+                        <h5 class="m-0 font-weight-bold text-primary ">
                             Registro de Asistencia
                         </h5>
                     </div>
-                        <form action="/reunionesFecha" method="post" class="row m-3" id="buscarReuniones">
-                            <div class="col-4">
-                                <label for="">Fecha Actual</label>
-                                <input type="date" id="fecha" name="fechaActual" value="" class="form-control"
-                                    required />
-                            </div>
-
-                            <div class="col-4">
-                                <label for="">Seleccione la fecha</label>
-                                <input type="date" class="form-control" name="fechaHasta" id="hora"
-                                    placeholder="Hora" required />
-                            </div>
-                            <div class="col-4 mt-4">
-                                <button type="submit" class="btn btn-primary">
-                                    Buscar reuniones
-                                </button>
-                            </div>
-                        </form>
+                    
                     
                     <div class="row col-12">
-                        <div class="col-6 form-group">
-                            <form action="/datosAsistencia" method="POST" id="formAsistencia">
-                                <label class="mt-2" for="">Seleccione la reunion:</label>
-                                <select class="form-select" name="reunion_1" id="Reunion_1" required>
-                                    <option disabled selected>Seleccione una reunion</option>
-                                    {% if reuniones: %} 
-                                        {% for reunion in reuniones %}
-                                            <option id="" value="{{reunion.id_reunion}}">{{reunion.nom_reunion}}</option>
-                                        {%endfor%} 
-                                    {% else: %}
-                                        <option disabled>No hay reuniones</option>
-                                    {%endif%}
-                                </select><br />
-                            </form>
+                        <div class="col-6 form-group mt-5">
                             {% if reunionSelect: %}
                             <h5>Reunion seleccionada: {{reunionSelect.nom_reunion}}</h5>
                             {% elif nombreReunion:%}

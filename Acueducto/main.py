@@ -546,8 +546,8 @@ def obtenerDatosReunion(
 
 
 @app.post("/reunionesFecha", response_class=HTMLResponse)
-async def reunionFecha(request: Request, fechaActual: str = Form(...), fechaHasta: str = Form(...), token: str = Cookie(None), db: Session = Depends(get_database)):
-    # Realiza la consulta para seleccionar reuniones entre las dos fechas
+async def reunionFecha(request: Request, fechaActual: str = Form(...), fechaHasta: str = Form(...), token: str = Cookie(None), db: Session = Depends(get_database),id_empresa : int = Form(None)):
+    print(id_empresa)
     if token:
         token_valido = verificar_token(token, db)
         if token_valido:
@@ -555,17 +555,25 @@ async def reunionFecha(request: Request, fechaActual: str = Form(...), fechaHast
                 db.query(Usuario).filter(
                     Usuario.id_usuario == token_valido).first()
             )
-            id_empresa = get_empresa(token_valido, db)
-            reuniones_entre_fechas = db.query(Reunion).filter(Reunion.fecha.between(
+            reuniones_entre_fechas = None
+            if usuario.rol == ADMIN:
+                id_empresa = get_empresa(token_valido, db)
+                reuniones_entre_fechas = db.query(Reunion).filter(Reunion.fecha.between(
                 fechaActual, fechaHasta), Reunion.id_empresa == id_empresa).all()
+            elif usuario.rol == SUPER_ADMIN:
+                reuniones_entre_fechas = db.query(Reunion).filter(Reunion.fecha.between(
+                fechaActual, fechaHasta), Reunion.id_empresa == id_empresa).all()
+                
+
             headers = elimimar_cache()
+            print(reuniones_entre_fechas)
             if reuniones_entre_fechas:
                 alerta = {
                     "mensaje": "Reuniones encontradas, seleccione la reunion.",
                     "color": "success",
                 }
                 response = template.TemplateResponse(
-                    "paso-1/paso1-2/llamado_lista.html",
+                    "crud-reuniones/consultar_reunion.html",
                     {
                         "request": request,
                         "reuniones": reuniones_entre_fechas,
@@ -575,6 +583,8 @@ async def reunionFecha(request: Request, fechaActual: str = Form(...), fechaHast
                 )
                 response.headers.update(headers)
                 return response
+            else:
+                return RedirectResponse(url="/reuniones", status_code=status.HTTP_303_SEE_OTHER)
 
 # --- RUTA PARA MOSTRAR LA PAGUNA DONDE SE EDITA LA REUNION
 
@@ -630,9 +640,9 @@ def obtenerDatos(
 
 
 # LLAMADO A LISTA
-@app.get("/llamado_lista", response_class=HTMLResponse, tags=["Operaciones Documentos"])
+@app.post("/llamado_lista", response_class=HTMLResponse, tags=["Operaciones Documentos"])
 def pagLlamado(
-    request: Request, token: str = Cookie(None), db: Session = Depends(get_database)
+    request: Request, token: str = Cookie(None), db: Session = Depends(get_database), id_reunion: int = Form(None)
 ):
     if token:
         is_token_valid = verificar_token(token, db)  # retorna el id_usuario
@@ -643,13 +653,9 @@ def pagLlamado(
             datos_usuario = get_datos_usuario(is_token_valid, db)
             headers = elimimar_cache()
             if rol_usuario == ADMIN:
-                id_empresa = get_empresa(is_token_valid, db)
-                response = template.TemplateResponse(
-                    "paso-1/paso1-2/llamado_lista.html",
-                    {"request": request, "usuario": datos_usuario},
-                )
-                response.headers.update(headers)  # Actualiza las cabeceras
-                return response
+                suscriptores = obtenerSuscriptoresEmpresa(
+                    db, is_token_valid, request, id_reunion)
+                return suscriptores
             else:
                 alerta = {
                     "mensaje": "No tiene los permisos para esta acción",
@@ -666,19 +672,8 @@ def pagLlamado(
     else:
         return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
 
-# RUTA PARA ENVIAR DATOS DE LA ASISTENCIA
-
-
-@app.post("/datosAsistencia", response_class=HTMLResponse)
-def procesar_datos(request: Request, token: str = Cookie(None), db: Session = Depends(get_database), reunion_1: str = Form("")):
-    is_token_valid = verificar_token(token, db)
-    suscriptores = obtenerSuscriptoresEmpresa(
-        db, is_token_valid, request, reunion_1)
-    return suscriptores
 
 # CALCULAR EL CUORUM
-
-
 @app.post("/calcularCuorum", response_class=HTMLResponse)
 def calcularmCuorum(request: Request, token: str = Cookie(None), db: Session = Depends(get_database), cantidadAsistentes: Optional[int] = Form(None), reunion_1: str = Form("")):
     if cantidadAsistentes is None:
