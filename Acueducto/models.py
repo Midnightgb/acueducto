@@ -90,8 +90,8 @@ class Vivienda(Base):
     update_at = Column(String, server_default=func.now(),
                        onupdate=func.now(), nullable=False)
 
-class ListaAsistencia(Base):
-    __tablename__ = "listaAsistencia"
+class Lista_asistencia(Base):
+    __tablename__ = "lista_asistencia"
     id_asistencia = Column(Integer, primary_key=True, autoincrement=True)
     id_usuario = Column(String(30), ForeignKey('usuarios.id_usuario'))
     id_reunion = Column(Integer, ForeignKey('reuniones.id_reunion'))

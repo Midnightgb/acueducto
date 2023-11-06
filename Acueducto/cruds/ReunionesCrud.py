@@ -17,7 +17,7 @@ from fastapi.responses import JSONResponse
 
 from sqlalchemy.orm import Session
 from funciones import *
-from models import Reunion,Empresa,Usuario,ListaAsistencia
+from models import Reunion,Empresa,Usuario,Lista_asistencia
 import CorreoAuto
 
 SUPER_ADMIN = "SuperAdmin"
@@ -157,7 +157,7 @@ def obtenerReuAdmin(
         return None
 
 def insertarDatosReunion(id_usuario : str, id_reunion:str, db : Session):
-    insertarAsistentes = ListaAsistencia(
+    insertarAsistentes = Lista_asistencia(
         id_usuario=id_usuario,
         id_reunion=id_reunion,
         asistencia = 1

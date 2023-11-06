@@ -21,7 +21,7 @@ from sqlalchemy.orm import Session
 from funciones import *
 from cruds.EmpresasCrud import *
 from cruds.ReunionesCrud import obtenerReuAdmin
-from models import Usuario, Reunion,ListaAsistencia
+from models import Usuario, Reunion,Lista_asistencia
 
 SUPER_ADMIN = "SuperAdmin"
 ADMIN = "Admin"
@@ -563,7 +563,7 @@ def obtenerSuscriptoresEmpresa(
             reuniones = obtenerReuAdmin(usuario.empresa, db)
             if query_usuarios:
 
-                query_asistentes = db.query(ListaAsistencia).filter(ListaAsistencia.id_reunion == reunion_1).all()
+                query_asistentes = db.query(Lista_asistencia).filter(Lista_asistencia.id_reunion == reunion_1).all()
 
                 lista_combinada = {"suscriptor":[]}
 
