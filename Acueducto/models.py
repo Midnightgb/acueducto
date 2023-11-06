@@ -89,3 +89,5 @@ class Vivienda(Base):
     create_at = Column(String, server_default=func.now(), nullable=False)
     update_at = Column(String, server_default=func.now(),
                        onupdate=func.now(), nullable=False)
+
+
