@@ -21,7 +21,7 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session, joinedload
 from funciones import *
-from models import Empresa, Servicio, Usuario, Token, Vivienda
+from models import Empresa, Usuario,Variable,DatosVariable
 import bcrypt
 from database import get_database
 from funciones import get_datos_empresa
@@ -55,13 +55,13 @@ def obtenerVariablesT(
         )
         headers = elimimar_cache()
         if usuario:
-            reuniones = obtenerVariables(id_empresa, db)
-            if reuniones:
+            preguntasRespuestas = obtenerVariables(id_empresa, db)
+            if preguntasRespuestas:
                 response = template.TemplateResponse(
                     "otros-archivos/lista_variables.html",
                     {
                         "request": request,
-                        "variables": reuniones,
+                        "variables": preguntasRespuestas,
                         "empresas": empresas,
                         "usuario": usuario,
                     },
@@ -87,11 +87,14 @@ def obtenerVariablesT(
         return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
 
 
-def obtenerVariables(
-    id_empresa:int,
-    db:Session
-):
-    query = db.query(Reunion).filter(Reunion.id_empresa == id_empresa).all()
+def obtenerVariables(id_empresa: int, db: Session):
+    query = (
+        db.query(Variable.pregunta, DatosVariable.respuesta)
+        .join(Variable, Variable.id_variable == DatosVariable.id_variable)
+        .filter(DatosVariable.id_empresa == id_empresa)
+        .all()
+    )
+    
     if query:
         return query
     else:
