@@ -20298,7 +20298,7 @@ pre[class*=language-]:before {
 
 .pcoded-header {
     z-index: 1029;
-    position: relative;
+    position: fixed;
     display: flex;
     min-height: 56px;
     padding: 0;
