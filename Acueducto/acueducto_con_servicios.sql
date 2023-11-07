@@ -20,7 +20,8 @@ SET time_zone = "+00:00";
 --
 -- Base de datos: `acueducto`
 --
-CREATE DATABASE IF NOT EXISTS `acueducto` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+DROP DATABASE IF EXISTS acueducto;
+CREATE DATABASE `acueducto` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE `acueducto`;
 
 -- --------------------------------------------------------
@@ -187,10 +188,10 @@ INSERT INTO `inmuebles_suscritor` (`id_inmueble`, `id_usuario`, `direccion`, `es
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `listaAsistencia`
+-- Estructura de tabla para la tabla `lista_asistencia`
 --
 
-CREATE TABLE `listaAsistencia` (
+CREATE TABLE `lista_asistencia` (
   `id_asistencia` int UNSIGNED NOT NULL,
   `id_usuario` char(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `id_reunion` int UNSIGNED DEFAULT NULL,
@@ -198,10 +199,10 @@ CREATE TABLE `listaAsistencia` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Volcado de datos para la tabla `listaAsistencia`
+-- Volcado de datos para la tabla `lista_asistencia`
 --
 
-INSERT INTO `listaAsistencia` (`id_asistencia`, `id_usuario`, `id_reunion`, `asistencia`) VALUES
+INSERT INTO `lista_asistencia` (`id_asistencia`, `id_usuario`, `id_reunion`, `asistencia`) VALUES
 (7, '524GkWjhM36hwC76sKBAYJQLlCmRUX', 128, 1),
 (8, 'JT5g1gR66RjpCmXjZvflLkuybu8u3k', 128, 1),
 (9, 'vyUkBOCPCao5GMHUmuBjYwNBvDzLcR', 128, 1);
@@ -563,7 +564,7 @@ ALTER TABLE `inmuebles_suscritor`
 --
 -- Indices de la tabla `listaAsistencia`
 --
-ALTER TABLE `listaAsistencia`
+ALTER TABLE `lista_asistencia`
   ADD PRIMARY KEY (`id_asistencia`),
   ADD KEY `id_usuario` (`id_usuario`),
   ADD KEY `id_reunion` (`id_reunion`);
@@ -627,7 +628,7 @@ ALTER TABLE `inmuebles_suscritor`
 --
 -- AUTO_INCREMENT de la tabla `listaAsistencia`
 --
-ALTER TABLE `listaAsistencia`
+ALTER TABLE `lista_asistencia`
   MODIFY `id_asistencia` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
@@ -674,9 +675,9 @@ ALTER TABLE `inmuebles_suscritor`
 --
 -- Filtros para la tabla `listaAsistencia`
 --
-ALTER TABLE `listaAsistencia`
-  ADD CONSTRAINT `listaAsistencia_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id_usuario`),
-  ADD CONSTRAINT `listaAsistencia_ibfk_2` FOREIGN KEY (`id_reunion`) REFERENCES `reuniones` (`id_reunion`);
+ALTER TABLE `lista_asistencia`
+  ADD CONSTRAINT `lista_asistencia_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id_usuario`),
+  ADD CONSTRAINT `lista_asistencia_ibfk_2` FOREIGN KEY (`id_reunion`) REFERENCES `reuniones` (`id_reunion`);
 
 --
 -- Filtros para la tabla `reuniones`

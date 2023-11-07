@@ -36,29 +36,52 @@
   
   <main class="pcoded-main-container">
     <div class="pcoded-content">
-      <div class="row col-12">
-        {% if alerta: %}
-          <div class="alert alert-{{alerta.color}}" role="alert">
-              {{alerta.mensaje}}
-          </div>
-        {% endif %}
-          <div class="col-3 form-group">
-            {%if usuario.rol == 'SuperAdmin': %}
-              <form action="/obtenerDatosReunionSuperAdmin" method="POST" id="formDatosReu">
-                <label class="mt-2" for="">Seleccione la empresa:</label>
-                <select class="form-select" name="id_empresa" id="selectEmpresa" required>
-                    <option value="">Seleccione la empresa</option>
-                    {% if empresas: %}
-                      {% for empresa in empresas %}
-                        <option value="{{ empresa.id_empresa }}">{{ empresa.nom_empresa }}</option>
-                      {% endfor %}
-                    {% else: %}
-                        <option value="">No hay empresas </option>
-                    {%endif%}
-                </select><br>
+      <div class="col-12">
+
+          <div class="row">
+            {% if alerta: %}
+                <div class="alert alert-{{alerta.color}}" role="alert">
+                    {{alerta.mensaje}}
+                </div>
+              {% endif %}
+            <div class="col-auto form-group">
+              {%if usuario.rol == 'SuperAdmin': %}
+                <form action="/obtenerDatosReunionSuperAdmin" method="POST" id="formDatosReu">
+                  <label class="mt-2" for="">Seleccione la empresa:</label>
+                  <select class="form-select" name="id_empresa" id="selectEmpresa" required>
+                      <option value="">Seleccione la empresa</option>
+                      {% if empresas: %}
+                        {% for empresa in empresas %}
+                          <option value="{{ empresa.id_empresa }}">{{ empresa.nom_empresa }}</option>
+                        {% endfor %}
+                      {% else: %}
+                          <option value="">No hay empresas </option>
+                      {%endif%}
+                  </select><br>
+                </form>
+              {%endif%} 
+            </div>
+            <div class="col-auto" >
+              <form action="/reunionesFecha" method="post" class="row" id="buscarReuniones">
+                  <input type="hidden" name="id_empresa" id="inputHidden">
+                  <div class="col-auto">
+                      <label for="">Desde</label>
+                      <input type="date" id="fecha" name="fechaActual" value="" class="form-control" required />
+                  </div>
+                  <div class="col-auto">
+                      <label for="">Hasta</label>
+                      <input type="date" class="form-control" name="fechaHasta" id="hora"
+                          placeholder="Hora" required />
+                  </div>
+                  <div class="col-auto mt-4">
+                      <button type="submit" class="btn btn-primary">
+                          Buscar reuniones
+                      </button>
+                  </div>
               </form>
-            {%endif%}
+            </div>
           </div>
+       
         {% if usuario.rol == 'Admin': %}
           <div class="d-flex justify-content-end">
             <a type="button" href="/reunion" class="btn btn-success">Crear Reunión</a>
@@ -87,6 +110,7 @@
                     {% endif %}
                     <th class="dt-no-sorting"></th>
                     <th class="dt-no-sorting"></th>
+                    <th class="dt-no-sorting"></th>
                 </tr>
             </thead>
             
@@ -99,14 +123,21 @@
                   <td>{{ emp.id_empresa }}</td>
                   <td>{{ emp.fecha }}</td>
                   <td>{{ emp.url_asistencia }}</td>
-                  {% if usuario.rol == 'SuperAdmin' or usuario.rol == 'Admin' %}
                   <td><img src="{{ url_for('static', path='assets/images/')}}{{emp.estado}}.png" alt="{{ emp.estado }}"></td>
+                  {% if usuario.rol == 'Admin' %}
+                  <td>
+                    <form action="/llamado_lista" method="POST">
+                      <input type="hidden" name="id_reunion" value="{{ emp.id_reunion  }}">
+                      <button type="submit" class="btn btn-light">Asistencia</button>
+                    </form>
+                  </td>
                   {% endif %}
-                  <td><form action="/EditarReunion/" method="POST">
-                    <input type="hidden" name="id_reunion" value="{{ emp.id_reunion  }}">
-                    <button type="submit" class="btn btn-primary">Editar</button>
-                  </form>
-                    
+                  <td>
+                    <form action="/EditarReunion/" method="POST">
+                      <input type="hidden" name="id_reunion" value="{{ emp.id_reunion  }}">
+                      <button type="submit" class="btn btn-primary">Editar</button>
+                    </form>
+                  </td>
                   <td>
                     {% if emp.estado == 'Activo' %}
                       <button type="button" class="btn btn-danger" onclick="confirmDeleteEmpresa('{{ emp.id_empresa }}')">Desactivar</button>
@@ -236,57 +267,21 @@
   <script>
     let formDatosReu = document.getElementById('formDatosReu');
     let selectEmpresa = document.getElementById('selectEmpresa');
+    let buscarReuniones = document.getElementById('buscarReuniones');
     let tbody = document.getElementById('tbody');
     selectEmpresa.addEventListener('change',() => {
-      //.setItem("opcionSeleccionada", selectEmpresa.value);
-      // Swal.fire({
-      //   title: "Aviso",
-      //   text: "filtradas con exito",
-      //   icon: "success",
-      // });
+      localStorage.setItem("opcionSeleccionada", selectEmpresa.value);
       formDatosReu.submit();
-      //postData();
     });
 
-    // const postData = () => {
-    //   let datos = new FormData(formDatosReu);
-    //   fetch("/obtenerDatosReunionSuperAdmin",{
-    //     method:"POST",
-    //     body:datos,
-    //   }).then(response => response.json())
-    //   .then( data => {
-    //     console.log(data);
-    //     data.reuniones.forEach(element => {
-    //       let tr_temp = document.createElement('tr');
-          
-    //       let td_temp = document.createElement('td');
-    //       td_temp.textContent = element.id_reunion;
-    //       tr_temp.append(td_temp);
+    buscarReuniones.addEventListener('submit', () => {
+      localStorage.clear();
+    })
+    
 
-    //       let td_temp2 = document.createElement('td');
-    //       td_temp2.textContent = element.nom_reunion;
-    //       tr_temp.append(td_temp2);
 
-    //       let td_temp3 = document.createElement('td');
-    //       td_temp3.textContent = element.id_empresa;
-    //       tr_temp.append(td_temp3);
-
-    //       let td_temp4 = document.createElement('td');
-    //       td_temp4.textContent = element.fecha;
-    //       tr_temp.append(td_temp4);
-
-    //       let td_temp5 = document.createElement('td');
-    //       td_temp5.textContent = element.url_asistencia;
-    //       tr_temp.append(td_temp5);
-
-    //       tbody.append(tr_temp);
-
-    //       console.log(element);
-    //     });
-    //   })
-      
-    // }
-
+    let inputHidden = document.getElementById('inputHidden');
+    inputHidden.value = localStorage.getItem("opcionSeleccionada");
     // window.addEventListener('load', () => {
     //     var opcionGuardada = localStorage.getItem("opcionSeleccionada");
     //     if (opcionGuardada) {
