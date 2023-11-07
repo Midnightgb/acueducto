@@ -292,18 +292,11 @@ def createUsuario(
                     # falta mostra el mensaje para cuando se almacene correctamnete el usuario
 
                     print("Usuario creado exitosamente")
-<<<<<<< HEAD
                     return JSONResponse (status_code=201, content={"mensaje": "Usuario creado exitosamente"})
                     
                 except Exception as e:
                     db.rollback()  # Realiza un rollback en caso de error para deshacer cambios
                     return HTTPException(status_code=500, detail="Error al registrar el usuario")
-=======
-                    return {"mensaje": "Usuario creado exitosamente"}
-                except Exception as e:
-                    db.rollback()  # Realiza un rollback en caso de error para deshacer cambios
-                    return {"mensaje": e}
->>>>>>> origin/warsdev
             
         else:
             raise HTTPException(status_code=203, detail="No autorizado")
