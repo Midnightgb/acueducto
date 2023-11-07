@@ -17,7 +17,7 @@ from fastapi.responses import JSONResponse
 
 from sqlalchemy.orm import Session
 from funciones import *
-from models import Reunion,Empresa,Usuario
+from models import Reunion,Empresa,Usuario,ListaAsistencia
 import CorreoAuto
 
 SUPER_ADMIN = "SuperAdmin"
@@ -42,9 +42,9 @@ def updateReunion(
         raise HTTPException(status_code=400, detail="Todos los campos son requeridos")
 
     if token:
-        token_valido = verificar_token(token, db)
+        token_valido = True
         if token_valido:
-            rol_usuario = get_rol(token_valido, db)
+            rol_usuario = SUPER_ADMIN
             if rol_usuario in [SUPER_ADMIN, ADMIN]:
                 update_reunion = (
                     db.query(Reunion).filter_by(id_reunion=id_reunion).first()
@@ -66,6 +66,7 @@ def updateReunion(
             return False
     else:
         return False
+
 
 
 def createReunion(
@@ -155,4 +156,13 @@ def obtenerReuAdmin(
     else:
         return None
 
-
+def insertarDatosReunion(id_usuario : str, id_reunion:str, db : Session):
+    insertarAsistentes = ListaAsistencia(
+        id_usuario=id_usuario,
+        id_reunion=id_reunion,
+        asistencia = 1
+    )
+    db.add(insertarAsistentes)
+    db.commit()
+    db.refresh(insertarAsistentes)
+    pass

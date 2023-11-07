@@ -47,7 +47,7 @@
               <form action="/obtenerDatosReunionSuperAdmin" method="POST" id="formDatosReu">
                 <label class="mt-2" for="">Seleccione la empresa:</label>
                 <select class="form-select" name="id_empresa" id="selectEmpresa" required>
-                    <option value=""></option>
+                    <option value="">Seleccione la empresa</option>
                     {% if empresas: %}
                       {% for empresa in empresas %}
                         <option value="{{ empresa.id_empresa }}">{{ empresa.nom_empresa }}</option>
@@ -58,10 +58,17 @@
                 </select><br>
               </form>
             {%endif%}
-          </div>  
-        <div class="d-flex justify-content-end">
-          <a type="button" href="/reunion" class="btn btn-success">Crear Reunión</a>
-        </div>
+          </div>
+        {% if usuario.rol == 'Admin': %}
+          <div class="d-flex justify-content-end">
+            <a type="button" href="/reunion" class="btn btn-success">Crear Reunión</a>
+          </div>
+        {% endif %}
+        {% if empresa : %}
+          <div class="d-flex justify-content-start">
+            <h3>Empresa: {{empresa.nom_empresa}} </h3>
+          </div>
+        {% endif %}
         <div class="table-responsive mt-3">
           <table class="table table-striped
               table-hover	
@@ -83,7 +90,7 @@
                 </tr>
             </thead>
             
-            <tbody>
+            <tbody id="tbody">
               {% if reuniones: %}
                 {% for emp in reuniones %}
                 <tr>
@@ -229,21 +236,66 @@
   <script>
     let formDatosReu = document.getElementById('formDatosReu');
     let selectEmpresa = document.getElementById('selectEmpresa');
-
+    let tbody = document.getElementById('tbody');
     selectEmpresa.addEventListener('change',() => {
-      localStorage.setItem("opcionSeleccionada", selectEmpresa.value);
+      //.setItem("opcionSeleccionada", selectEmpresa.value);
+      // Swal.fire({
+      //   title: "Aviso",
+      //   text: "filtradas con exito",
+      //   icon: "success",
+      // });
       formDatosReu.submit();
+      //postData();
     });
 
-    window.addEventListener('load', () => {
-        var opcionGuardada = localStorage.getItem("opcionSeleccionada");
-        if (opcionGuardada) {
-            let optionToSelect = selectEmpresa.querySelector(`option[value="${opcionGuardada}"]`);
-            if (optionToSelect) {
-                optionToSelect.selected = true;
-            }
-        }
-    });
+    // const postData = () => {
+    //   let datos = new FormData(formDatosReu);
+    //   fetch("/obtenerDatosReunionSuperAdmin",{
+    //     method:"POST",
+    //     body:datos,
+    //   }).then(response => response.json())
+    //   .then( data => {
+    //     console.log(data);
+    //     data.reuniones.forEach(element => {
+    //       let tr_temp = document.createElement('tr');
+          
+    //       let td_temp = document.createElement('td');
+    //       td_temp.textContent = element.id_reunion;
+    //       tr_temp.append(td_temp);
+
+    //       let td_temp2 = document.createElement('td');
+    //       td_temp2.textContent = element.nom_reunion;
+    //       tr_temp.append(td_temp2);
+
+    //       let td_temp3 = document.createElement('td');
+    //       td_temp3.textContent = element.id_empresa;
+    //       tr_temp.append(td_temp3);
+
+    //       let td_temp4 = document.createElement('td');
+    //       td_temp4.textContent = element.fecha;
+    //       tr_temp.append(td_temp4);
+
+    //       let td_temp5 = document.createElement('td');
+    //       td_temp5.textContent = element.url_asistencia;
+    //       tr_temp.append(td_temp5);
+
+    //       tbody.append(tr_temp);
+
+    //       console.log(element);
+    //     });
+    //   })
+      
+    // }
+
+    // window.addEventListener('load', () => {
+    //     var opcionGuardada = localStorage.getItem("opcionSeleccionada");
+    //     if (opcionGuardada) {
+    //         let optionToSelect = selectEmpresa.querySelector(`option[value="${opcionGuardada}"]`);
+    //         if (optionToSelect) {
+    //             optionToSelect.selected = true;
+    //         }
+    //     }
+    // });
 
 
   </script>

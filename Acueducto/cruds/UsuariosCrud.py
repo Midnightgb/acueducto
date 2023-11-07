@@ -21,8 +21,7 @@ from sqlalchemy.orm import Session
 from funciones import *
 from cruds.EmpresasCrud import *
 from cruds.ReunionesCrud import obtenerReuAdmin
-from models import Usuario, Reunion
-from models import Usuario, Reunion
+from models import Usuario, Reunion,ListaAsistencia
 
 SUPER_ADMIN = "SuperAdmin"
 ADMIN = "Admin"
@@ -293,11 +292,18 @@ def createUsuario(
                     # falta mostra el mensaje para cuando se almacene correctamnete el usuario
 
                     print("Usuario creado exitosamente")
+<<<<<<< HEAD
                     return JSONResponse (status_code=201, content={"mensaje": "Usuario creado exitosamente"})
                     
                 except Exception as e:
                     db.rollback()  # Realiza un rollback en caso de error para deshacer cambios
                     return HTTPException(status_code=500, detail="Error al registrar el usuario")
+=======
+                    return {"mensaje": "Usuario creado exitosamente"}
+                except Exception as e:
+                    db.rollback()  # Realiza un rollback en caso de error para deshacer cambios
+                    return {"mensaje": e}
+>>>>>>> origin/warsdev
             
         else:
             raise HTTPException(status_code=203, detail="No autorizado")
@@ -553,14 +559,34 @@ def obtenerSuscriptoresEmpresa(
                     & (Usuario.empresa == usuario.empresa)
                 ).all()
             )
+
+            
+
             reunion_select = db.query(Reunion).filter(
                 Reunion.id_reunion == reunion_1).first()
+
+            
             headers = elimimar_cache()
             reuniones = obtenerReuAdmin(usuario.empresa, db)
             if query_usuarios:
+
+                query_asistentes = db.query(ListaAsistencia).filter(ListaAsistencia.id_reunion == reunion_1).all()
+
+                lista_combinada = {"suscriptor":[]}
+
+                for busquedaUsuarios in query_usuarios:
+                    estado = False
+                    for usuariosReunion in query_asistentes:
+                        if busquedaUsuarios.id_usuario == usuariosReunion.id_usuario:
+                            lista_combinada["suscriptor"].append([busquedaUsuarios,True])
+                            estado = True
+                            break
+                    if not estado:
+                        lista_combinada["suscriptor"].append([busquedaUsuarios,False])
+
                 response = template.TemplateResponse(
                     "paso-1/paso1-2/llamado_lista.html",
-                    {"request": request, "suscriptores": query_usuarios, "usuario": usuario,
+                    {"request": request, "usuarios": lista_combinada, "usuario": usuario,
                         "reuniones": reuniones, "reunionSelect": reunion_select},
                 )
                 response.headers.update(headers)
