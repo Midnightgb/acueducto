@@ -5,6 +5,7 @@ from cruds.EmpresasCrud import *
 from cruds.ReunionesCrud import *
 from cruds.UsuariosCrud import *
 from cruds.SuperAdmin import *
+from cruds.VariablesCrud import *
 from pdfs.generarDocx import *
 from fastapi import (
     FastAPI,
@@ -31,6 +32,7 @@ from sqlalchemy import and_
 
 SUPER_ADMIN = "SuperAdmin"
 ADMIN = "Admin"
+TECNICO = 'Tecnico'
 ESTADO = "Activo"
 datos_usuario = None
 
@@ -476,6 +478,53 @@ def consultarReuniones(
                     )
                     response.headers.update(headers)
                     return response
+            else:
+                raise HTTPException(status_code=403, detail="No puede entrar")
+        else:
+            return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
+    else:
+        return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
+
+#DATOS DE VARIABLES
+
+@app.post("/obtenerDatosVariablesTecnico")
+def procesar_datos(request: Request, id_empresa: int = Form(...), token: str = Cookie(None), db: Session = Depends(get_database)):
+    is_token_valid = verificar_token(token, db)
+    datosReunion = obtenerVariablesT(db, id_empresa, is_token_valid, request)
+    return datosReunion
+
+@app.get("/listaVariables", response_class=HTMLResponse)
+def consultarListavariables(
+    request: Request, token: str = Cookie(None), db: Session = Depends(get_database)
+):
+    if token:
+        token_valido = verificar_token(token, db)
+        if token_valido:
+            rol_usuario = get_rol(token_valido, db)
+            usuario = (
+                db.query(Usuario).filter(
+                    Usuario.id_usuario == token_valido).first()
+            )
+            headers = elimimar_cache()
+            if rol_usuario == TECNICO:
+
+                empresas = db.query(Empresa).all()
+                if empresas:
+                    response = template.TemplateResponse(
+                        "otros-archivos/lista_variables.html",
+                        {
+                            "request": request,
+                            "empresas": empresas,
+                            "usuario": usuario,
+
+                        },
+                    )
+                    response.headers.update(headers)
+                    return response
+                else:
+                    raise HTTPException(
+                        status_code=403, detail="No hay reuniones que consultar"
+                    )
             else:
                 raise HTTPException(status_code=403, detail="No puede entrar")
         else:
@@ -1951,3 +2000,46 @@ def desvincularVivienda(
                 status_code=403, detail="nada")
     else:
         return RedirectResponse("/", status_code=status.HTTP_303_SEE_OTHER)
+
+@app.get("/ruta", response_class=RedirectResponse, tags=["Operacion ruta"])
+def inicio(
+    request: Request, token: str = Cookie(None), db: Session = Depends(get_database)
+):
+    if token:
+        is_valid = verificar_token(token, db)
+        if is_valid:
+            usuario = db.query(Usuario).filter(
+                Usuario.id_usuario == is_valid).first()
+            headers = elimimar_cache()
+            
+            response = template.TemplateResponse(
+                "form_prueba.html", {"request": request, "usuario": usuario}
+            )
+            response.headers.update(headers)  # Actualiza las cabeceras
+            return response
+        else:
+            return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
+
+    return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
+
+@app.post("/diseño_acueducto")
+# def datosDiseñoAcueducto(token: str = Cookie(None), db: Session = Depends(get_database), id_empresa: int = Form(...), nombre_proyecto: str = Form(...), clasificacion_suelo: str = Form(...)):
+def datosDiseñoAcueducto(token: str = Cookie(None), db: Session = Depends(get_database), id_empresa: int = Form(...), id_variable: int = Form(...), respuesta: str = Form(...)):
+    if token:
+        id_usuario = verificar_token(token, db)
+        if id_usuario:
+            rol_usuario = get_rol(id_usuario, db)
+            if rol_usuario == TECNICO:
+                almacenarVar = registrarVariables(db, id_empresa, id_variable, respuesta)
+                if almacenarVar:
+                    return {"msg":"registrado con exito"}
+                else:
+                    return {"msg":"No se pudo registrar la variable"}
+            else:
+                 raise HTTPException(
+                status_code=403, detail="Este usuario no cuenta con los permisos para realizar esta acción.")
+        else:
+            return RedirectResponse("/", status_code=status.HTTP_303_SEE_OTHER)
+    else:
+        return RedirectResponse("/", status_code=status.HTTP_303_SEE_OTHER)
+
