@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% block meta %} {% include 'meta.html' %} {% endblock %}
+</head>
+
+<body class="dashboard-analytics admin-header">
+    <!-- [ navigation menu ] start -->
+    {% block nav %} {% include 'nav.html' %} {% endblock %}
+    <!-- [ Header ] end -->
+    <!-- BEGIN LOADER -->
+    {% block loader %} {% include 'loader.html' %} {% endblock %}
+    <!--  END LOADER -->
+
+    <!--  BEGIN MAIN CONTAINER  -->
+    <!--  BEGIN CONTENT AREA  -->
+    <div class="pcoded-main-container">
+        <!-- Formulario Asistencia -->
+
+        <!-- Main Content -->
+        <div class="container py-4">
+            <div class="col-lg-12 mb-4">
+                <!-- Approach -->
+                {% if alerta: %}
+                <div class="alert alert-{{alerta.color}}" role="alert">
+                    {{alerta.mensaje}}
+                </div>
+                {% endif %}
+
+                <div>
+                    <h1 class="text-center">CUORUM</h1>
+                    <p class="fw-bold fs-6 text-center">El cuórum se refiere al número mínimo de miembros o participantes necesario para que una asamblea sea válida y las decisiones tomadas sean legalmente vinculantes. Es esencial contar con el cuórum adecuado en la Asamblea de Constitución de una asociación comunitaria de acueducto para asegurar que las decisiones representen a la mayoría de la comunidad. El cálculo del cuórum se basa en un porcentaje específico del total de miembros o suscriptores, que puede variar según los estatutos. Por ejemplo, si se requiere un 50% + 1 de cuórum y hay 100 miembros en total, se necesitarían 51 personas presentes. Si no se alcanza el cuórum requerido, la asamblea no puede tomar decisiones válidas y podría ser necesaria una reunión posterior. Por lo tanto, se promueve la participación y asistencia de los miembros para asegurar que sus voces sean escuchadas y se logre el cuórum necesario en el proceso de establecimiento de la asociación comunitaria de acueducto.</p>
+                </div>
+
+                <div class="card shadow mb-4 rounded-2">
+                    <div class="card-header py-3">
+                        <h5 class="m-0 font-weight-bold text-primary">
+                            Registro de Asistencia
+                        </h5>
+                    </div>
+                        <form action="/reunionesFecha" method="post" class="row m-3" id="buscarReuniones">
+                            <div class="col-4">
+                                <label for="">Fecha Actual</label>
+                                <input type="date" id="fecha" name="fechaActual" value="" class="form-control"
+                                    required readonly />
+                            </div>
+
+                            <div class="col-4">
+                                <label for="">Seleccione la fecha</label>
+                                <input type="date" class="form-control" name="fechaHasta" id="hora"
+                                    placeholder="Hora" required />
+                            </div>
+                            <div class="col-4 mt-4">
+                                <button type="submit" class="btn btn-primary">
+                                    Buscar reuniones
+                                </button>
+                            </div>
+                        </form>
+                    
+                    <div class="row col-12">
+                        <div class="col-6 form-group">
+                            <form action="/datosAsistencia" method="POST" id="formAsistencia">
+                                <label class="mt-2" for="">Seleccione la reunion:</label>
+                                <select class="form-select" name="reunion_1" id="Reunion_1" required>
+                                    <option disabled selected>Seleccione una reunion</option>
+                                    {% if reuniones: %} 
+                                        {% for reunion in reuniones %}
+                                            <option id="" value=" {{reunion.id_reunion}} ">{{reunion.nom_reunion}}</option>
+                                        {%endfor%} 
+                                    {% else: %}
+                                        <option disabled>No hay reuniones</option>
+                                    {%endif%}
+                                </select><br />
+                            </form>
+                            {% if reunionSelect: %}
+                            <h5>Reunion seleccionada: {{reunionSelect.nom_reunion}}</h5>
+                            {% elif nombreReunion:%}
+                            <h5>Reunion seleccionada: {{nombreReunion}}</h5>
+                            {%endif%}
+                        </div>
+                        <div class="col-6 form-group">
+                            {%if suscriptores: %}
+                            <form action="/calcularCuorum" method="POST" id="Calcular">
+                                <div class="col form-group">
+                                    <label class="mt-2" for="">cuorum</label>
+                                    {%if cuorum:%}
+                                    <input value="hay cuorum" type="text" class="form-control" name="cuorum" id="cuorum"
+                                        placeholder="" readonly required />
+                                    {%else:%}
+                                    <input value="no hay cuorum" type="text" class="form-control" name="cuorum"
+                                        id="cuorum" placeholder="" readonly required />
+                                    {%endif%}
+
+                                    <button type="submit" class="btn btn-primary mt-5" id="calcularCuorum"
+                                        onclick="limpiar()">
+                                        Calcular Cuorum
+                                    </button>
+                                    <input type="hidden" name="cantidadAsistentes" id="cc" value="0" />
+                                    <p class="mt-3" id="contador-checkboxes">
+                                        Cantidad de asistentes: 0
+                                    </p>
+                                </div>
+                                {% if reunionSelect: %}
+                                <input type="hidden" name="reunion_1" value="{{reunionSelect.nom_reunion}}" />
+                                {% elif nombreReunion:%}
+                                <input type="hidden" name="reunion_1" value="{{nombreReunion}}" />
+                                {%endif%}
+                            </form>
+                            {%endif%}
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Nombre</th>
+                                    <th scope="col">Apellido</th>
+                                    <th scope="col">No. Documento</th>
+                                    <th scope="col">Dirección</th>
+                                    <th scope="col">Correo Electronico</th>
+                                    <th scope="col">Asistencia</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if suscriptores: %} {% for suscrip in suscriptores %}
+                                <tr>
+                                    <td>{{suscrip.nom_usuario}}</td>
+                                    <td>{{suscrip.apellido_usuario}}</td>
+                                    <td>{{suscrip.tipo_doc}}:{{suscrip.num_doc}}</td>
+                                    <td>{{suscrip.direccion}}</td>
+                                    <td>{{suscrip.correo}}</td>
+                                    <td>
+                                        <input class="ml-4" type="checkbox" id="miCheckbox" name="miCheckbox" />
+                                    </td>
+                                </tr>
+                                {%endfor%} {%endif%}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-center mb-3">
+                    <a href="archivos/asistencia" download="formulario-asistencia"
+                        class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
+                            class="fas fa-download fa-sm text-white-50"></i> Descargar
+                        Formato</a>
+                </div>
+                <div class="footer-wrapper col-xl-12 d-flex justify-content-center mt-2">
+                    <div class="footer-section f-section-1">
+                        <p class="">
+                            &copy; 2023
+                            <a target="_blank" href="https://www.sena.edu.co/es-co/Paginas/default.aspx">SENA -
+                                Acueducto</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End of Main Content -->
+    </div>
+
+    <script>
+        let formularioAsistencia = document.getElementById("formAsistencia");
+        let reunionSelect = document.getElementById("Reunion_1");
+
+        // Agrega un contador para llevar el registro de los checkboxes marcados
+        let contadorCheckboxes = 0;
+
+        reunionSelect.addEventListener("change", () => {
+            localStorage.setItem("opcionSeleccionada", reunionSelect.value);
+            formularioAsistencia.submit();
+        });
+
+        let checkboxes = document.querySelectorAll('input[type="checkbox"]');
+
+        checkboxes.forEach((checkbox) => {
+            checkbox.addEventListener("change", () => {
+                if (checkbox.checked) {
+                    contadorCheckboxes++;
+                } else {
+                    contadorCheckboxes--;
+                }
+
+                // Actualiza el elemento HTML con el contador
+                document.getElementById(
+                    "contador-checkboxes"
+                ).textContent = `Cantidad de asistentes: ${contadorCheckboxes}`;
+                document.getElementById("cc").value = contadorCheckboxes;
+            });
+        });
+
+        window.addEventListener("load", () => {
+            var opcionGuardada = localStorage.getItem("opcionSeleccionada");
+            if (opcionGuardada) {
+                let optionToSelect = reunionSelect.querySelector(
+                    `option[value="${opcionGuardada}"]`
+                );
+                if (optionToSelect) {
+                    optionToSelect.selected = true;
+                }
+            }
+        });
+
+        reunionSelect.addEventListener("change", function () {
+            localStorage.setItem("opcionSeleccionada", this.value);
+        });
+
+        function limpiar() {
+            localStorage.clear();
+        }
+
+        function obtenerFechaActual() {
+            const fecha = new Date();
+            const año = fecha.getFullYear();
+            const mes = String(fecha.getMonth() + 1).padStart(2, "0");
+            const dia = String(fecha.getDate()).padStart(2, "0");
+            return `${año}-${mes}-${dia}`;
+        }
+
+        // Asignar la fecha actual al campo de entrada
+        document.getElementById("fecha").value = obtenerFechaActual();
+
+        let buscarReunionesForm = document.getElementById("buscarReuniones");
+
+        buscarReunionesForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            buscarReunionesForm.submit();
+        });
+
+        
+    </script>
+
+    <!-- BEGIN SCRIPTS -->
+    {% block scripts %} {% include 'scripts.html' %} {% endblock %}
+    <!-- END SCRIPTS -->
+</body>
+
+</html>

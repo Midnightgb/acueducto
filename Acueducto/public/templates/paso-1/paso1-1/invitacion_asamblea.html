@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    {% block meta %}
+    {% include 'meta.html' %}
+    {% endblock %}
+
+    <link href="{{ url_for('static', path='plugins/fullcalendar/fullcalendar.css') }}" rel="stylesheet"
+        type="text/css" />
+    <link href="{{ url_for('static', path='plugins/fullcalendar/custom-fullcalendar.advance.css') }}" rel="stylesheet"
+        type="text/css" />
+    <link href="{{ url_for('static', path='plugins/flatpickr/flatpickr.css') }}" rel="stylesheet" type="text/css">
+    <link href="{{ url_for('static', path='plugins/flatpickr/custom-flatpickr.css') }}" rel="stylesheet"
+        type="text/css">
+    <style>
+        @media (max-width: 1410px) {
+            .my-button-special {
+                display: none;
+            }
+        }
+
+        #selectEmpresa {
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body class="dashboard-analytics admin-header">
+
+    <!-- [ navigation menu ] start -->
+    {% block nav %}
+    {% include 'nav.html' %}
+    {% endblock %}
+    <!-- [  navigation menu ] end -->
+
+    <!-- BEGIN LOADER -->
+    {% block loader %}
+    {% include 'loader.html' %}
+    {% endblock %}
+    <!--  END LOADER -->
+
+    <!--  BEGIN MAIN CONTAINER  -->
+    <div class="main-container  d-flex justify-content-center" id="container">
+        <div class="overlay"></div>
+        <div class="search-overlay"></div>
+
+        <div class="main-content mt-4" id="content">
+            <div class="layout-px-spacing"></div>
+            <div class="container-xl">
+                <div class="layout-top-spacing">
+                    <div class="col-left-content py-3 bg-light shadow">
+                        <div class="container mt-2 d-flex justify-content-center ">
+                            <h2 class="text-center">
+                                Invitacion a la asamblea
+                            </h2>
+                        </div>
+                        <div class="form-group col-lg-8 col-md-6 col-sm-12 mb-3 row d-flex justify-content-center ">
+                            {% if usuario.rol == "SuperAdmin" %}
+                            <div class="col-lg-8 col-md-6 col-sm-12 mt-2">
+                                <label for="selectEmpresa" class="form-label">
+                                    Seleciona la empresa que quieres gestionar:
+                                </label>
+                            </div>
+                            <div class="col-lg-9 col-md-6 col-sm-12 mt-2 d-flex justify-content-center row">
+                                <form id="formulario" action="invitacion_asamblea" method="GET">
+                                    <select class="form-select mt-2 " name="id_empresa" id="selectEmpresa">
+                                        <option selected>Elige una empresa</option>
+                                        {% for empresa in datos_empresas %}
+                                        <option value="{{empresa.id_empresa}}">{{empresa.nom_empresa}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </form>
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="d-flex justify-content-center">
+                            {% if ruta_pdf: %}
+                            <iframe src="{{ url_for('static', path=ruta_pdf) }}"
+                                style="width: 80%; height: 70vh; border: none;"></iframe>
+                            {% else: %}
+                            <div class="alert alert-danger" role="alert">
+                                No hay una asamblea programada para esta empresa
+                                <a href="#" class="btn btn-outline-danger alert-link">Crear una asamblea</a>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-center py-1">
+                        <div class="footer-section f-section-1">
+                            <p class="">&copy; 2023 
+                                <a target="_blank"href="https://www.sena.edu.co/es-co/Paginas/default.aspx">SENA - Acueducto</a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- END MAIN CONTAINER -->
+
+
+    <!-- BEGIN SCRIPTS -->
+    {% block scripts %}
+    {% include 'scripts.html' %}
+    {% endblock %}
+    <!-- END SCRIPTS -->
+
+    <script src="{{ url_for('static', path='plugins/fullcalendar/moment.min.js') }}"></script>
+    <script src="{{ url_for('static', path='plugins/flatpickr/flatpickr.js') }}"></script>
+    <script src="{{ url_for('static', path='plugins/fullcalendar/fullcalendar.min.js') }}"></script>
+
+    <script src="{{ url_for('static', path='plugins/fullcalendar/custom-fullcalendar.advance.js') }}"></script>
+
+</body>
+
+</html>

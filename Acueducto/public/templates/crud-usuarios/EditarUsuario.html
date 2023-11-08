@@ -1,0 +1,490 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <title>Editar Usuario</title>
+  {% block meta %}
+  {% include 'meta.html' %}
+  {% endblock %}
+  <script src="sweetalert2.all.min.js"></script>
+
+  <script type="text/javascript">
+    let stateChanged = false;
+    let rolChanged = false;
+    let typeDocChanged = false;
+
+    function validarFormulario() {
+      var nom_usuario = document.getElementById("nom_usuario").value.trim();
+      var apellido_usuario = document.getElementById("apellido_usuario").value.trim();
+
+      var num_doc = document.getElementById("num_doc").value.trim();
+      var correo = document.getElementById("correo").value.trim();
+      var municipio = document.getElementById("municipio").value.trim();
+      var direccion = document.getElementById("direccion").value.trim();
+
+      // Verifica que los campos no estén vacíos
+      if (nom_usuario.length === 0 || !nom_usuario.trim() ||
+        apellido_usuario.length === 0 || !apellido_usuario.trim() ||
+        num_doc.length === 0 || !num_doc.trim() ||
+        correo.length === 0 || !correo.trim() ||
+        municipio.length === 0 || !municipio.trim() ||
+        direccion.length === 0 || !direccion.trim()) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Por favor, ingresa valores válidos en todos los campos.',
+        })
+        return false;
+      }
+      return true;
+    }
+
+    function validarUpdate() {
+      var nom_usuario = document.getElementById("nom_usuario").value.trim();
+      var apellido_usuario = document.getElementById("apellido_usuario").value.trim();
+      var num_doc = document.getElementById("num_doc").value.trim();
+      var correo = document.getElementById("correo").value.trim();
+      var municipio = document.getElementById("municipio").value.trim();
+      var direccion = document.getElementById("direccion").value.trim();
+      var estado = document.getElementById("estado").value.trim();
+      var rol = document.getElementById("rol").value.trim();
+      
+      // Obtén los valores originales antes de la edición
+      var originalNomUsuario = "{{ user.nom_usuario }}".trim();
+      var originalApellidoUsuario = "{{ user.apellido_usuario }}".trim();
+      var originalNumDoc = "{{ user.num_doc }}".trim();
+      var originalCorreo = "{{ user.correo }}".trim();
+      var originalMunicipio = "{{ user.municipio }}".trim();
+      var originalDireccion = "{{ user.direccion }}".trim();
+      var originalEstado = "{{ user.estado }}".trim();
+      var originalRol = "{{ user.rol }}".trim();
+
+      // Compara los valores actuales con los originales
+      if (nom_usuario === originalNomUsuario 
+      && apellido_usuario === originalApellidoUsuario 
+      && num_doc === originalNumDoc 
+      && correo === originalCorreo 
+      && municipio === originalMunicipio 
+      && direccion === originalDireccion
+      && estado === originalEstado
+      && rol === originalRol
+      && !stateChanged
+      && !rolChanged
+      && !typeDocChanged) {
+        Swal.fire('Sin cambios', 'No se han realizado modificaciones.', 'info');
+        return;
+      }
+
+      Swal.fire({
+        title: '¿Estás seguro?',
+        text: '¿Deseas actualizar los datos?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, actualizar',
+        cancelButtonText: 'Cancelar'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          document.getElementById('updateUser').submit();
+        }
+      });
+    }
+  </script>
+
+</head>
+<style>
+  .btnGoDown {
+    position: fixed;
+    bottom: 40px;
+    right: 40px;
+    border-radius: 100%;
+    padding: 1em;
+    background: #00af00;
+    transition: .3s ease-in-out;
+    z-index: 1000;
+  }
+
+  .btnGoDown:hover {
+    background: #00bf00;
+    animation: goDown 1s ease-in-out .5s infinite alternate;
+  }
+
+  @keyframes goDown {
+    0% {
+      transform: translateY(0);
+    }
+
+    100% {
+      transform: translateY(10px);
+    }
+  }
+</style>
+
+<body>
+  <header>
+    {% block nav %}
+    {% include 'nav.html' %}
+    {% endblock %}
+  </header>
+
+  <!-- [  navigation menu ] end -->
+
+  <!-- BEGIN LOADER -->
+  {% block loader %}
+  {% include 'loader.html' %}
+  {% endblock %}
+  <!--  END LOADER -->
+  <div class="main-container" id="container">
+
+    <div class="overlay"></div>
+    <div class="search-overlay"></div>
+
+    <!--  BEGIN CONTENT AREA  -->
+    <div id="content" class="main-content">
+      <div class="layout-px-spacing">
+        <div class="container-xl bg-light shadow rounded">
+          <div class="layout-top-spacing">
+            <div class="">
+              <a href="#" onclick="goDown()">
+                <div class="btnGoDown">
+                  <img src="{{ url_for('static', path='assets/images/icons8-abajo-50.png') }}" width="26px" alt="">
+                </div>
+              </a>
+              <!-- Formulario registro suscriptores -->
+              <div class="d-flex justify-content-center align-items-center">
+                <div class="col-lg-12 col-md-12 col-sm-12 pt-2">
+
+                  <h2 class="text-center my-4">Estas modificando a {{ user.nom_usuario }}</h2>
+                  <form action="/updateUser/" method="POST" id="updateUser" onsubmit="return validarFormulario()"
+                    class="row">
+                    <input type="hidden" name="id_usuario" value="{{ user.id_usuario }}">
+
+                    <div class="form-group col-lg-6 col-md-6 col-sm-12 mb-3">
+                      <label for="nom_usuario" style="font-size: smaller;">Nombres</label>
+                      <input type="text" name="nom_usuario" class="form-control" id="nom_usuario" placeholder="Nombres"
+                        value="{{ user.nom_usuario }}  " required>
+                    </div>
+                    <div class="form-group col-lg-6 col-md-6 col-sm-12 mb-3">
+                      <label for="apellido_usuario" style="font-size: smaller;">Apellidos</label>
+                      <input type="text" name="apellido_usuario" class="form-control" id="apellido_usuario"
+                        placeholder="Apellidos" required value="{{ user.apellido_usuario }}">
+                    </div>
+                    <div class="form-group col-lg-6 col-md-6 col-sm-12 mb-3">
+                      <label for="tipo_doc" style="font-size: smaller; width: 100%; ">Tipo de Documento:</label>
+                      <select class="form-select" name="tipo_doc" id="tipo_doc" required style="width: 100%;">
+                        <option value="CC" {% if user.tipo_doc == "CC" %}selected{% endif %}>Cédula de Ciudadanía
+                        </option>
+                        <option value="CE" {% if user.tipo_doc == "CE" %}selected{% endif %}>Cédula de Extranjería
+                        </option>
+                        <option value="DNI" {% if user.tipo_doc == "DNI" %}selected{% endif %}>DNI</option>
+                        <option value="NIT" {% if user.tipo_doc == "NIT" %}selected{% endif %}>NIT</option>
+                      </select>
+                    </div>
+
+                    <div class="form-group col-lg-6 col-md-6 col-sm-12 mb-3">
+                      <label for="num_doc" style="font-size: smaller;">Número de Documento:</label>
+                      <input type="number" class="form-control" name="num_doc" id="num_doc" required
+                        value="{{ user.num_doc }}" style="width: 100%;">
+                    </div>
+
+
+                    <div class="form-group col-lg-6 col-md-6 col-sm-12 mb-3">
+                      <label for="correo" style="font-size: smaller;">Correo Electrónico:</label>
+                      <input type="email" class="form-control" name="correo" id="correo" required
+                        value="{{ user.correo }}">
+                    </div>
+                    <div class="form-group col-lg-6 col-md-6 col-sm-12 mb-3">
+                      <label for="municipio" style="font-size: smaller;">Municipio:</label>
+                      <input type="text" class="form-control" name="municipio" id="municipio" required
+                        value="{{ user.municipio }}">
+                    </div>
+                    <div class="form-group col-lg-6 col-md-6 col-sm-12 mb-3">
+                      <label for="direccion" style="font-size: smaller;">Dirección:</label>
+                      <input type="text" class="form-control" name="direccion" id="direccion" required
+                        value="{{ user.direccion }}">
+                    </div>
+                    <div class="form-group col-lg-6 col-md-6 col-sm-12 mb-3">
+                      <label for="estado" style="font-size: smaller;">Estado:</label>
+                      <select class="form-select" name="estado" id="estado" required>
+                        <option value="Activo" {% if user.estado == "Activo" %}selected{% endif %}>Activo</option>
+                        <option value="Inactivo" {% if user.estado == "Inactivo" %}selected{% endif %}>Inactivo</option>
+                      </select>
+                    </div>
+
+                    <div class="form-group">
+                      <label for="rol" style="font-size: smaller;">Rol:</label>
+                      <select class="form-select" name="rol" id="rol" required>
+                        <option value="Admin" {% if user.rol == "Admin" %}selected{% endif %}>Admin</option>
+                        <option value="Tecnico" {% if user.rol == "Tecnico" %}selected{% endif %}>Técnico</option>
+                        <option value="Suscriptor" {% if user.rol == "Suscriptor" %}selected{% endif %}>Suscriptor
+                        </option>
+                      </select>
+                    </div>
+                  </form>
+                  <div class="form-group col-lg-12 col-md-12 col-sm-12">
+                    {% if viviendas %}
+                    <label for="viviendas">Viviendas:</label>
+                    <div class="row d-flex">
+                      {% for vivienda in viviendas %}
+                      <div class="col-lg-3 col-md-6 col-sm-12 mt-4">
+                        <div class="shadow p-3 rounded-1">
+                          <p class="text-center"><b>#{{ loop.index }}</b></p>
+                          <label for="direccion">ID:</label>
+                          <input type="text" class="form-control" name="vivienda" id="vivienda" disabled
+                            value="{{ vivienda.id_inmueble }}">
+                          <label for="direccion">Dirección:</label>
+                          <input type="text" class="form-control" name="vivienda" id="vivienda" disabled
+                            value="{{ vivienda.direccion }}">
+                          <br>
+                          <div class="col-12">
+                            <div class="row d-flex text-center">
+                              <div class="col-6 ">
+                                <button type="button" class="btn btn-success p-2"
+                                  onclick="openModal('{{ vivienda.id_inmueble }}', '{{ vivienda.direccion }}', '{{vivienda.estrato}}', '{{vivienda.uso}}', '{{vivienda.numero_residentes}}')">
+                                  Editar
+                                </button>
+                              </div>
+                              <div class="col-6 ">
+                                <form action="/deleteVivienda" method="post"
+                                  id="deleteVivienda_{{vivienda.id_inmueble}}">
+                                  <input type="hidden" name="id_usuario" value="{{ user.id_usuario }}">
+                                  <input type="hidden" name="id_vivienda" value="{{ vivienda.id_inmueble }}">
+                                  <button type="button" class="btn btn-danger p-2"
+                                    onclick="confirmar('{{vivienda.id_inmueble}}')">
+                                    Eliminar
+                                  </button>
+                                </form>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-center">Este usuario no cuenta con viviendas registradas</p>
+                    {% endif %}
+                  </div>
+                  <div class="text-center ">
+                    <button onclick="validarUpdate()" type="button" id="act"
+                      class="btn btn-success my-2">ACTUALIZAR</button>
+                    {% if user.estado == "Activo" %}
+                    <button type="button" data-bs-toggle="modal" data-bs-target="#modalAddVivienda"
+                      class="btn btn-info  my-2">AGREGAR VIVIENDA</button>
+                    {% endif %}
+                    <form action="/usuarios" method="get">
+                      <input type="hidden" name="id_empresa" value="{{ user.empresa }}">
+                      <button type="submit" class="btn btn-danger my-2">CANCELAR</button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="footer-wrapper d-flex justify-content-center ">
+          <div class="footer-section f-section-1">
+            <p>&copy; 2023 <a target="_blank" href="https://www.sena.edu.co/es-co/Paginas/default.aspx">SENA -
+                Acueducto</a></p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <!--  END CONTENT AREA  -->
+  </div>
+  <!-- END MAIN CONTAINER -->
+  {% if alerta: %}
+  <script>
+    Swal.fire({
+      icon: '{{alerta.color}}',
+      title: '{{alerta.mensaje}}',
+      showConfirmButton: false,
+      timer: 1500
+    })
+  </script>
+  {% endif %}
+
+  {% if user.estado == "Activo" %}
+  <!-- Modal editar vivienda-->
+  <div class="modal fade" id="modalEditVivienda" tabindex="-1" role="dialog" aria-labelledby="modalTitleId"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalTitleId">Editando vivienda de {{user.nom_usuario}}</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form action="/updateVivienda" method="post">
+          <div class="modal-body">
+            <div class="container-fluid">
+              <input type="hidden" name="id_vivienda" id="id_vivienda" value="">
+              <input type="hidden" name="id_usuario" value="{{ user.id_usuario }}">
+              <div class="form-group">
+                <label for="drcViviendaEdit">Dirección:</label>
+                <input type="text" class="form-control" name="drcViviendaEdit" id="drcViviendaEdit" required>
+              </div>
+              <div class="form-group">
+                <label for="estratoEdit">Estrato:</label>
+                <select class="form-select" name="estratoEdit" id="estratoEdit" required>
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="4">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                  <option value="6">6</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="tipoViviendaEdit">Tipo de vivienda:</label>
+                <select class="form-select" name="tipoViviendaEdit" id="tipoViviendaEdit" required>
+                  <option value="Domestico">Domestico</option>
+                  <option value="Industrial">Industrial</option>
+                  <option value="Institucional">Institucional</option>
+                  <option value="Comercial">Comercial</option>
+                  <option value="Agropecuario">Agropecuario</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="numPersonasEdit">Número de residentes</label>
+                <input type="number" class="form-control" name="numPersonasEdit" id="numPersonasEdit" required
+                  max="2147483647" min="0">
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-bs-dismiss="modal" onclick="reset()">Cancelar</button>
+            <button type="submit" class="btn btn-success">Editar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Modal agregar vivienda-->
+  <div class="modal fade" id="modalAddVivienda" tabindex="-1" role="dialog" aria-labelledby="modalTitleId"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalTitleId">Agregar vivienda de {{user.nom_usuario}}</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form action="/registrarVivienda" method="post">
+          <div class="modal-body">
+            <div class="container-fluid">
+              <input type="hidden" name="id_usuario" value="{{ user.id_usuario }}">
+              <div class="form-group">
+                <label for="drcVivienda">Dirección:</label>
+                <input type="text" class="form-control" name="drcVivienda" id="drcVivienda" required>
+              </div>
+              <div class="form-group">
+                <label for="estrato">Estrato:</label>
+                <select class="form-select" name="estrato" id="estrato" required>
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="4">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                  <option value="6">6</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="tipoVivienda">Tipo de vivienda:</label>
+                <select class="form-select" name="tipoVivienda" id="tipoVivienda" required>
+                  <option disabled>Selecione un tipo</option>
+                  <option value="Domestico">Domestico</option>
+                  <option value="Industrial">Industrial</option>
+                  <option value="Institucional">Institucional</option>
+                  <option value="Comercial">Comercial</option>
+                  <option value="Agropecuario">Agropecuario</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="numPersonas">Número de residentes</label>
+                <input type="number" class="form-control" name="numPersonas" id="numPersonas" required max="2147483647" min="0">
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-bs-dismiss="modal" onclick="reset()">Cerrar</button>
+            <button type="submit" class="btn btn-success">Agregar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    modalEditVivienda = new bootstrap.Modal(document.getElementById('modalEditVivienda'), {
+      keyboard: false,
+    });
+
+    function openModal(id, direccion, estrato, uso, num_residentes) {
+      document.getElementById('id_vivienda').value = id;
+      document.getElementById('drcViviendaEdit').value = direccion;
+      document.getElementById('estratoEdit').selectedIndex = estrato - 1;
+      document.getElementById('tipoViviendaEdit').selectedIndex = uso == 'Domestico' ? 0 : uso == 'Industrial' ? 1 :
+        uso == 'Institucional' ? 2 : uso == 'Comercial' ? 3 : 4;
+      document.getElementById('numPersonasEdit').value = num_residentes;
+      modalEditVivienda.show();
+    }
+
+
+    function confirmar(id) {
+      Swal.fire({
+        title: '¿Estás seguro?',
+        text: '¿Deseas eliminar la vivienda?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'Cancelar'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          document.getElementById(`deleteVivienda_${id}`).submit();
+        }
+      });
+    }
+    const stateElement = document.getElementById('estado');
+    stateElement.addEventListener('change', (event) => {
+        const selectedValue = event.target.value;
+        stateChanged = true;
+    });
+    const rolElement = document.getElementById('rol');
+    rolElement.addEventListener('change', (event) => {
+        const selectedValue = event.target.value;
+        rolChanged = true;
+    });
+    const typeDocElement = document.getElementById('tipo_doc');
+    typeDocElement.addEventListener('change', (event) => {
+        const selectedValue = event.target.value;
+        typeDocChanged = true;
+    });
+    let clickBtnGoDown = false;
+    function goDown() {
+      window.scrollTo({
+        top: document.body.scrollHeight,
+        behavior: 'smooth'
+      });
+      let img = document.querySelector('.btnGoDown img');
+      if (clickBtnGoDown) {
+        img.style.transform = 'rotate(0deg)';
+        clickBtnGoDown = false;
+      }else{
+        img.style.transform = 'rotate(180deg)';
+        clickBtnGoDown = true;
+      }
+      console.log(clickBtnGoDown);
+    }
+  </script>
+  <!-- BEGIN SCRIPTS -->
+  {% block scripts %}
+  {% include 'scripts.html' %}
+  {% endblock %}
+  <!-- END SCRIPTS -->
+</body>
+
+</html>
