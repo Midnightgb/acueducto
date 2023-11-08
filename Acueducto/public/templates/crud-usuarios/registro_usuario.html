@@ -98,7 +98,7 @@
                   </div>
                     <div class="form-group col-lg-6 col-md-6 col-sm-12 mb-3">
                       <label for="rol">Rol:</label>
-                      <select class="form-select" name="rol" id="rol" required>
+                      <select class="form-select" name="rol" id="rol" onchange="ocultarPassword()" required>
                         {% if usuario.rol == 'SuperAdmin': %}
                         <option value="Admin">Admin</option>
                         <option value="Técnico">Técnico</option>
@@ -113,7 +113,8 @@
                         {% endif %}
                       </select>
                     </div>
-                    <div class="form-group col-lg-6 col-md-6 col-sm-12 mb-3 ">
+
+                    <div class="form-group col-lg-6 col-md-6 col-sm-12 mb-3 " id="contraseniaField">
                       <label for="contrasenia">Contraseña:</label>
                       <input type="password" class="form-control" name="contrasenia" id="contrasenia" required>
                     </div>
@@ -187,6 +188,22 @@
       function limpiarFormulario() {
         document.getElementById("registroForm").reset();
       }
+    </script>
+    <script>
+      function ocultarPassword() {
+        var rolSelect = document.getElementById("rol");
+        var contraseniaField = document.getElementById("contraseniaField");
+      
+        if (rolSelect.value === "Suscriptor") {
+          contraseniaField.style.display = "none";
+          
+        } else {
+          contraseniaField.style.display = "block";
+        }
+      }
+      
+      ocultarPassword();
+
     </script>
     
 </body>

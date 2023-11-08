@@ -189,8 +189,9 @@ def actualizarUsuario(
                     # Guarda los cambios en la base de datos
                     db.commit()
                     # Compara los valores actuales con los nuevos valores
-
-                    return RedirectResponse(url="/usuarios", status_code=status.HTTP_303_SEE_OTHER)
+                    raise HTTPException(status_code=307, detail="Redireccionando...", headers={
+                                        "Location": "/usuarios"})
+                    # return RedirectResponse(url="/usuarios", status_code=status.HTTP_303_SEE_OTHER)
 
                 else:
 
@@ -201,6 +202,7 @@ def actualizarUsuario(
     else:
 
         return RedirectResponse("/", status_code=status.HTTP_303_SEE_OTHER)
+
 
 
 def createUsuario(
