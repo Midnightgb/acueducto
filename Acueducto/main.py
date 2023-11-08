@@ -87,13 +87,32 @@ def pagCenso(
             print(rol_usuario)
             datos_usuario = get_datos_usuario(is_token_valid, db)
             headers = elimimar_cache()
-            if rol_usuario == SUPER_ADMIN or rol_usuario == ADMIN:
+            
+            
+            if rol_usuario == ADMIN:
+                query_usuarios = (
+                    db.query(Usuario, Empresa.nom_empresa)
+                    .join(Empresa, Usuario.empresa == Empresa.id_empresa).filter(
+                        (Usuario.rol == 'Suscriptor') &
+                        (Usuario.empresa == datos_usuario['empresa'])
+                    )
+                )
+                
+                mensaje = "LISTA DE SUSCRIPTORES"
                 response = template.TemplateResponse(
                     "paso-1/paso1-1/censo.html",
-                    {"request": request, "usuario": datos_usuario},
+                    {"request": request, "usuario": query_usuarios, "mensaje": mensaje, "datos_usuario": datos_usuario}
+                )
+                return response
+            
+            if rol_usuario == SUPER_ADMIN:
+                response = template.TemplateResponse(
+                    "paso-1/paso1-1/censo.html",
+                    {"request": request, "usuario": datos_usuario, "datos_usuario": datos_usuario},
                 )
                 response.headers.update(headers)  # Actualiza las cabeceras
                 return response
+            
             else:
                 alerta = {
                     "mensaje": "No tiene los permisos para esta acción",

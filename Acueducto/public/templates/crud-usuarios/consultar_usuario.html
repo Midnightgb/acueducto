@@ -104,8 +104,7 @@
                             <td>{{ user.num_doc}}</td>
                             <td>{{ user.municipio }}</td>
                             {% if usuario.rol == 'SuperAdmin' or usuario.rol == 'Admin' %}
-                            <td><img src="{{ url_for('static', path='assets/images/')}}{{user.estado}}.png"
-                                    alt="{{ user.estado }}"></td>
+                            <td><img src="{{ url_for('static', path='assets/images/')}}{{user.estado}}.png" alt="{{ user.estado }}"></td>
                             {% endif %}
                             <td>{{ user.direccion }}</td>
 
@@ -125,7 +124,6 @@
                                     {{ texto }}
                                 </button>
                             </td>
-
                         </tr>
                         {% endfor %}
                         {% endif %}
