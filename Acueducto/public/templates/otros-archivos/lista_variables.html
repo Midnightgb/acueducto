@@ -62,10 +62,16 @@
                 </select><br>
               </form>
             </div>
-              
             {%endif%}
+            
           </div> 
         <div class="table-responsive mt-3">
+          <div class="col-auto">
+            <div class="d-flex justify-content-end mb-2">
+              <form action="/entrada_variables" method="post"><input type="hidden" name="id_empresa" id="id_empresa"><button type="submit" class="btn btn-success">Llenar variables</button></form>
+              
+            </div>
+          </div>
           <table class="table table-striped
               table-hover	
               table-borderless
@@ -117,6 +123,10 @@
     </div>
 </main>
 
+<form action="/formulario/"{}>
+  <button> </button>
+</form>
+
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
@@ -161,6 +171,7 @@
   <script>
     let formDatosVa = document.getElementById('formDatosVa');
     let selectEmpresa = document.getElementById('selectEmpresa');
+    let id_empresa = document.getElementById('id_empresa');
 
     selectEmpresa.addEventListener('change',() => {
       localStorage.setItem("opcionSeleccionada", selectEmpresa.value);
@@ -171,6 +182,7 @@
         var opcionGuardada = localStorage.getItem("opcionSeleccionada");
         if (opcionGuardada) {
             let optionToSelect = selectEmpresa.querySelector(`option[value="${opcionGuardada}"]`);
+            id_empresa.value = opcionGuardada;
             if (optionToSelect) {
                 optionToSelect.selected = true;
             }
