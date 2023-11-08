@@ -99,6 +99,17 @@ def obtenerVariables(id_empresa: int, db: Session):
         return query
     else:
         return None
+    
+def preguntasId(db: Session,id_empresa: int):
+    query = (
+        db.query(DatosVariable.id_variable)
+        .filter(DatosVariable.id_empresa == id_empresa)
+        .all()
+    )
+    if query:
+        return query
+    else:
+        return None
 
 def registrarVariables(db:Session,id_empresa:int,id_variable:int,respuesta:str):
     #lista_v_string = [1,2,4,6,7,10,15]
@@ -125,3 +136,4 @@ def registrarVariables(db:Session,id_empresa:int,id_variable:int,respuesta:str):
         db.rollback()
     
     return status
+

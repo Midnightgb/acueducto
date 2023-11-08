@@ -2017,8 +2017,13 @@ def ver_formulario(
             rol_usuario = get_rol(is_valid, db)
             if rol_usuario == TECNICO:
                 headers = elimimar_cache()
+                preguntas = preguntasId(db,id_empresa)
+                if not preguntas:
+                    preguntas = [0]
+                else:
+                    preguntas = [item[0] for item in preguntas]
                 response = template.TemplateResponse(
-                    "paso-3/paso-3-2/paso-3.html", {"request": request, "usuario": usuario,"id_empresa":id_empresa}
+                    "paso-3/paso-3-2/paso-3.html", {"request": request, "usuario": usuario,"id_empresa":id_empresa,"preguntas":preguntas}
                 )
                 response.headers.update(headers)  # Actualiza las cabeceras
                 return response
@@ -2030,23 +2035,18 @@ def ver_formulario(
     return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
 
 @app.post("/diseño_acueducto")
-# def datosDiseñoAcueducto(token: str = Cookie(None), db: Session = Depends(get_database), id_empresa: int = Form(...), nombre_proyecto: str = Form(...), clasificacion_suelo: str = Form(...)):
-def datosDiseñoAcueducto(token: str = Cookie(None), db: Session = Depends(get_database), id_empresa: int = Form(...), id_variable: int = Form(...), respuesta: str = Form(...)):
-    if token:
-        id_usuario = verificar_token(token, db)
-        if id_usuario:
-            rol_usuario = get_rol(id_usuario, db)
-            if rol_usuario == TECNICO:
-                almacenarVar = registrarVariables(db, id_empresa, id_variable, respuesta)
-                if almacenarVar:
-                    return {"msg":"registrado con exito"}
-                else:
-                    return {"msg":"No se pudo registrar la variable"}
-            else:
-                 raise HTTPException(
-                status_code=403, detail="Este usuario no cuenta con los permisos para realizar esta acción.")
+async def datosDiseñoAcueducto(request:Request, db: Session = Depends(get_database), ):
+        datos = await request.json()
+        id_empresa = datos.get("id_empresa")
+        lista_respuestas = datos.get("lista_respuestas")
+        lista_variables = datos.get("lista_variables")
+        if lista_respuestas and lista_variables:
+            for respuesta, variable in zip(lista_respuestas, lista_variables):
+                status = registrarVariables(db,id_empresa, variable, respuesta)
+        
+        if status:
+            return {"status":True,"msg":"Variables registradas con exito"}
         else:
-            return RedirectResponse("/", status_code=status.HTTP_303_SEE_OTHER)
-    else:
-        return RedirectResponse("/", status_code=status.HTTP_303_SEE_OTHER)
+            return {"status":False,"msg":"No se pudo registrar la variable"}
+       
 
