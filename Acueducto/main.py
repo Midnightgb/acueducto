@@ -1936,3 +1936,26 @@ def desvincularVivienda(
                 status_code=403, detail="nada")
     else:
         return RedirectResponse("/", status_code=status.HTTP_303_SEE_OTHER)
+
+
+
+@app.get("/entrada_variables", response_class=RedirectResponse)
+def ver_formulario(
+    request: Request, token: str = Cookie(None), db: Session = Depends(get_database)
+):
+    if token:
+        is_valid = verificar_token(token, db)
+        if is_valid:
+            usuario = db.query(Usuario).filter(
+                Usuario.id_usuario == is_valid).first()
+            headers = elimimar_cache()
+
+            response = template.TemplateResponse(
+                "paso-3.html", {"request": request, "usuario": usuario}
+            )
+            response.headers.update(headers)  # Actualiza las cabeceras
+            return response
+        else:
+            return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
+
+    return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)

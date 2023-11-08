@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <title>Registro Usuario</title>
+  {% block meta %}
+  {% include 'meta.html' %}
+  {% endblock %}
+  <script>
+    function validarFormulario() {
+      var nom_usuario = document.getElementById("nom_usuario").value.trim();
+      var apellido_usuario = document.getElementById("apellido_usuario").value.trim();
+      var tipo_doc = document.getElementById("tipo_doc").value.trim();
+      var num_doc = document.getElementById("num_doc").value.trim();
+      var correo = document.getElementById("correo").value.trim();
+      var municipio = document.getElementById("municipio").value.trim();
+      var direccion = document.getElementById("direccion").value.trim();
+      var empresa = document.getElementById("empresa").value.trim();
+      var rol = document.getElementById("rol").value.trim();
+      var contrasenia = document.getElementById("contrasenia").value.trim();
+    
+      if (
+        nom_usuario === "" ||
+        apellido_usuario === "" ||
+        tipo_doc === "" ||
+        num_doc === "" ||
+        correo === "" ||
+        municipio === "" ||
+        direccion === "" ||
+        empresa === "" ||
+        rol === "" ||
+        contrasenia === ""
+      ) {
+        alert("Por favor, ingresa valores válidos en todos los campos.");
+        return false;
+      }
+    
+      return true;
+    }
+    </script>
+    
+</head>
+<style>
+  #tipo_doc,
+  #rol,
+  #empresa {
+    cursor: pointer;
+  }
+</style>
+
+
+<body class="dashboard-analytics admin-header">
+  <header>
+    {% block nav %}
+    {% include 'nav.html' %}
+    {% endblock %}
+  </header>
+  <!-- [  navigation menu ] end -->
+
+  <!-- BEGIN LOADER -->
+  {% block loader %}
+  {% include 'loader.html' %}
+  {% endblock %}
+  <!--  END LOADER -->
+  <!--  BEGIN MAIN CONTAINER  -->
+  <div class="main-container" id="container">
+    <div class="overlay"></div>
+    <div class="search-overlay"></div>
+    <!--  BEGIN CONTENT AREA  -->
+    <div id="content" class="main-content">
+      <div class="layout-px-spacing">
+        <div class="container-xxl bg-light  shadow">
+          <div class="layout-top-spacing">
+            <div class="col-left-content">
+              <!-- Formulario registro suscriptores -->
+              <div class="container-xxl d-flex justify-content-center align-items-center vh-90">
+                <div class="col-lg-12 col-md-12 col-sm-12 pt-2">
+                  {% if alerta: %}
+                  <div class="alert alert-{{alerta.color}}" role="alert">
+                    {{alerta.mensaje}}
+                  </div>
+                  {% endif %}
+                  <h2 class="text-center mb-4 py-3">Parámetros fisico químicos</h2>
+                  <form  id="registroForm" class="row" onsubmit="return validarFormulario()">
+                    <!-- Agregamos action y method para enviar datos al servidor -->
+                    <div class="form-group  col-lg-6 col-md-6 col-sm-12 mb-3">
+                      <label for="nom_usuario">Nombre del proyecto</label>
+                      <input type="text" class="form-control" id="nom_proyecto" name="nom_proyecto" placeholder="Ingrese el nombre del proyecto"
+                        required>
+                    </div>
+                    <div class=" form-group col-lg-6 col-md-6 col-sm-12 mb-3 ">
+                        <label for="tipo_doc">Clasificación del suelo rural</label>
+                        <select class="form-select" name="suelo_ru" id="suelo_ru" required>
+                          <option value="cab_co">Cabecera de corregimiento</option>
+                          <option value="cen_pob">Centro poblado rural</option>
+                          <option value="parce_cam">Parcelación campestre</option>
+                          <option value="otos">Otros núcleos rurales (que no aparecen en el POT, PBOT o EOT)</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-lg-6 col-md-6 col-sm-12 mb-3">
+                      <label for="apellido_usuario">Número de viviendas</label>
+                      <input type="number" class="form-control" id="num_viv" name="num_viv"
+                        placeholder="Ingrese el número de viviendas" required>
+                    </div>
+
+                    <div class=" form-group col-lg-6 col-md-6 col-sm-12 mb-3 ">
+                      <label for="tipo_doc">Fuentes abastecedoras</label>
+                      <input type="tex" class="form-control" id="fuen_ab" name="fuen_ab"
+                        placeholder="Ingrese el nombre de la fuente " required>
+                      
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-12 mb-3 form-group ">
+                      <label for="num_doc">Ingresos promedio por familia</label>
+                      <input type="number" class="form-control" name="ingr" id="ingr" placeholder="Ingrese la Periodicidad del ingreso" required>
+                    </div>
+                    <div class=" form-group col-lg-6 col-md-6 col-sm-12 mb-3 ">
+                        <label for="tipo_doc">Periodicidad del ingreso</label>
+                        <select class="form-select" name="per_ingr" id="per_ingr" required>
+                          <option value="diario">Diario</option>
+                          <option value="semanal">Semanal</option>
+                          <option value="quincenal">Quincenal </option>
+                          <option value="mensual">Mensual</option>
+                          <option value="otos">Otro</option>
+                        </select>
+                    </div>
+                    <div class=" form-group col-lg-6 col-md-6 col-sm-12 mb-3 ">
+                        <label for="tipo_doc">Disponibilidad para el pago del servicio de acueducto</label>
+                        <select class="form-select" name="dis_pago_ser" id="dis_pago_ser" required>
+                          <option value="si">Si</option>
+                          <option value="no">No</option>
+                          <option value="posible">Posible </option>
+                        </select>
+                    </div>
+                    <div class="form-group col-lg-6 col-md-6 col-sm-12 mb-3">
+                      <label for="correo">Año base de diseño</label>
+                      <input type="number" class="form-control" name="anio_bas" id="anio_bas" 
+                      placeholder="Colocar el año inmediatamente superior al actual" required>
+                    </div>
+                    <div class="form-group col-lg-6 col-md-6 col-sm-12 mb-3">
+                      <label for="municipio">Población residencial</label>
+                      <input type="number" class="form-control" name="pob_res" id="pob_res"
+                      placeholder="Ingrese el numero" required>
+                    </div>
+                    <div class=" form-group col-lg-6 col-md-6 col-sm-12 mb-3 ">
+                        <label for="tipo_doc">¿Existe una institución escolar?</label>
+                        <select class="form-select" name="inst" id="inst" required>
+                          <option value="si">si</option>
+                          <option value="no">no</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-lg-6 col-md-6 col-sm-12 mb-3">
+                      <label for="direccion">Número total de alumnos</label>
+                      <input type="number" class="form-control" name="num_al" id="num_al" 
+                      placeholder="Ingrese el numero" required>
+                    </div>
+                    <div class="form-group col-lg-6 col-md-6 col-sm-12 mb-3">
+                        <label for="direccion">Número de alumnos nativos</label>
+                        <input type="number" class="form-control" name="num_alnat" id="num_alnat" 
+                        placeholder="Ingrese el numero" required>
+                    </div>
+                    <div class="form-group col-lg-6 col-md-6 col-sm-12 mb-3">
+                        <label for="direccion">Número de profesores</label>
+                        <input type="number" class="form-control" name="num_pr" id="num_pr" 
+                        placeholder="Ingrese el numero" required>
+                    </div>
+                    <div class="form-group col-lg-6 col-md-6 col-sm-12 mb-3">
+                        <label for="direccion">Número de administrativos</label>
+                        <input type="number" class="form-control" name="num_ad" id="num_ad" 
+                        placeholder="Ingrese el numero" required>
+                    </div>
+                    <div class=" form-group col-lg-6 col-md-6 col-sm-12 mb-3 ">
+                        <label for="tipo_doc">¿Población flotante?</label>
+                        <select class="form-select" name="pobflo" id="pobflo" required>
+                          <option value="vis_fin">Visitantes de fines de semana</option>
+                          <option value="com_sem">De eventos comerciales semanales</option>
+                          <option value="cul_sem">De eventos culturales semanales</option>
+                          <option value="otro_ev">Otro</option>
+                          <option value="no_apli">No aplica</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-lg-6 col-md-6 col-sm-12 mb-3">
+                        <label for="direccion">Número estimado de población flotante</label>
+                        <input type="number" class="form-control" name="num_poflo" id="num_poflo" 
+                        placeholder="Ingrese el numero" required>
+                    </div>
+                    <div class="form-group col-lg-6 col-md-6 col-sm-12 mb-3">
+                        <label for="direccion">Altura promedio sobre el nivel del mar de la zona atendida
+                        </label>
+                        <input type="number" class="form-control" name="al_niv_zona" id="al_niv_zona" 
+                        placeholder="Ingrese el valor" required>
+                    </div>
+                    <div class="form-group col-lg-6 col-md-6 col-sm-12 mb-3">
+                        <label for="direccion">Altura sobre el nivel de más del punto de captación
+                        </label>
+                        <input type="number" class="form-control" name="niv_cap" id="niv_cap" 
+                        placeholder="Ingrese la altura sobre el nivel del mar" required>
+                    </div>
+                    <div class="form-group col-lg-6 col-md-6 col-sm-12 mb-3">
+                        <label for="direccion">Caudal medio de la fuente
+                        </label>
+                        <input type="number" class="form-control" name="caudal_med" id="caudal_med" 
+                        placeholder="Ingrese el dato" required>
+                    </div>
+                    <div class="form-group col-lg-6 col-md-6 col-sm-12 mb-3">
+                        <label for="direccion">Caudal mínimo de la fuente
+                        </label>
+                        <input type="number" class="form-control" name="caudal_min" id="caudal_min" 
+                        placeholder="Ingrese el dato" required>
+                    </div>
+                    <div class="form-group col-lg-6 col-md-6 col-sm-12 mb-3">
+                        <label for="direccion">Altura máxima de crecidas
+                        </label>
+                        <input type="number" class="form-control" name="alt_max" id="alt_max" 
+                        placeholder="Ingrese el valor" required>
+                    </div>
+                    <div class="form-group col-lg-6 col-md-6 col-sm-12 mb-3">
+                        <label for="direccion">Temperatura media del agua</label>
+                        <input type="number" class="form-control" name="temp_agua" id="temp_agua" 
+                        placeholder="Ingrese el dato" required>
+                    </div>
+                    <div class="form-group col-lg-6 col-md-6 col-sm-12 mb-3">
+                        <label for="direccion">Ancho medio del cauce en el punto de captación</label>
+                        <input type="number" class="form-control" name="ancho_cause" id="ancho_cause" 
+                        placeholder="Ingrese el valor" required>
+                    </div>
+                    
+                    <div class="text-center mt-2 ">
+                      <a href="/index"  class="btn btn-danger">Cancelar</a>
+                      <button type="submit" class="btn btn-success" onclick="insertUser()">Aceptar</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+              <br>
+            </div>
+          </div>
+        </div>
+        <!--  END CONTENT AREA  -->
+      </div>
+      <br>
+      <div class="footer-section f-section-1 m-1" style="text-align: center;">
+        <p>&copy; 2023 <a target="_blank" href="https://www.sena.edu.co/es-co/Paginas/default.aspx">SENA -Acueducto</a>
+        </p>
+      </div>
+    </div>
+    {% block scripts %}
+    {% include 'scripts.html' %}
+    {% endblock %}
+    <!-- <script>
+      function insertUser(){
+        document.getElementById("registroForm").submit();
+        document.getElementById("registroForm").reset();
+      }
+    </script> -->
+
+    <script >
+      //funcion para valirdar que se creo
+  
+      async function enviarSolicitud(formData){
+        try {
+          const reponse = await fetch("/crearUser", {
+            method: "POST",
+            body: formData,
+          });
+  
+          console.log(reponse.status);
+          if(reponse.status === 201){
+            const data = await reponse.json();
+            return {success: true, data};
+  
+          } else {
+            const errorData = await reponse.json();
+            throw new Error(errorData.detail || "Error desconocido" );
+          }
+  
+        } catch (error) {
+          throw error;
+        }
+      }
+  
+      //funcion  para mostrar alert
+      function mostrarAlert(message, type = "info"){
+        Swal.fire({
+            title: "Aviso",
+            text: message,
+            icon: type,
+        });
+      } 
+  
+    document.getElementById("registroForm").addEventListener("submit", async function (event){
+      event.preventDefault();
+      console.log("SI ENTRAMOS PAPI");
+      try {
+        const formData = new FormData(this);
+  
+        const response = await enviarSolicitud(formData);
+  
+        if (response.success) {
+          mostrarAlert("Usuario regsitrado con exito.", "success");
+  
+          //Limpiamos el form
+          this.reset();
+  
+          document.getElementById("nom_usuario").focus();
+          
+          
+          setTimeout(function() {
+            window.location.href = "/form_registro_usuario";
+          }, 3000); // segundos
+        }
+      } catch (error) {
+        mostrarAlert(`Error al registrar el usuario: ${error.message}`, "error");
+      }
+    });
+  
+    </script>
+</body>
+
+</html>
