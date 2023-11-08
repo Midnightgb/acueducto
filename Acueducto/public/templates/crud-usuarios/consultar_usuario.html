@@ -56,7 +56,7 @@
                         </form>
                     </div>
                 </div>
-                
+
                 {% endif %}
                 <div class="div">
                     {% if usuarios[0]: %}
@@ -72,25 +72,25 @@
             table-borderless
             table-success
             align-middle responsive " id="dataUsers" class="display">
-            <thead>
-                <tr>
-                    <th>Nombre</th>
-                    <th>Apellido</th>
-                    <th>Empresa</th>
-                    <th>Correo</th>
-                    <th>Rol</th>
-                    <th>Tipo Documento</th>
-                    <th>Documento</th>
-                    <th>Ciudad</th>
-                    {% if usuario.rol == 'SuperAdmin' or usuario.rol == 'Admin' %}
-                    <th>Estado</th>
-                    {% endif %}
-                    <th>Direccion</th>
-                    <th class="dt-no-sorting"></th>
-                    <th class="dt-no-sorting"></th>
-                </tr>
-            </thead>
-            
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Apellido</th>
+                            <th>Empresa</th>
+                            <th>Correo</th>
+                            <th>Rol</th>
+                            <th>Tipo Documento</th>
+                            <th>Documento</th>
+                            <th>Ciudad</th>
+                            {% if usuario.rol == 'SuperAdmin' or usuario.rol == 'Admin' %}
+                            <th>Estado</th>
+                            {% endif %}
+                            <th>Direccion</th>
+                            <th class="dt-no-sorting"></th>
+                            <th class="dt-no-sorting"></th>
+                        </tr>
+                    </thead>
+
                     <tbody>
                         {% if usuarios: %}
                         {% for user, nom_empresa in usuarios %}
@@ -112,6 +112,7 @@
                             <td>
                                 <form action="/EditarUsuarios/" method="POST">
                                     <input type="hidden" name="id_usuario" value="{{ user.id_usuario }}">
+                                    <input type="hidden" name="id_empresa" value="{{ user.empresa }}">
                                     <button type="submit" class="btn btn-primary">Editar</button>
                                 </form>
                             <td>
@@ -148,7 +149,8 @@
                             </div>
                             <div class="modal-footer">
                                 <div class="content-buttons">
-                                    <button type="button" id="confirmDeleteButton" class="btn btn-success">Cambiar estado</button>
+                                    <button type="button" id="confirmDeleteButton" class="btn btn-success">Cambiar
+                                        estado</button>
                                 </div>
                             </div>
                         </form>
@@ -171,20 +173,20 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/pdfmake.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/vfs_fonts.js"></script>
     <script src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.print.min.js"></script>
-    
+
     <script>
         $(document).ready(function () {
             $('#dataUsers').DataTable({
                 select: true,
                 destroy: true,
                 columnDefs: [{
-                    targets: [8],
-                    orderable: false
-                },
-                {
-                    targets: [9],
-                    orderable: false
-                }
+                        targets: [8],
+                        orderable: false
+                    },
+                    {
+                        targets: [9],
+                        orderable: false
+                    }
                 ],
                 language: {
                     url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json',
@@ -228,9 +230,9 @@
                             title: 'El estado del usuario ha sido cambiado',
                             showConfirmButton: false,
                             timer: 1500
-                            
 
-                            
+
+
                         });
 
                         location.reload();
@@ -242,7 +244,7 @@
                             icon: 'error',
                             title: 'Error al cambiar el estado del usuario ',
                             showConfirmButton: false,
-                            
+
                         });
                         console.log('Error al cambiar el estado del usuario:', error);
                         // Puedes mostrar un mensaje de error al user si es necesario
@@ -250,15 +252,14 @@
                 });
             });
         }
-        
     </script>
     <script>
-        
+
     </script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous">
-        </script>
+    </script>
     <script src="{{ url_for('static', path='plugins/perfect-scrollbar/perfect-scrollbar.min.js') }}"></script>
     <script src="{{ url_for('static', path='assets/js/pcoded.min.js') }}"></script>
     <script src="{{ url_for('static', path='assets/js/loader.js') }}"></script>
