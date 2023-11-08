@@ -218,6 +218,7 @@ def createUsuario(
     contrasenia: str,
     token: str,
     db: Session,
+
 ):
 
     empresa_existente = db.query(Empresa).filter(
@@ -293,24 +294,26 @@ def createUsuario(
                     db.refresh(usuario_db)
 
                     # falta mostra el mensaje para cuando se almacene correctamnete el usuario
+                    """ alerta = {
+                        "mensaje": "creado correctamente",
+                        "color": "success",
+                    } """
                     print("Usuario creado exitosamente")
-                    return JSONResponse(status_code=201, content={"mensaje": "Usuario creado exitosamente"})
-
+                    return RedirectResponse(url="/usuarios", status_code=status.HTTP_201_CREATED)
                 except Exception as e:
                     db.rollback()  # Realiza un rollback en caso de error para deshacer cambios
-                    return HTTPException(status_code=500, detail="Error al registrar el usuario")
+                    return {"mensaje": e}
+            return {"mensaje": "Usuario creado exitosamente"}
         else:
             raise HTTPException(status_code=203, detail="No autorizado")
     else:
         raise HTTPException(status_code=203, detail="No autorizado")
-
 
 def verificar_existencia(campos, valores, db):
     query = db.query(Usuario)
     for campo, valor in zip(campos, valores):
         query = query.filter(getattr(Usuario, campo) == valor)
     return db.query(query.exists()).scalar()
-
 
 def consultarUsuarios(
     request: Request, token: str, db: Session, id_empresa: str
@@ -332,7 +335,7 @@ def consultarUsuarios(
                     ).filter(
                         (Usuario.id_usuario != token_valido)
                         & (Usuario.empresa == id_empresa)
-
+                        
                     )
                 if rol_usuario == ADMIN:
                     empresas = None
@@ -386,7 +389,6 @@ def EditarUsuarios(
     id_usuario: str,
     token: str,
     db: Session,
-    id_empresa: str,
 ):
     if token:
         token_valido = verificar_token(token, db)
@@ -403,7 +405,7 @@ def EditarUsuarios(
                 response = template.TemplateResponse(
                     "crud-usuarios/EditarUsuario.html",
                     {"request": request, "user": user,
-                        "usuario": usuario, "viviendas": viviendas, "id_empresa": id_empresa},
+                        "usuario": usuario, "viviendas": viviendas},
                 )
                 response.headers.update(headers)
                 return response

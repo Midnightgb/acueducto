@@ -148,6 +148,7 @@ def pagConceptosBasicos(
     else:
         return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
 
+
 # ESTATUTOS
 @app.get("/estatutos", response_class=HTMLResponse, tags=["Operaciones Documentos"])
 def pagEstatutos(
@@ -278,7 +279,6 @@ def pagContrato_de_condiciones_uniformes(
             return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
     else:
         return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
-
 
 
 # INVITACION A LA ASAMBLEA
@@ -796,7 +796,7 @@ def pagEleccion(
     else:
         return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
 
-'''
+
 # APROBACION ESTATUTOS
 @app.get("/aprobacion_estatutos", response_class=HTMLResponse, tags=["Operaciones Documentos"])
 def pagAprobacion_estatutos(
@@ -833,7 +833,6 @@ def pagAprobacion_estatutos(
     else:
         return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
 
-'''
 
 # ELECCION DE LA JUNTA
 @app.get("/eleccion_junta_administradora", response_class=HTMLResponse, tags=["Operaciones Documentos"])
@@ -913,8 +912,8 @@ def PagAprobacion_acta_constitucion(
 
 # FIN 1.2
 
-@app.get("/generar_documentos", response_class=HTMLResponse)
-def PagGenerarDocumentos(
+@app.get("/archivo_control_documental", response_class=HTMLResponse)
+def PagArchivo_control_documental(
     request: Request, id_empresa: Union[int, None] = None, token: str = Cookie(None), db: Session = Depends(get_database)
 ):
     if token:
@@ -939,7 +938,7 @@ def PagGenerarDocumentos(
             headers = elimimar_cache()
             if rol_usuario == ADMIN:
                 response = template.TemplateResponse(
-                    "paso-1/paso1-1/generar_documentos.html",
+                    "paso-1/paso1-3/archivo_control_documental.html",
                     {"request": request, "usuario": datos_usuario,
                         "rutas_pdf": arreglo_rutas_pdf},
                 )
@@ -949,7 +948,7 @@ def PagGenerarDocumentos(
             elif rol_usuario == SUPER_ADMIN:
                 datos_empresas = db.query(Empresa).all()
                 response = template.TemplateResponse(
-                    "paso-1/paso1-1/generar_documentos.html",
+                    "paso-1/paso1-3/archivo_control_documental.html",
                     {"request": request, "usuario": datos_usuario,
                         "rutas_pdf": arreglo_rutas_pdf, "datos_empresas": datos_empresas},
                 )
@@ -1124,8 +1123,8 @@ async def una_ruta(token: str = Cookie(None), db: Session = Depends(get_database
 
 
 # GENERAR DOCUMENTOS PERSONALIZADOS
-@app.post("/generar_docx/")
-def generar_docx(
+@app.post("/generar_docx_P01_F_03/")
+def generar_docx_P01_F_03(
     request: Request,
     token: str = Cookie(None),
     db: Session = Depends(get_database),
@@ -1144,55 +1143,26 @@ def generar_docx(
     caudal_permanente: str = Form(...),
     rango_medicion: str = Form(...)
 ):
-    if token:
-        is_token_valid = verificar_token(token, db)  # retorna el id_usuario
-
-        if is_token_valid:
-
-            rol_usuario = get_rol(is_token_valid, db)
-            print(rol_usuario)
-            datos_usuario = get_datos_usuario(is_token_valid, db)
-            headers = elimimar_cache()
-            
-            respuesta = generarDocx(
-                request,
-                token,
-                db,
-                nit,
-                presidente,
-                patrimonio,
-                municipio,
-                departamento,
-                web,
-                horario,
-                vereda,
-                sigla,
-                fecha,
-                especificaciones,
-                diametro,
-                caudal_permanente,
-                rango_medicion,
-            )
-            return respuesta
-        
-        else:
-            alerta = {
-                "mensaje": "La contraseña es incorrecta.",
-                "color": "danger",
-            }
-            return template.TemplateResponse(
-            "generar_documentos.html", {"request": request, "alerta": alerta}
-        )
-    else:
-        alerta = {
-            "mensaje": "La contraseña es incorrecta.",
-            "color": "danger",
-        }
-        return template.TemplateResponse(
-            "generar_documentos.html", {"request": request, "alerta": alerta}
-        )
-
-    
+    respuesta = generarDocx(
+        request,
+        token,
+        db,
+        nit,
+        presidente,
+        patrimonio,
+        municipio,
+        departamento,
+        web,
+        horario,
+        vereda,
+        sigla,
+        fecha,
+        especificaciones,
+        diametro,
+        caudal_permanente,
+        rango_medicion,
+    )
+    return respuesta
 
 
 # Otras importaciones necesarias (como SUPER_ADMIN, ADMIN, Usuario, verificar_token, get_rol, get_database, etc.)
@@ -1239,8 +1209,8 @@ def create_usuario(
         token,
         db,
     )
-
     return respuesta
+
 
 # --- FUNCION PARA VERIFICAR CAMPOS EN LA CREACION DE USUARIOS
 
@@ -1277,9 +1247,8 @@ def Editar_Usuarios(
     id_usuario: str = Form(...),
     token: str = Cookie(None),
     db: Session = Depends(get_database),
-    id_empresa: str = Form(None)
 ):
-    respuesta = EditarUsuarios(request, id_usuario, token, db, id_empresa)
+    respuesta = EditarUsuarios(request, id_usuario, token, db)
     return respuesta
 
 
@@ -1936,3 +1905,4 @@ def desvincularVivienda(
                 status_code=403, detail="nada")
     else:
         return RedirectResponse("/", status_code=status.HTTP_303_SEE_OTHER)
+
