@@ -3,6 +3,13 @@
 
 <head>
     {% block meta %} {% include 'meta.html' %} {% endblock %}
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    <link
+        href="https://cdn.datatables.net/v/bs5/jszip-3.10.1/dt-1.13.6/af-2.6.0/b-2.4.2/b-html5-2.4.2/b-print-2.4.2/kt-2.10.0/r-2.5.0/sr-1.3.0/datatables.min.css"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11">
 </head>
 
 <body class="dashboard-analytics admin-header">
@@ -35,44 +42,14 @@
 
                 <div class="card shadow mb-4 rounded-2">
                     <div class="card-header py-3">
-                        <h5 class="m-0 font-weight-bold text-primary">
+                        <h5 class="m-0 font-weight-bold text-primary ">
                             Registro de Asistencia
                         </h5>
                     </div>
-                        <form action="/reunionesFecha" method="post" class="row m-3" id="buscarReuniones">
-                            <div class="col-4">
-                                <label for="">Fecha Actual</label>
-                                <input type="date" id="fecha" name="fechaActual" value="" class="form-control"
-                                    required readonly />
-                            </div>
-
-                            <div class="col-4">
-                                <label for="">Seleccione la fecha</label>
-                                <input type="date" class="form-control" name="fechaHasta" id="hora"
-                                    placeholder="Hora" required />
-                            </div>
-                            <div class="col-4 mt-4">
-                                <button type="submit" class="btn btn-primary">
-                                    Buscar reuniones
-                                </button>
-                            </div>
-                        </form>
+                    
                     
                     <div class="row col-12">
-                        <div class="col-6 form-group">
-                            <form action="/datosAsistencia" method="POST" id="formAsistencia">
-                                <label class="mt-2" for="">Seleccione la reunion:</label>
-                                <select class="form-select" name="reunion_1" id="Reunion_1" required>
-                                    <option disabled selected>Seleccione una reunion</option>
-                                    {% if reuniones: %} 
-                                        {% for reunion in reuniones %}
-                                            <option id="" value=" {{reunion.id_reunion}} ">{{reunion.nom_reunion}}</option>
-                                        {%endfor%} 
-                                    {% else: %}
-                                        <option disabled>No hay reuniones</option>
-                                    {%endif%}
-                                </select><br />
-                            </form>
+                        <div class="col-6 form-group mt-5">
                             {% if reunionSelect: %}
                             <h5>Reunion seleccionada: {{reunionSelect.nom_reunion}}</h5>
                             {% elif nombreReunion:%}
@@ -80,7 +57,7 @@
                             {%endif%}
                         </div>
                         <div class="col-6 form-group">
-                            {%if suscriptores: %}
+                            {%if usuarios %}
                             <form action="/calcularCuorum" method="POST" id="Calcular">
                                 <div class="col form-group">
                                     <label class="mt-2" for="">cuorum</label>
@@ -110,35 +87,66 @@
                             {%endif%}
                         </div>
                     </div>
-
-                    <div class="table-responsive">
-                        <table class="table table-hover">
-                            <thead>
-                                <tr>
-                                    <th scope="col">Nombre</th>
-                                    <th scope="col">Apellido</th>
-                                    <th scope="col">No. Documento</th>
-                                    <th scope="col">Dirección</th>
-                                    <th scope="col">Correo Electronico</th>
-                                    <th scope="col">Asistencia</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% if suscriptores: %} {% for suscrip in suscriptores %}
-                                <tr>
-                                    <td>{{suscrip.nom_usuario}}</td>
-                                    <td>{{suscrip.apellido_usuario}}</td>
-                                    <td>{{suscrip.tipo_doc}}:{{suscrip.num_doc}}</td>
-                                    <td>{{suscrip.direccion}}</td>
-                                    <td>{{suscrip.correo}}</td>
-                                    <td>
-                                        <input class="ml-4" type="checkbox" id="miCheckbox" name="miCheckbox" />
-                                    </td>
-                                </tr>
-                                {%endfor%} {%endif%}
-                            </tbody>
-                        </table>
+                    <div class="pcoded-content">
+                        <div class="table-responsive">
+                          <table class="table table-striped table-hover	 table-borderless align-middle responsive" id="dataUsers" class="display" >
+                              <thead>
+                                        <tr>
+                                            <th scope="col">Nombre</th>
+                                            <th scope="col">Apellido</th>
+                                            <th scope="col">No. Documento</th>
+                                            <th scope="col">Dirección</th>
+                                            <th scope="col">Correo Electronico</th>
+                                            <th scope="col">Asistencia</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% if usuarios %}
+                                            {% for item in usuarios["suscriptor"] %}
+                                                {% set suscrip = item[0] %}
+                                                {% set estado = item[1] %}
+                                                <tr>
+                                                    <td>{{ suscrip.nom_usuario }}</td>
+                                                    <td>{{ suscrip.apellido_usuario }}</td>
+                                                    <td>{{ suscrip.tipo_doc }}:{{ suscrip.num_doc }}</td>
+                                                    <td>{{ suscrip.direccion }}</td>
+                                                    <td>{{ suscrip.correo }}</td>
+                                                    <td>
+                                                        {% if estado %}
+                                                            <input class="ml-4" type="checkbox" id="miCheckbox" name="miCheckbox" value="{{ suscrip.id_usuario }}" checked />
+                                                        {% else %}
+                                                            <input class="ml-4" type="checkbox" id="miCheckbox" name="miCheckbox" value="{{ suscrip.id_usuario }}" />
+                                                        {% endif %}
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        {% endif %}
+                                    </tbody>                                    
+                          </table>
+                        </div>
+                        <!-- modal de confirmacion de eliminacio de empresa -->
+                        <div class="modal fade" id="confirmDeleteModal" tabindex="-1" role="dialog"
+                        aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                              <form id="postForm" action="/CambiarEstadoEmpresa/{{id_empresa}}" method="POST">
+                                <div class="modal-header">
+                                      <h5 class="modal-title" id="confirmDeleteModalLabel">Confirmación de Eliminación de la empresa</h5>
+                                      <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    ¿Está seguro de que desea desactivar esta empresa?
+                                </div>
+                                <div class="modal-footer">
+                                  <div class="content-buttons">
+                                    <button type="button" id="confirmDeleteButton" class="btn btn-danger">Desactivar Empresa</button>
+                                  </div>
+                              </div>
+                            </form>
+                        </div>
                     </div>
+                  </div>
                 </div>
                 <div class="d-flex justify-content-center mb-3">
                     <a href="archivos/asistencia" download="formulario-asistencia"
@@ -160,7 +168,28 @@
         <!-- End of Main Content -->
     </div>
 
+
+    
+    <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
     <script>
+        $(document).ready(function() {
+            $('#myTable').DataTable( {
+                dom: 'Bfrtip',
+                buttons: [
+                    {
+                        extend: 'pdfHtml5',
+                        download: 'open'
+                    }
+                ]
+            } );
+        } );
+
+        let asistentes = [];
         let formularioAsistencia = document.getElementById("formAsistencia");
         let reunionSelect = document.getElementById("Reunion_1");
 
@@ -177,49 +206,66 @@
         checkboxes.forEach((checkbox) => {
             checkbox.addEventListener("change", () => {
                 if (checkbox.checked) {
+                    asistentes.push(checkbox.value);
                     contadorCheckboxes++;
                 } else {
+                    let eliminarUser = checkbox.value;
+                    let index = asistentes.indexOf(eliminarUser);
+                    if (index !== -1) {
+                        asistentes.splice(index, 1);
+                    }
+                    
                     contadorCheckboxes--;
                 }
+
+                console.log(asistentes);
 
                 // Actualiza el elemento HTML con el contador
                 document.getElementById(
                     "contador-checkboxes"
                 ).textContent = `Cantidad de asistentes: ${contadorCheckboxes}`;
                 document.getElementById("cc").value = contadorCheckboxes;
+
+
             });
         });
 
+        var opcionGuardada = localStorage.getItem("opcionSeleccionada");
         window.addEventListener("load", () => {
-            var opcionGuardada = localStorage.getItem("opcionSeleccionada");
             if (opcionGuardada) {
                 let optionToSelect = reunionSelect.querySelector(
                     `option[value="${opcionGuardada}"]`
                 );
                 if (optionToSelect) {
                     optionToSelect.selected = true;
+                    console.log(opcionGuardada);
                 }
             }
         });
 
+        
         reunionSelect.addEventListener("change", function () {
             localStorage.setItem("opcionSeleccionada", this.value);
         });
 
         function limpiar() {
+            if (asistentes.length > 0) {
+                enviarDatosPost();
+            }
+
             localStorage.clear();
         }
 
-        function obtenerFechaActual() {
-            const fecha = new Date();
-            const año = fecha.getFullYear();
-            const mes = String(fecha.getMonth() + 1).padStart(2, "0");
-            const dia = String(fecha.getDate()).padStart(2, "0");
-            return `${año}-${mes}-${dia}`;
-        }
+        //function obtenerFechaActual() {
+        //    const fecha = new Date();
+        //    const año = fecha.getFullYear();
+        //    const mes = String(fecha.getMonth() + 1).padStart(2, "0");
+        //    const dia = String(fecha.getDate()).padStart(2, "0");
+        //    return `${año}-${mes}-${dia}`;
+        //}
 
         // Asignar la fecha actual al campo de entrada
-        document.getElementById("fecha").value = obtenerFechaActual();
+        
 
         let buscarReunionesForm = document.getElementById("buscarReuniones");
 
@@ -228,10 +274,29 @@
             buscarReunionesForm.submit();
         });
 
+        const enviarDatosPost = () => {
+            fetch("/listaAsistentes",{
+                method:"POST",
+                body:JSON.stringify(
+                    { 
+                        "datos": asistentes,
+                        "id_reunion": opcionGuardada
+                    }),
+            }).then( response => response.json())
+            .then( data => {
+                console.log(data);
+            })
+        }
+        
         
     </script>
-
-    <!-- BEGIN SCRIPTS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous">
+        </script>
+    <script src="{{ url_for('static', path='plugins/perfect-scrollbar/perfect-scrollbar.min.js') }}"></script>
+    <script src="{{ url_for('static', path='assets/js/pcoded.min.js') }}"></script>
+    <script src="{{ url_for('static', path='assets/js/loader.js') }}"></script>
+    <script src="{{ url_for('static', path='assets/js/select.js') }}"></script>
     {% block scripts %} {% include 'scripts.html' %} {% endblock %}
     <!-- END SCRIPTS -->
 </body>

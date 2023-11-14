@@ -1,10 +1,11 @@
-from fastapi import HTTPException, Depends, Cookie, Response
+from fastapi import HTTPException, Depends, Cookie, Response, Body
 from fastapi import HTTPException
 from typing import Optional
 from cruds.EmpresasCrud import *
 from cruds.ReunionesCrud import *
 from cruds.UsuariosCrud import *
 from cruds.SuperAdmin import *
+from cruds.VariablesCrud import *
 from pdfs.generarDocx import *
 from fastapi import (
     FastAPI,
@@ -25,12 +26,13 @@ from models import Empresa, Servicio, Usuario, Token, Vivienda
 import bcrypt
 from database import get_database
 from funciones import get_datos_empresa
-from typing import Union
+from typing import Union, List
 from sqlalchemy import and_
 
 
 SUPER_ADMIN = "SuperAdmin"
 ADMIN = "Admin"
+TECNICO = 'Tecnico'
 ESTADO = "Activo"
 datos_usuario = None
 
@@ -483,6 +485,53 @@ def consultarReuniones(
     else:
         return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
 
+#DATOS DE VARIABLES
+
+@app.post("/obtenerDatosVariablesTecnico")
+def procesar_datos(request: Request, id_empresa: int = Form(...), token: str = Cookie(None), db: Session = Depends(get_database)):
+    is_token_valid = verificar_token(token, db)
+    datosReunion = obtenerVariablesT(db, id_empresa, is_token_valid, request)
+    return datosReunion
+
+@app.get("/listaVariables", response_class=HTMLResponse)
+def consultarListavariables(
+    request: Request, token: str = Cookie(None), db: Session = Depends(get_database)
+):
+    if token:
+        token_valido = verificar_token(token, db)
+        if token_valido:
+            rol_usuario = get_rol(token_valido, db)
+            usuario = (
+                db.query(Usuario).filter(
+                    Usuario.id_usuario == token_valido).first()
+            )
+            headers = elimimar_cache()
+            if rol_usuario == TECNICO:
+
+                empresas = db.query(Empresa).all()
+                if empresas:
+                    response = template.TemplateResponse(
+                        "otros-archivos/lista_variables.html",
+                        {
+                            "request": request,
+                            "empresas": empresas,
+                            "usuario": usuario,
+
+                        },
+                    )
+                    response.headers.update(headers)
+                    return response
+                else:
+                    raise HTTPException(
+                        status_code=403, detail="No hay reuniones que consultar"
+                    )
+            else:
+                raise HTTPException(status_code=403, detail="No puede entrar")
+        else:
+            return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
+    else:
+        return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
+
 # --- RUTA PARA MOSTRAR LA INFO DE LA REUNION SOBRE UNA EMPRESA
 
 
@@ -508,7 +557,10 @@ def obtenerDatosReunion(
         headers = elimimar_cache()
         if usuario:
             reuniones = obtenerReuAdmin(id_empresa, db)
+            empresa = db.query(Empresa).filter(Empresa.id_empresa == id_empresa).first()
             if reuniones:
+                #return {"reuniones": reuniones}
+                    
                 response = template.TemplateResponse(
                     "crud-reuniones/consultar_reunion.html",
                     {
@@ -516,6 +568,7 @@ def obtenerDatosReunion(
                         "reuniones": reuniones,
                         "empresas": empresas,
                         "usuario": usuario,
+                        "empresa":empresa,
                     },
                 )
                 response.headers.update(headers)
@@ -542,8 +595,8 @@ def obtenerDatosReunion(
 
 
 @app.post("/reunionesFecha", response_class=HTMLResponse)
-async def reunionFecha(request: Request, fechaActual: str = Form(...), fechaHasta: str = Form(...), token: str = Cookie(None), db: Session = Depends(get_database)):
-    # Realiza la consulta para seleccionar reuniones entre las dos fechas
+async def reunionFecha(request: Request, fechaActual: str = Form(...), fechaHasta: str = Form(...), token: str = Cookie(None), db: Session = Depends(get_database),id_empresa : int = Form(None)):
+    print(id_empresa)
     if token:
         token_valido = verificar_token(token, db)
         if token_valido:
@@ -551,17 +604,25 @@ async def reunionFecha(request: Request, fechaActual: str = Form(...), fechaHast
                 db.query(Usuario).filter(
                     Usuario.id_usuario == token_valido).first()
             )
-            id_empresa = get_empresa(token_valido, db)
-            reuniones_entre_fechas = db.query(Reunion).filter(Reunion.fecha.between(
+            reuniones_entre_fechas = None
+            if usuario.rol == ADMIN:
+                id_empresa = get_empresa(token_valido, db)
+                reuniones_entre_fechas = db.query(Reunion).filter(Reunion.fecha.between(
                 fechaActual, fechaHasta), Reunion.id_empresa == id_empresa).all()
+            elif usuario.rol == SUPER_ADMIN:
+                reuniones_entre_fechas = db.query(Reunion).filter(Reunion.fecha.between(
+                fechaActual, fechaHasta), Reunion.id_empresa == id_empresa).all()
+                
+
             headers = elimimar_cache()
+            print(reuniones_entre_fechas)
             if reuniones_entre_fechas:
                 alerta = {
                     "mensaje": "Reuniones encontradas, seleccione la reunion.",
                     "color": "success",
                 }
                 response = template.TemplateResponse(
-                    "paso-1/paso1-2/llamado_lista.html",
+                    "crud-reuniones/consultar_reunion.html",
                     {
                         "request": request,
                         "reuniones": reuniones_entre_fechas,
@@ -571,6 +632,8 @@ async def reunionFecha(request: Request, fechaActual: str = Form(...), fechaHast
                 )
                 response.headers.update(headers)
                 return response
+            else:
+                return RedirectResponse(url="/reuniones", status_code=status.HTTP_303_SEE_OTHER)
 
 # --- RUTA PARA MOSTRAR LA PAGUNA DONDE SE EDITA LA REUNION
 
@@ -626,9 +689,9 @@ def obtenerDatos(
 
 
 # LLAMADO A LISTA
-@app.get("/llamado_lista", response_class=HTMLResponse, tags=["Operaciones Documentos"])
+@app.post("/llamado_lista", response_class=HTMLResponse, tags=["Operaciones Documentos"])
 def pagLlamado(
-    request: Request, token: str = Cookie(None), db: Session = Depends(get_database)
+    request: Request, token: str = Cookie(None), db: Session = Depends(get_database), id_reunion: int = Form(None)
 ):
     if token:
         is_token_valid = verificar_token(token, db)  # retorna el id_usuario
@@ -639,13 +702,9 @@ def pagLlamado(
             datos_usuario = get_datos_usuario(is_token_valid, db)
             headers = elimimar_cache()
             if rol_usuario == ADMIN:
-                id_empresa = get_empresa(is_token_valid, db)
-                response = template.TemplateResponse(
-                    "paso-1/paso1-2/llamado_lista.html",
-                    {"request": request, "usuario": datos_usuario},
-                )
-                response.headers.update(headers)  # Actualiza las cabeceras
-                return response
+                suscriptores = obtenerSuscriptoresEmpresa(
+                    db, is_token_valid, request, id_reunion)
+                return suscriptores
             else:
                 alerta = {
                     "mensaje": "No tiene los permisos para esta acción",
@@ -662,19 +721,8 @@ def pagLlamado(
     else:
         return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
 
-# RUTA PARA ENVIAR DATOS DE LA ASISTENCIA
-
-
-@app.post("/datosAsistencia", response_class=HTMLResponse)
-def procesar_datos(request: Request, token: str = Cookie(None), db: Session = Depends(get_database), reunion_1: str = Form("")):
-    is_token_valid = verificar_token(token, db)
-    suscriptores = obtenerSuscriptoresEmpresa(
-        db, is_token_valid, request, reunion_1)
-    return suscriptores
 
 # CALCULAR EL CUORUM
-
-
 @app.post("/calcularCuorum", response_class=HTMLResponse)
 def calcularmCuorum(request: Request, token: str = Cookie(None), db: Session = Depends(get_database), cantidadAsistentes: Optional[int] = Form(None), reunion_1: str = Form("")):
     if cantidadAsistentes is None:
@@ -683,6 +731,22 @@ def calcularmCuorum(request: Request, token: str = Cookie(None), db: Session = D
     cuorumCalculado = calcularCuorum(
         db, is_token_valid, request, cantidadAsistentes, reunion_1)
     return cuorumCalculado
+
+@app.post("/listaAsistentes")
+async def recibirDatos(request:Request, db: Session = Depends(get_database)):
+    datos = await request.json()
+
+    
+    id_reunion = datos.get("id_reunion")
+    print(id_reunion)
+
+    if "datos" in datos:
+        for id_usuario in datos["datos"]:
+            insertarDatosReunion(id_usuario,id_reunion,db)
+    
+            
+
+
 
 # VERIFICACION DEL CUORUM
 
@@ -1936,3 +2000,53 @@ def desvincularVivienda(
                 status_code=403, detail="nada")
     else:
         return RedirectResponse("/", status_code=status.HTTP_303_SEE_OTHER)
+
+
+
+@app.post("/entrada_variables", response_class=RedirectResponse)
+def ver_formulario(
+    request: Request, token: str = Cookie(None), db: Session = Depends(get_database),id_empresa:int = Form(...)
+):
+    print(id_empresa)
+    if token:
+        is_valid = verificar_token(token, db)
+        if is_valid:
+            usuario = db.query(Usuario).filter(
+                Usuario.id_usuario == is_valid).first()
+
+            rol_usuario = get_rol(is_valid, db)
+            if rol_usuario == TECNICO:
+                headers = elimimar_cache()
+                preguntas = preguntasId(db,id_empresa)
+                if not preguntas:
+                    preguntas = [0]
+                else:
+                    preguntas = [item[0] for item in preguntas]
+                response = template.TemplateResponse(
+                    "paso-3/paso-3-2/paso-3.html", {"request": request, "usuario": usuario,"id_empresa":id_empresa,"preguntas":preguntas}
+                )
+                response.headers.update(headers)  # Actualiza las cabeceras
+                return response
+            else:
+                return RedirectResponse("/index", status_code=status.HTTP_303_SEE_OTHER)
+        else:
+            return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
+
+    return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
+
+@app.post("/diseño_acueducto")
+async def datosDiseñoAcueducto(request:Request, db: Session = Depends(get_database), ):
+        datos = await request.json()
+        id_empresa = datos.get("id_empresa")
+        lista_respuestas = datos.get("lista_respuestas")
+        lista_variables = datos.get("lista_variables")
+        if lista_respuestas and lista_variables:
+            for respuesta, variable in zip(lista_respuestas, lista_variables):
+                status = registrarVariables(db,id_empresa, variable, respuesta)
+        
+        if status:
+            return {"status":True,"msg":"Variables registradas con exito"}
+        else:
+            return {"status":False,"msg":"No se pudo registrar la variable"}
+       
+

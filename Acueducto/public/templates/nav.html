@@ -236,7 +236,7 @@
                         <li class="nav-item pcoded-menu-caption">
                             <label class="label-modulos">Paso 3.2: Análisis de la calidad de agua</label>
                         </li>
-                        <li><a href="#" target="_parent">Parámetros físico químicos</a></li>
+                        <li><a href="/entrada_variables" target="_parent">Parámetros físico químicos</a></li>
                         <li><a href="#" target="_parent">Parámetros microbiológicos</a></li>
                         <li><a href="#" target="_parent">Otros</a></li>
                         <li class="nav-item pcoded-menu-caption">
@@ -318,6 +318,8 @@
                 <li class="nav-item">
                     <a class="text-dark" href="/viviendas/1" target="_self">Viviendas</a>
                 </li>
+                
+                
             {% elif usuario.rol == 'Admin' %}
                 <li class="nav-item">
                     <a class="text-dark" href="/form_registro_usuario" target="_self">Registrar usuario</a>
@@ -332,6 +334,12 @@
                 </li>
                 <li class="nav-item">
                     <a class="text-dark" href="/viviendas/1" target="_self">Viviendas</a>
+                </li>
+            {% endif %}
+
+            {% if usuario.rol == 'Tecnico' %}
+                <li class="nav-item">
+                    <a class="text-dark" href="/listaVariables" target="_self">Diseño de componentes</a>
                 </li>
             {% endif %}
         </ul>

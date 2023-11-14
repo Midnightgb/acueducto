@@ -35,7 +35,7 @@ SECRET_KEY = "sd45g4f45SWFGVHHuoyiad4F5SFD65V4SFDVOJWNHACUfwghdfvcguDCwfghezxhAz
 
 
 def generar_token(usuario_id: str):
-    expiration = datetime.utcnow() + timedelta(hours=1)  # Token expira en 1 hora
+    expiration = datetime.utcnow() + timedelta(hours=20)  # Token expira en 20 hora
     payload = {"sub": usuario_id, "exp": expiration}
     token = jwt.encode(payload, SECRET_KEY, algorithm="HS256")
     return token
