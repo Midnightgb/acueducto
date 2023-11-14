@@ -130,21 +130,30 @@
                                 </div>
                             </div>
                             <div class="row pt-5">
+
                                 {% if usuario.rol == "SuperAdmin" %}
                                 <div class="col-lg-2 col-md-2"></div>
                                 <div class="col-lg-8 col-md-8 col-sm-12"> 
-                                    <form id="formulario" action="estatutos" method="GET">
+                                    <form id="formulario" action="estatutos_documento" method="POST">
                                         <h6>Selecciona la empresa que quieres ver los documentos:</h6>
                                         <select class="form-select mt-2 mb-3" name="id_empresa" id="selectEmpresa" required>
                                             <option selected>Elige una empresa</option>
                                             {% for empresa in datos_empresas %}
-                                            <option value="{{empresa.id_empresa}}">{{empresa.nom_empresa}}</option>
+                                                <option value="{{empresa.id_empresa}}">{{empresa.nom_empresa}}</option>
                                             {% endfor %}
                                         </select>
+                                        <input type="hidden" name="id_empresa_hidden" id="id_empresa_hidden" value="">
                                     </form>
                                 </div>
                                 <div class="col-lg-2 col-md-2"></div>
+
+                                <script>
+                                    document.getElementById("selectEmpresa").addEventListener("change", function() {
+                                        document.getElementById("id_empresa_hidden").value = this.value;
+                                    });
+                                </script>
                                 {% endif %}
+
                             </div>
                             <div>
                                 {% if ruta_pdf: %}
