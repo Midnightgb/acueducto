@@ -3,7 +3,7 @@
 <html lang="en">
 
 <head>
-  <title>Listado Empresas </title>
+  <title>Listado Variables </title>
   {% block meta %}
   {% include 'meta.html' %}
   {% endblock %}
@@ -51,7 +51,7 @@
             <div class="col-auto">
               <form action="/obtenerDatosVariablesTecnico" method="POST" id="formDatosVa">
                 <select class="form-select mt-2 mb-3" name="id_empresa" id="selectEmpresa" required>
-                    <option value="" disabled selected>Seleccione una empresa</option>
+                    <option value="" id="jija" disabled selected>Seleccione una empresa</option>
                     {% if empresas: %}
                       {% for empresa in empresas %}
                         <option value="{{ empresa.id_empresa }}">{{ empresa.nom_empresa }}</option>
@@ -62,11 +62,23 @@
                 </select><br>
               </form>
             </div>
-              
             {%endif%}
+            
           </div> 
+        
         <div class="table-responsive mt-3">
-          <table class="table table-striped
+          {% if not variables|length == 23 and variables or alerta %}
+            <div class="col-auto">
+              <div class="d-flex justify-content-end mb-2">
+                <form action="/entrada_variables" method="post"><button type="submit" class="btn btn-success">Llenar variables</button>
+              </div>
+            </div>
+          {% endif %}
+              <input type="hidden" name="id_empresa" id="id_empresa">
+            </form>
+
+          
+          <table class="table table-stripedk
               table-hover	
               table-borderless
               table-success
@@ -161,24 +173,30 @@
   <script>
     let formDatosVa = document.getElementById('formDatosVa');
     let selectEmpresa = document.getElementById('selectEmpresa');
+    let id_empresa = document.getElementById('id_empresa');
+    let jija = document.getElementById("jija");
 
     selectEmpresa.addEventListener('change',() => {
       localStorage.setItem("opcionSeleccionada", selectEmpresa.value);
+      
       formDatosVa.submit();
     });
 
     window.addEventListener('load', () => {
-        var opcionGuardada = localStorage.getItem("opcionSeleccionada");
-        if (opcionGuardada) {
-            let optionToSelect = selectEmpresa.querySelector(`option[value="${opcionGuardada}"]`);
-            if (optionToSelect) {
-                optionToSelect.selected = true;
-            }
-        }
+      var opcionGuardada = localStorage.getItem("opcionSeleccionada");
+      if (opcionGuardada) {
+          let optionToSelect = selectEmpresa.querySelector(`option[value="${opcionGuardada}"]`);
+          id_empresa.value = opcionGuardada;
+          if (optionToSelect) {
+              optionToSelect.selected = true;
+              selectEmpresa.value = opcionGuardada;
+          }
+          console.log(opcionGuardada);
+      }  
+
       localStorage.removeItem("opcionSeleccionada");
     });
-
-
+    
   </script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"
