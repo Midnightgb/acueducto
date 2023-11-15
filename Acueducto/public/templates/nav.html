@@ -40,10 +40,7 @@
                 </li>
                 <!-- MODULO 1 -->
                 <li class="nav-item pcoded-hasmenu menu-modulo-bordes menu-modulos">
-                    <a href="#!" class="nav-link"><span class="pcoded-micon"><i
-                                class="feather icon-box"></i></span><span
-                            class="pcoded-mtext label-modulos"><Strong>Módulo 1<br>CONFORMACIÓN DEL
-                                ACUEDUCTO</Strong></span></a>
+                    <a href="#!" class="nav-link"><span class="pcoded-micon"><i class="feather icon-box"></i></span><span class="pcoded-mtext label-modulos"><Strong>Módulo 1<br>CONFORMACIÓN DEL ACUEDUCTO</Strong></span></a>
                     <ul class="pcoded-submenu">
                         <li class="nav-item">
                             <!-- PARTE 1 -->
@@ -60,55 +57,58 @@
                                 <li class="nav-item pcoded-menu-caption">
                                     <label class="label-modulos">Paso 1.1: Antes</label>
                                 </li>
+                                <li><a href="/introduccion" target="_parent">Introduccion</a></li>
                                 <li><a href="/censo" target="_parent">Censo</a></li>
-                                <li><a href="/conceptos_basicos" target="_parent">Conceptos básicos</a></li>
-                                <li><a href="/estatutos" target="_parent">Estatutos</a></li>
-                                <li><a href="/contrato_condiciones" target="_parent">Contratos de
-                                        Condiciones Uniformes</a></li>
-                                <li><a href="/invitacion_asamblea" target="_parent">Invitación a la
-                                        asamblea</a></li>
-                                <!-- 1.2 durante -->
-                                <!-- estructura para los sub pasos -->
-                                <li class="nav-item pcoded-menu-caption">
-                                    <label class="label-modulos">Paso 1.2: Durante</label>
-                                </li>
-                                {%if usuario.rol == 'Admin':%}
+                                <!-- menu de documentos y formatos -->
+                                <!--  -->
+                        
+                                    <!--  -->
+                                    <li><a href="/estatutos" target="_parent">Estatutos</a></li>
+                                    <li><a href="/contrato_condiciones" target="_parent">Contratos de
+                                            Condiciones Uniformes</a></li>
+                                    <li><a href="/invitacion_asamblea" target="_parent">Invitación a la
+                                            asamblea</a></li>
+                                    <!-- 1.2 durante -->
+                                    <!-- estructura para los sub pasos -->
+                                    <li class="nav-item pcoded-menu-caption">
+                                        <label class="label-modulos">Paso 1.2: Durante</label>
+                                    </li>
+                                    {%if usuario.rol == 'Admin':%}
                                     <li><a href="/llamado_lista" target="_parent">Llamado a lista</a></li>
-                                {%endif%}
-                                <li><a href="/cuorum" target="_parent">Verificación del cuórum</a></li>
-                                <li><a href="/orden_dia" target="_parent">Orden del día</a></li>
-                                <li><a href="/eleccion_comision" target="_parent">Elección de la comisión</a></li>
-                                <li><a href="/archivo_control_documental" target="_parent">Archivo y control
-                                    documental</a></li>
-                                <li><a href="/aprobacion_estatutos" target="_parent">Aprobación de los estatutos</a>
-                                </li>
-                                <li><a href="/eleccion_junta_administradora" target="_parent">Elección junta
-                                        administradora y comité de control</a></li>
-                                <li><a href="/aprobacion_acta_constitucion" target="_parent">Aprobación del acta de
-                                        consitución</a></li>                                
-                                <!--Paso 2-->
-                                <li class="nav-item pcoded-menu-caption">
-                                    <label class="label-modulos"><i class="feather icon-file-text"></i>Paso 2:
-                                        Trámites de legalización </label>
-                                </li>
-                                <li class="nav-item pcoded-menu-caption">
-                                    <label class="label-modulos">Paso 2.1: Registro de cámara de comercio</label>
-                                </li>
-                                <li><a href="#" target="_parent">Acta de constitución</a></li>
-                                <li><a href="#" target="_parent">Listado de suscriptores</a></li>
-                                <li><a href="#" target="_parent">Balance de cuentas inicial</a></li>
-                                <li><a href="#" target="_parent">Documentos del presidente y el representante
-                                        legal</a></li>
-                                <li><a href="#" target="_parent">Documentos de la secretaria </a></li>
-                                <li><a href="#" target="_parent">Estatutos</a></li>
-                                <li class="nav-item pcoded-menu-caption">
-                                    <label class="label-modulos">Paso 2.2: RUT y NIT de la DIAN</label>
-                                </li>
-                                <li><a href="#" target="_parent">Fotocopia de la cédula y el RUT del representante
-                                        legal</a></li>
-                                <li><a href="#" target="_parent">Documento Pre-RUT de la asociación </a></li>
-                                <li><a href="#" target="_parent">Recibo de servicio público - oficina </a></li>
-                            </ul>
+                                    {%endif%}
+                                    <li><a href="/orden_dia" target="_parent">Orden del día</a></li>
+                                    <li><a href="/eleccion_comision" target="_parent">Elección de la comisión</a></li>
+                                    <li><a href="/archivo_control_documental" target="_parent">Archivo y control
+                                            documental</a></li>
+                                    <li><a href="/aprobacion_estatutos" target="_parent">Aprobación de los estatutos</a>
+                                    </li>
+                                    <li><a href="/eleccion_junta_administradora" target="_parent">Elección junta
+                                            administradora y comité de control</a></li>
+                                    <li><a href="/aprobacion_acta_constitucion" target="_parent">Aprobación del acta de
+                                            consitución</a></li>
+                                    <!--Paso 2-->
+                                    <li class="nav-item pcoded-menu-caption">
+                                        <label class="label-modulos"><i class="feather icon-file-text"></i>Paso 2:
+                                            Trámites de legalización </label>
+                                    </li>
+                                    <li class="nav-item pcoded-menu-caption">
+                                        <label class="label-modulos">Paso 2.1: Registro de cámara de comercio</label>
+                                    </li>
+                                    <li><a href="#" target="_parent">Acta de constitución</a></li>
+                                    <li><a href="#" target="_parent">Listado de suscriptores</a></li>
+                                    <li><a href="#" target="_parent">Balance de cuentas inicial</a></li>
+                                    <li><a href="#" target="_parent">Documentos del presidente y el representante legal</a></li>
+                                    <li><a href="#" target="_parent">Documentos de la secretaria </a></li>
+                                    <li><a href="#" target="_parent">Estatutos</a></li>
+                                    <li class="nav-item pcoded-menu-caption">
+                                        <label class="label-modulos">Paso 2.2: RUT y NIT de la DIAN</label>
+                                    </li>
+                                    <li><a href="#" target="_parent">Fotocopia de la cédula y el RUT del representante
+                                            legal</a></li>
+                                    <li><a href="#" target="_parent">Documento Pre-RUT de la asociación </a></li>
+                                    <li><a href="#" target="_parent">Recibo de servicio público - oficina </a></li>
+
+                                </ul>
                         </li>
                         <!-- PARTE 2 -->
                         <li class="nav-item">
@@ -117,73 +117,12 @@
                                     class="pcoded-mtext partes-menu">Trámites prestador de servicios
                                     públicos</span></a>
                             <ul class="pcoded-submenu">
-                                <li class="nav-item pcoded-menu-caption">
-                                    <label class="label-modulos"><i class="feather icon-file-text"></i>Paso 5:
-                                        Comisión Reguladora del Agua Potable y Saneamiento Básico CRA </label>
-                                </li>
-                                <li class="nav-item pcoded-menu-caption">
-                                    <label class="label-modulos">Paso 5.1:</label>
-                                </li>
-                                <li><a href="#" target="_parent">Carta de conformación de la asociación </a></li>
-                                <li class="nav-item pcoded-menu-caption">
-                                    <label class="label-modulos">Paso 5.2: Estudio de Costos y Tarifas</label>
-                                </li>
-                                <li><a href="#" target="_parent">Cargos fijos: Costos administrativos, costos
-                                        operativos, proyectos futuros </a></li>
-                                <li><a href="#" target="_parent">Cargos fijos: Consumo: básico, complementario,
-                                        suntuario </a></li>
-                                <li class="nav-item pcoded-menu-caption">
-                                    <label class="label-modulos"><i class="feather icon-file-text"></i>Paso 6:
-                                        Superintendencia de servicio públicos domicialiarios </label>
-                                </li>
-                                <li><a href="#" target="_parent">Carta a la CRA con radicado</a></li>
-                                <li><a href="#" target="_parent">Carta de conformación de la asociación</a></li>
-                                <li><a href="#" target="_parent">Certificado Cámara de Comercio</a></li>
-                                <li><a href="#" target="_parent">Estatutos</a></li>
-                                <li><a href="#" target="_parent">Listado de suscriptores</a></li>
-                                <li class="nav-item pcoded-menu-caption">
-                                    <label class="label-modulos"><i class="feather icon-file-text"></i>Paso 7:
-                                        Autorización Sanitaria Favorable</label>
-                                </li>
-                                <li><a href="#" target="_parent">Formulario de solicitud</a></li>
-                                <li><a href="#" target="_parent">RUT o Certificado Cámara de Comercio</a></li>
-                                <li><a href="#" target="_parent">Plano hidrográfico</a></li>
-                                <li><a href="#" target="_parent">Plano hidrográfico</a></li>
-                                <li><a href="#" target="_parent">Analisis calidad del agua </a></li>
-                                <li><a href="#" target="_parent">Presentación del Sistema de Tratamiento de Agua
-                                        Potable</a></li>
-                                <li class="nav-item pcoded-menu-caption">
-                                    <label class="label-modulos"><i class="feather icon-file-text"></i>Paso 8:
-                                        Concesión de aguas</label>
-                                </li>
-                                <li><a href="#" target="_parent">Formulario</a></li>
-                                <li><a href="#" target="_parent">Personería jurídica</a></li>
-                                <li><a href="#" target="_parent">Diseño del pozo </a></li>
-                                <li><a href="#" target="_parent">Programa de Uso Eficiente y Ahorro del Agua
-                                        PUEAA</a></li>
-                                <li><a href="#" target="_parent">Visita CAR</a></li>
-                                <li class="nav-item pcoded-menu-caption">
-                                    <label class="label-modulos"><i class="feather icon-file-text"></i>Paso 9: Plan
-                                        de Uso Eficiente y Ahorro de Agua PUEAA</label>
-                                </li>
-                                <li><a href="#" target="_parent">Información general</a></li>
-                                <li><a href="#" target="_parent">Diagnóstico</a></li>
-                                <li><a href="#" target="_parent">Objetivo general</a></li>
-                                <li><a href="#" target="_parent">Plan de acción</a></li>
-                                <li class="nav-item pcoded-menu-caption">
-                                    <label class="label-modulos"><i class="feather icon-file-text"></i>Paso 10:
-                                        Registro Único de Prestador de Servicios Públicos Domiciliarios</label>
-                                </li>
-                                <li class="nav-item pcoded-menu-caption">
-                                    <label class="label-modulos">Paso 10.1: CRA</label>
-                                </li>
-                                <li><a href="#" target="_parent">RUT</a></li>
-                                <li><a href="#" target="_parent">Resolución concesión de aguas </a></li>
-                                <li class="nav-item pcoded-menu-caption">
-                                    <label class="label-modulos">Paso 10.2: SuperServicios</label>
-                                </li>
-                                <li><a href="#" target="_parent">RUT</a></li>
-                                <li><a href="#" target="_parent">Resolución concesión de aguas </a></li>
+                                <li><a href="#" target="_parent">Comisión Reguladora del Agua Potable y Saneamiento Básico CRA</a></li>
+                                <li><a href="#" target="_parent">Superintendencia de servicio públicos domiciliarios</a></li>
+                                <li><a href="#" target="_parent">Autorización Sanitaria Favorable</a></li>
+                                <li><a href="#" target="_parent">Concesión de aguas</a></li>
+                                <li><a href="#" target="_parent">Plan de Uso Eficiente y Ahorro de Agua PUEAA</a></li>
+                                <li><a href="#" target="_parent">Registro Único de Prestador de Servicios Públicos Domiciliarios</a></li>
                             </ul>
                         </li>
                         <!-- PARTE 3 -->
@@ -192,73 +131,37 @@
                                         class="feather icon-layout"></i></span><span
                                     class="pcoded-mtext partes-menu">Seguimiento planes y programas</span></a>
                             <ul class="pcoded-submenu">
+                                <li><a href="#" target="_parent">SG-SST (Resolución 312/2019)</a></li>
+                                <li><a href="#" target="_parent">Asambleas generales y extraordinarias</a></li>
                                 <li class="nav-item pcoded-menu-caption">
-                                    <label class="label-modulos"><i class="feather icon-file-text"></i>Paso 11:
-                                        SG-SST</label>
-                                </li>
-                                <li><a href="#" target="_parent">Matriz de riesgos</a></li>
-                                <li><a href="#" target="_parent">Plan de trabajo anual</a></li>
-                                <li><a href="#" target="_parent">Plan de emergencias</a></li>
-                                <li><a href="#" target="_parent">Procedimiento de trabajo en alturas</a></li>
-                                <li><a href="#" target="_parent">Instrucciones técnicas</a></li>
-                                <li><a href="#" target="_parent">Fichas de seguridad</a></li>
-                                <li><a href="#" target="_parent">Investigación de incidentes, accidentes y
-                                        enfermedad laboral</a></li>
-                                <li><a href="#" target="_parent">Reglamento interno de trabajo </a></li>
-                                <li class="nav-item pcoded-menu-caption">
-                                    <label class="label-modulos"><i class="feather icon-file-text"></i>Paso 12:
-                                        Seguimiento PUEAA</label>
-                                </li>
-                                <li class="nav-item pcoded-menu-caption">
-                                    <label class="label-modulos"><i class="feather icon-file-text"></i>Paso 15:
-                                        Facturación</label>
+                                    <label class="label-modulos"><i class="feather icon-file-text"></i>
+                                    Facturación</label>
                                 </li>
                                 <li><a href="#" target="_parent">Facturación</a></li>
                             </ul>
                         </li>
                     </ul>
 
-                    <!-- MODULO 2 -->
+                    <!-- MÓDULO 2 -->
                 <li class="nav-item pcoded-hasmenu menu-modulos">
                     <a href="#!" class="nav-link"><span class="pcoded-micon"><i
                                 class="feather icon-box"></i></span><span
-                            class="pcoded-mtext label-modulos"><Strong>Módulo 2<br>ASISTENCIA TÉCNICA
-                                POTABILIZACIÓN</Strong></span></a>
+                            class="pcoded-mtext label-modulos"><Strong>Módulo 2<br>ASISTENCIA TÉCNICA TRATAMIENTO</Strong></span></a>
                     <ul class="pcoded-submenu">
+                        
                         <li class="nav-item pcoded-menu-caption">
-                            <label class="label-modulos"><i class="feather icon-file-text"></i>Paso 3: Análisis de
-                                la fuente</label>
+                            <label class="label-modulos">Paso 1: Análisis de la fuente</label>
                         </li>
+                        <li><a href="#" target="_parent">Ubicación punto de captación</a></li>
+                        <li><a href="#" target="_parent">Análisis de la calidad del agua</a></li>
+                        
                         <li class="nav-item pcoded-menu-caption">
-                            <label class="label-modulos">Paso 3.1: Ubicación del punto de captación </label>
+                            <label class="label-modulos">Paso 2: Diseño del sistema de tratamiento del agua</label>
                         </li>
-                        <li><a href="#" target="_parent">Plano hidrográfico</a></li>
-                        <li class="nav-item pcoded-menu-caption">
-                            <label class="label-modulos">Paso 3.2: Análisis de la calidad de agua</label>
-                        </li>
-                        <li><a href="#" target="_parent">Parámetros físico químicos</a></li>
-                        <li><a href="#" target="_parent">Parámetros microbiológicos</a></li>
-                        <li><a href="#" target="_parent">Otros</a></li>
-                        <li class="nav-item pcoded-menu-caption">
-                            <label class="label-modulos"><i class="feather icon-file-text"></i>Paso 4: Diseño del
-                                sistema de potabilización de agua</label>
-                        </li>
-                        <li class="nav-item pcoded-menu-caption">
-                            <label class="label-modulos">Paso 4.2: Cálculos de diseño de componentes del
-                                STAP</label>
-                        </li>
-                        <li class="nav-item pcoded-menu-caption">
-                            <label class="label-modulos">Paso 4.3: Diseño de componentes del STAP</label>
-                        </li>
-                        <li><a href="#" target="_parent">Esquemas</a></li>
-                        <li><a href="#" target="_parent">Memorias de cálculo</a></li>
-                        <li><a href="#" target="_parent">Descripción técnica de los procesos</a></li>
-                        <li><a href="#" target="_parent">Costos de construcción y operación</a></li>
-                        <li class="nav-item pcoded-menu-caption">
-                            <label class="label-modulos">Paso 4.4: Captación, conducción y distribución</label>
-                        </li>
-                        <li><a href="#" target="_parent">Descripción</a></li>
-                        <li><a href="#" target="_parent">Costos de instalación - construcción</a></li>
+                        <li><a href="#" target="_parent">Variables de entrada</a></li>
+                        <li><a href="#" target="_parent">Diseño de componentes del tratamiento</a></li>
+                        <li><a href="#" target="_parent">Operación y mantenimiento de componentes del tratamiento
+                        </a></li>
                         <li class="nav-item pcoded-menu-caption">
                             <label class="label-modulos"><i class="feather icon-file-text"></i>Paso 13: Operación y
                                 mantenimiento STAP</label>
@@ -281,7 +184,8 @@
 <!-- [ navigation menu ] end -->
 
 <!-- [ Header ] start -->
-<header class="navbar pcoded-header navbar-expand-lg navbar-light header-dark" style="background: whitesmoke;">
+
+<header class="navbar pcoded-header navbar-expand-lg navbar-light" style="background: whitesmoke; position: fixed;">
 
     <div class="m-header">
         <a class="mobile-menu" id="mobile-collapse" href="#!"><span></span></a>
@@ -298,41 +202,41 @@
     <div class="collapse navbar-collapse">
         <ul class="navbar-nav mr-auto">
             {% if usuario.rol == 'SuperAdmin' %}
-                <li class="nav-item">
-                    <a class="text-dark" href="/form_registro_usuario" target="_self">Registrar usuario</a>
-                </li>
-                <li class="nav-item">
-                    <a class="text-dark" href="/registro_empresa" target="_self">Registrar empresa</a>
-                </li>
-                <li class="nav-item">
-                    <form action="/usuarios" method="post" class="btnUsuarios">
-                        <button class="btnUsuarios text-dark" type="submit" target="_self">Usuarios</button>
-                    </form>
-                </li>
-                <li class="nav-item">
-                    <a class="text-dark" href="/empresas/1" target="_self">Empresas</a>
-                </li>
-                <li class="nav-item">
-                    <a class="text-dark" href="/reuniones" target="_self">Reunion</a>
-                </li>
-                <li class="nav-item">
-                    <a class="text-dark" href="/viviendas/1" target="_self">Viviendas</a>
-                </li>
+            <li class="nav-item">
+                <a class="text-dark" href="/form_registro_usuario" target="_self">Registrar usuario</a>
+            </li>
+            <li class="nav-item">
+                <a class="text-dark" href="/registro_empresa" target="_self">Registrar empresa</a>
+            </li>
+            <li class="nav-item">
+                <form action="/usuarios" method="post" class="btnUsuarios">
+                    <button class="btnUsuarios text-dark" type="submit" target="_self">Usuarios</button>
+                </form>
+            </li>
+            <li class="nav-item">
+                <a class="text-dark" href="/empresas/1" target="_self">Empresas</a>
+            </li>
+            <li class="nav-item">
+                <a class="text-dark" href="/reuniones" target="_self">Reunion</a>
+            </li>
+            <li class="nav-item">
+                <a class="text-dark" href="/viviendas/1" target="_self">Viviendas</a>
+            </li>
             {% elif usuario.rol == 'Admin' %}
-                <li class="nav-item">
-                    <a class="text-dark" href="/form_registro_usuario" target="_self">Registrar usuario</a>
-                </li>
-                <li class="nav-item">
-                    <form action="/usuarios" method="post" class="btnUsuarios">
-                        <button class="btnUsuarios text-dark" type="submit" target="_self">Usuarios</button>
-                    </form>
-                </li>
-                <li class="nav-item">
-                    <a class="text-dark" href="/reuniones" target="_self">Reunion</a>
-                </li>
-                <li class="nav-item">
-                    <a class="text-dark" href="/viviendas/1" target="_self">Viviendas</a>
-                </li>
+            <li class="nav-item">
+                <a class="text-dark" href="/form_registro_usuario" target="_self">Registrar usuario</a>
+            </li>
+            <li class="nav-item">
+                <form action="/usuarios" method="post" class="btnUsuarios">
+                    <button class="btnUsuarios text-dark" type="submit" target="_self">Usuarios</button>
+                </form>
+            </li>
+            <li class="nav-item">
+                <a class="text-dark" href="/reuniones" target="_self">Reunion</a>
+            </li>
+            <li class="nav-item">
+                <a class="text-dark" href="/viviendas/1" target="_self">Viviendas</a>
+            </li>
             {% endif %}
         </ul>
     </div>
