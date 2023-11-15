@@ -140,7 +140,7 @@ def generarDocx(
                         manejarDocumentos("P01-F-02_Formato_Contrato_Condiciones_Uniformes", datos, nit, is_token_valid, db, 2)
                         arreglo_rutas.append('ArchivosDescarga/Generados/P01-F-02_Formato_Contrato_Condiciones_Uniformes'+ nit + '.pdf')
                         response = template.TemplateResponse(
-                        "paso-1/paso1-3/archivo_control_documental.html", {"request": request, "usuario": datos_usuario, "rutas_pdf": arreglo_rutas}
+                        "paso-1/paso1-1/generar_documentos.html", {"request": request, "usuario": datos_usuario, "rutas_pdf": arreglo_rutas}
                         )
                         response.headers.update(headers)  # Actualiza las cabeceras
                         return response
@@ -150,7 +150,7 @@ def generarDocx(
                 else:
                     print('No se encontró el usuario con el ID proporcionado.')
                 response = template.TemplateResponse(
-                    "paso-1/paso1-3/archivo_control_documental.html", {"request": request, "usuario": datos_usuario, "rutas_pdf": []}
+                    "paso-1/paso1-1/generar_documentos.html", {"request": request, "usuario": datos_usuario, "rutas_pdf": []}
                 )
                 response.headers.update(headers)  # Actualiza las cabeceras
                 return response
