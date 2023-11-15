@@ -1,11 +1,12 @@
-from fastapi import HTTPException, Depends, Cookie, Response
+from fastapi import HTTPException, Depends, Cookie, Response, Body
 from fastapi import HTTPException
 from typing import Optional
 from cruds.EmpresasCrud import *
 from cruds.ReunionesCrud import *
 from cruds.UsuariosCrud import *
 from cruds.SuperAdmin import *
-from pdfs.P01_F_03 import *
+from cruds.VariablesCrud import *
+from pdfs.generarDocx import *
 from fastapi import (
     FastAPI,
     Request,
@@ -25,16 +26,21 @@ from models import Empresa, Servicio, Usuario, Token, Vivienda
 import bcrypt
 from database import get_database
 from funciones import get_datos_empresa
-from typing import Union
+from typing import Union, List
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import and_
 
 
 SUPER_ADMIN = "SuperAdmin"
 ADMIN = "Admin"
+TECNICO = 'Tecnico'
 ESTADO = "Activo"
 datos_usuario = None
 
 app = FastAPI()
+
+
+
 
 # Agregando los archivos estaticos que están en la carpeta dist del proyecto
 app.mount("/static", StaticFiles(directory="public/dist"), name="static")
@@ -148,7 +154,6 @@ def pagConceptosBasicos(
     else:
         return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
 
-
 # ESTATUTOS
 @app.get("/estatutos", response_class=HTMLResponse, tags=["Operaciones Documentos"])
 def pagEstatutos(
@@ -214,7 +219,7 @@ def pagEstatutos(
     else:
         return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
 
-
+'''
 # CONTRATO DE CONDICIONES UNIFORME
 @app.get("/contrato_condiciones", response_class=HTMLResponse, tags=["Operaciones Documentos"])
 def pagContrato_de_condiciones_uniformes(
@@ -280,6 +285,7 @@ def pagContrato_de_condiciones_uniformes(
     else:
         return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
 
+'''
 
 # INVITACION A LA ASAMBLEA
 @app.get("/invitacion_asamblea", response_class=HTMLResponse, tags=["Operaciones Documentos"])
@@ -483,6 +489,53 @@ def consultarReuniones(
     else:
         return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
 
+#DATOS DE VARIABLES
+
+@app.post("/obtenerDatosVariablesTecnico")
+def procesar_datos(request: Request, id_empresa: int = Form(...), token: str = Cookie(None), db: Session = Depends(get_database)):
+    is_token_valid = verificar_token(token, db)
+    datosReunion = obtenerVariablesT(db, id_empresa, is_token_valid, request)
+    return datosReunion
+
+@app.get("/listaVariables", response_class=HTMLResponse)
+def consultarListavariables(
+    request: Request, token: str = Cookie(None), db: Session = Depends(get_database)
+):
+    if token:
+        token_valido = verificar_token(token, db)
+        if token_valido:
+            rol_usuario = get_rol(token_valido, db)
+            usuario = (
+                db.query(Usuario).filter(
+                    Usuario.id_usuario == token_valido).first()
+            )
+            headers = elimimar_cache()
+            if rol_usuario == TECNICO:
+
+                empresas = db.query(Empresa).all()
+                if empresas:
+                    response = template.TemplateResponse(
+                        "otros-archivos/lista_variables.html",
+                        {
+                            "request": request,
+                            "empresas": empresas,
+                            "usuario": usuario,
+
+                        },
+                    )
+                    response.headers.update(headers)
+                    return response
+                else:
+                    raise HTTPException(
+                        status_code=403, detail="No hay reuniones que consultar"
+                    )
+            else:
+                raise HTTPException(status_code=403, detail="No puede entrar")
+        else:
+            return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
+    else:
+        return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
+
 # --- RUTA PARA MOSTRAR LA INFO DE LA REUNION SOBRE UNA EMPRESA
 
 
@@ -508,7 +561,10 @@ def obtenerDatosReunion(
         headers = elimimar_cache()
         if usuario:
             reuniones = obtenerReuAdmin(id_empresa, db)
+            empresa = db.query(Empresa).filter(Empresa.id_empresa == id_empresa).first()
             if reuniones:
+                #return {"reuniones": reuniones}
+                    
                 response = template.TemplateResponse(
                     "crud-reuniones/consultar_reunion.html",
                     {
@@ -516,6 +572,7 @@ def obtenerDatosReunion(
                         "reuniones": reuniones,
                         "empresas": empresas,
                         "usuario": usuario,
+                        "empresa":empresa,
                     },
                 )
                 response.headers.update(headers)
@@ -542,8 +599,8 @@ def obtenerDatosReunion(
 
 
 @app.post("/reunionesFecha", response_class=HTMLResponse)
-async def reunionFecha(request: Request, fechaActual: str = Form(...), fechaHasta: str = Form(...), token: str = Cookie(None), db: Session = Depends(get_database)):
-    # Realiza la consulta para seleccionar reuniones entre las dos fechas
+async def reunionFecha(request: Request, fechaActual: str = Form(...), fechaHasta: str = Form(...), token: str = Cookie(None), db: Session = Depends(get_database),id_empresa : int = Form(None)):
+    print(id_empresa)
     if token:
         token_valido = verificar_token(token, db)
         if token_valido:
@@ -551,17 +608,25 @@ async def reunionFecha(request: Request, fechaActual: str = Form(...), fechaHast
                 db.query(Usuario).filter(
                     Usuario.id_usuario == token_valido).first()
             )
-            id_empresa = get_empresa(token_valido, db)
-            reuniones_entre_fechas = db.query(Reunion).filter(Reunion.fecha.between(
+            reuniones_entre_fechas = None
+            if usuario.rol == ADMIN:
+                id_empresa = get_empresa(token_valido, db)
+                reuniones_entre_fechas = db.query(Reunion).filter(Reunion.fecha.between(
                 fechaActual, fechaHasta), Reunion.id_empresa == id_empresa).all()
+            elif usuario.rol == SUPER_ADMIN:
+                reuniones_entre_fechas = db.query(Reunion).filter(Reunion.fecha.between(
+                fechaActual, fechaHasta), Reunion.id_empresa == id_empresa).all()
+                
+
             headers = elimimar_cache()
+            print(reuniones_entre_fechas)
             if reuniones_entre_fechas:
                 alerta = {
                     "mensaje": "Reuniones encontradas, seleccione la reunion.",
                     "color": "success",
                 }
                 response = template.TemplateResponse(
-                    "paso-1/paso1-2/llamado_lista.html",
+                    "crud-reuniones/consultar_reunion.html",
                     {
                         "request": request,
                         "reuniones": reuniones_entre_fechas,
@@ -571,6 +636,8 @@ async def reunionFecha(request: Request, fechaActual: str = Form(...), fechaHast
                 )
                 response.headers.update(headers)
                 return response
+            else:
+                return RedirectResponse(url="/reuniones", status_code=status.HTTP_303_SEE_OTHER)
 
 # --- RUTA PARA MOSTRAR LA PAGUNA DONDE SE EDITA LA REUNION
 
@@ -626,9 +693,9 @@ def obtenerDatos(
 
 
 # LLAMADO A LISTA
-@app.get("/llamado_lista", response_class=HTMLResponse, tags=["Operaciones Documentos"])
+@app.post("/llamado_lista", response_class=HTMLResponse, tags=["Operaciones Documentos"])
 def pagLlamado(
-    request: Request, token: str = Cookie(None), db: Session = Depends(get_database)
+    request: Request, token: str = Cookie(None), db: Session = Depends(get_database), id_reunion: int = Form(None)
 ):
     if token:
         is_token_valid = verificar_token(token, db)  # retorna el id_usuario
@@ -639,13 +706,9 @@ def pagLlamado(
             datos_usuario = get_datos_usuario(is_token_valid, db)
             headers = elimimar_cache()
             if rol_usuario == ADMIN:
-                id_empresa = get_empresa(is_token_valid, db)
-                response = template.TemplateResponse(
-                    "paso-1/paso1-2/llamado_lista.html",
-                    {"request": request, "usuario": datos_usuario},
-                )
-                response.headers.update(headers)  # Actualiza las cabeceras
-                return response
+                suscriptores = obtenerSuscriptoresEmpresa(
+                    db, is_token_valid, request, id_reunion)
+                return suscriptores
             else:
                 alerta = {
                     "mensaje": "No tiene los permisos para esta acción",
@@ -662,27 +725,36 @@ def pagLlamado(
     else:
         return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
 
-# RUTA PARA ENVIAR DATOS DE LA ASISTENCIA
-
-
-@app.post("/datosAsistencia", response_class=HTMLResponse)
-def procesar_datos(request: Request, token: str = Cookie(None), db: Session = Depends(get_database), reunion_1: str = Form("")):
-    is_token_valid = verificar_token(token, db)
-    suscriptores = obtenerSuscriptoresEmpresa(
-        db, is_token_valid, request, reunion_1)
-    return suscriptores
 
 # CALCULAR EL CUORUM
 
-
-@app.post("/calcularCuorum", response_class=HTMLResponse)
-def calcularmCuorum(request: Request, token: str = Cookie(None), db: Session = Depends(get_database), cantidadAsistentes: Optional[int] = Form(None), reunion_1: str = Form("")):
+def calcularmCuorum(request: Request, token: str, db: Session, cantidadAsistentes: int, reunion_1: str):
     if cantidadAsistentes is None:
         cantidadAsistentes = 0
     is_token_valid = verificar_token(token, db)
     cuorumCalculado = calcularCuorum(
         db, is_token_valid, request, cantidadAsistentes, reunion_1)
     return cuorumCalculado
+
+@app.post("/listaAsistentes")
+async def recibirDatos(request: Request, token: str = Cookie(None),db: Session = Depends(get_database)):
+    print(
+        "Estamos dentro de la funcion de recibirDatos"
+    )
+    try:
+        datos = await request.json()
+        id_reunion = datos.get("id_reunion")
+        cantidad = datos.get("cantidadAsistentes")
+
+        if "datos" in datos:
+            for id_usuario in datos["datos"]:
+                insertarDatosReunion(id_usuario, id_reunion, db)
+
+        resultado = calcularmCuorum(request,token,db,cantidad,id_reunion)
+        return {"result":resultado}
+    except HTTPException as e:
+        if e.status_code == 499:
+            print("Cliente desconectado")
 
 # VERIFICACION DEL CUORUM
 
@@ -796,7 +868,7 @@ def pagEleccion(
     else:
         return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
 
-
+'''
 # APROBACION ESTATUTOS
 @app.get("/aprobacion_estatutos", response_class=HTMLResponse, tags=["Operaciones Documentos"])
 def pagAprobacion_estatutos(
@@ -833,6 +905,7 @@ def pagAprobacion_estatutos(
     else:
         return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
 
+'''
 
 # ELECCION DE LA JUNTA
 @app.get("/eleccion_junta_administradora", response_class=HTMLResponse, tags=["Operaciones Documentos"])
@@ -912,8 +985,8 @@ def PagAprobacion_acta_constitucion(
 
 # FIN 1.2
 
-@app.get("/archivo_control_documental", response_class=HTMLResponse)
-def PagArchivo_control_documental(
+@app.get("/generar_documentos", response_class=HTMLResponse)
+def PagGenerarDocumentos(
     request: Request, id_empresa: Union[int, None] = None, token: str = Cookie(None), db: Session = Depends(get_database)
 ):
     if token:
@@ -938,7 +1011,7 @@ def PagArchivo_control_documental(
             headers = elimimar_cache()
             if rol_usuario == ADMIN:
                 response = template.TemplateResponse(
-                    "paso-1/paso1-3/archivo_control_documental.html",
+                    "paso-1/paso1-1/generar_documentos.html",
                     {"request": request, "usuario": datos_usuario,
                         "rutas_pdf": arreglo_rutas_pdf},
                 )
@@ -948,7 +1021,7 @@ def PagArchivo_control_documental(
             elif rol_usuario == SUPER_ADMIN:
                 datos_empresas = db.query(Empresa).all()
                 response = template.TemplateResponse(
-                    "paso-1/paso1-3/archivo_control_documental.html",
+                    "paso-1/paso1-1/generar_documentos.html",
                     {"request": request, "usuario": datos_usuario,
                         "rutas_pdf": arreglo_rutas_pdf, "datos_empresas": datos_empresas},
                 )
@@ -1123,8 +1196,8 @@ async def una_ruta(token: str = Cookie(None), db: Session = Depends(get_database
 
 
 # GENERAR DOCUMENTOS PERSONALIZADOS
-@app.post("/generar_docx_P01_F_03/")
-def generar_docx_P01_F_03(
+@app.post("/generar_docx/")
+def generar_docx(
     request: Request,
     token: str = Cookie(None),
     db: Session = Depends(get_database),
@@ -1143,26 +1216,55 @@ def generar_docx_P01_F_03(
     caudal_permanente: str = Form(...),
     rango_medicion: str = Form(...)
 ):
-    respuesta = generarDocx_P01_F_03(
-        request,
-        token,
-        db,
-        nit,
-        presidente,
-        patrimonio,
-        municipio,
-        departamento,
-        web,
-        horario,
-        vereda,
-        sigla,
-        fecha,
-        especificaciones,
-        diametro,
-        caudal_permanente,
-        rango_medicion,
-    )
-    return respuesta
+    if token:
+        is_token_valid = verificar_token(token, db)  # retorna el id_usuario
+
+        if is_token_valid:
+
+            rol_usuario = get_rol(is_token_valid, db)
+            print(rol_usuario)
+            datos_usuario = get_datos_usuario(is_token_valid, db)
+            headers = elimimar_cache()
+            
+            respuesta = generarDocx(
+                request,
+                token,
+                db,
+                nit,
+                presidente,
+                patrimonio,
+                municipio,
+                departamento,
+                web,
+                horario,
+                vereda,
+                sigla,
+                fecha,
+                especificaciones,
+                diametro,
+                caudal_permanente,
+                rango_medicion,
+            )
+            return respuesta
+        
+        else:
+            alerta = {
+                "mensaje": "La contraseña es incorrecta.",
+                "color": "danger",
+            }
+            return template.TemplateResponse(
+            "generar_documentos.html", {"request": request, "alerta": alerta}
+        )
+    else:
+        alerta = {
+            "mensaje": "La contraseña es incorrecta.",
+            "color": "danger",
+        }
+        return template.TemplateResponse(
+            "generar_documentos.html", {"request": request, "alerta": alerta}
+        )
+
+    
 
 
 # Otras importaciones necesarias (como SUPER_ADMIN, ADMIN, Usuario, verificar_token, get_rol, get_database, etc.)
@@ -1209,8 +1311,8 @@ def create_usuario(
         token,
         db,
     )
-    return respuesta
 
+    return respuesta
 
 # --- FUNCION PARA VERIFICAR CAMPOS EN LA CREACION DE USUARIOS
 
@@ -1247,8 +1349,9 @@ def Editar_Usuarios(
     id_usuario: str = Form(...),
     token: str = Cookie(None),
     db: Session = Depends(get_database),
+    id_empresa: str = Form(None)
 ):
-    respuesta = EditarUsuarios(request, id_usuario, token, db)
+    respuesta = EditarUsuarios(request, id_usuario, token, db, id_empresa)
     return respuesta
 
 
@@ -1905,3 +2008,53 @@ def desvincularVivienda(
                 status_code=403, detail="nada")
     else:
         return RedirectResponse("/", status_code=status.HTTP_303_SEE_OTHER)
+
+
+
+@app.post("/entrada_variables", response_class=RedirectResponse)
+def ver_formulario(
+    request: Request, token: str = Cookie(None), db: Session = Depends(get_database),id_empresa:int = Form(...)
+):
+    print(id_empresa)
+    if token:
+        is_valid = verificar_token(token, db)
+        if is_valid:
+            usuario = db.query(Usuario).filter(
+                Usuario.id_usuario == is_valid).first()
+
+            rol_usuario = get_rol(is_valid, db)
+            if rol_usuario == TECNICO:
+                headers = elimimar_cache()
+                preguntas = preguntasId(db,id_empresa)
+                if not preguntas:
+                    preguntas = [0]
+                else:
+                    preguntas = [item[0] for item in preguntas]
+                response = template.TemplateResponse(
+                    "paso-3/paso-3-2/paso-3.html", {"request": request, "usuario": usuario,"id_empresa":id_empresa,"preguntas":preguntas}
+                )
+                response.headers.update(headers)  # Actualiza las cabeceras
+                return response
+            else:
+                return RedirectResponse("/index", status_code=status.HTTP_303_SEE_OTHER)
+        else:
+            return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
+
+    return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
+
+@app.post("/diseño_acueducto")
+async def datosDiseñoAcueducto(request:Request, db: Session = Depends(get_database), ):
+        datos = await request.json()
+        id_empresa = datos.get("id_empresa")
+        lista_respuestas = datos.get("lista_respuestas")
+        lista_variables = datos.get("lista_variables")
+        if lista_respuestas and lista_variables:
+            for respuesta, variable in zip(lista_respuestas, lista_variables):
+                status = registrarVariables(db,id_empresa, variable, respuesta)
+        
+        if status:
+            return {"status":True,"msg":"Variables registradas con exito"}
+        else:
+            return {"status":False,"msg":"No se pudo registrar la variable"}
+       
+

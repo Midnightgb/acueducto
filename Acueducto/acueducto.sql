@@ -2,9 +2,9 @@
 -- version 5.2.0
 -- https://www.phpmyadmin.net/
 --
--- Servidor: 45.77.161.32
--- Tiempo de generación: 01-11-2023 a las 13:36:48
--- Versión del servidor: 8.0.35-0ubuntu0.20.04.1
+-- Servidor: 127.0.0.1
+-- Tiempo de generación: 08-11-2023 a las 12:52:44
+-- Versión del servidor: 10.4.27-MariaDB
 -- Versión de PHP: 8.2.0
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
@@ -21,8 +21,20 @@ SET time_zone = "+00:00";
 -- Base de datos: `acueducto`
 --
 DROP DATABASE IF EXISTS acueducto;
-CREATE DATABASE `acueducto` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE IF NOT EXISTS `acueducto` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE `acueducto`;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `datos_variables`
+--
+
+CREATE TABLE `datos_variables` (
+  `id_empresa` int(10) UNSIGNED NOT NULL,
+  `id_variable` int(10) UNSIGNED NOT NULL,
+  `respuesta` varchar(100) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -31,14 +43,14 @@ USE `acueducto`;
 --
 
 CREATE TABLE `documentos` (
-  `id_doc` int NOT NULL,
-  `id_usuario` char(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `nom_doc` varchar(80) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `id_servicio` int UNSIGNED DEFAULT NULL,
-  `tipo` enum('pdf','docx','xlsx') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `create_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `update_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `url` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL
+  `id_doc` int(11) NOT NULL,
+  `id_usuario` char(30) DEFAULT NULL,
+  `nom_doc` varchar(80) DEFAULT NULL,
+  `id_servicio` int(10) UNSIGNED DEFAULT NULL,
+  `tipo` enum('pdf','docx','xlsx') DEFAULT NULL,
+  `create_at` timestamp NULL DEFAULT current_timestamp(),
+  `update_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `url` varchar(200) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -60,15 +72,15 @@ INSERT INTO `documentos` (`id_doc`, `id_usuario`, `nom_doc`, `id_servicio`, `tip
 --
 
 CREATE TABLE `empresas` (
-  `id_empresa` int UNSIGNED NOT NULL,
-  `nom_empresa` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `direccion_empresa` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `tel_fijo` char(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `tel_cel` char(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `email` varchar(90) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `estado` enum('Activo','Inactivo') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT 'Activo',
-  `create_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `update_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  `id_empresa` int(10) UNSIGNED NOT NULL,
+  `nom_empresa` varchar(50) DEFAULT NULL,
+  `direccion_empresa` varchar(100) DEFAULT NULL,
+  `tel_fijo` char(10) DEFAULT NULL,
+  `tel_cel` char(10) DEFAULT NULL,
+  `email` varchar(90) DEFAULT NULL,
+  `estado` enum('Activo','Inactivo') DEFAULT 'Activo',
+  `create_at` timestamp NULL DEFAULT current_timestamp(),
+  `update_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -137,14 +149,14 @@ INSERT INTO `empresas` (`id_empresa`, `nom_empresa`, `direccion_empresa`, `tel_f
 --
 
 CREATE TABLE `inmuebles_suscritor` (
-  `id_inmueble` int UNSIGNED NOT NULL,
-  `id_usuario` char(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `direccion` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `estrato` enum('1','2','3','4','5','6') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `uso` enum('Doméstico','Industrial','Institucional','Comercial','Agropecuario') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `numero_residentes` int UNSIGNED DEFAULT NULL,
-  `create_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `update_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  `id_inmueble` int(10) UNSIGNED NOT NULL,
+  `id_usuario` char(30) DEFAULT NULL,
+  `direccion` varchar(100) DEFAULT NULL,
+  `estrato` enum('1','2','3','4','5','6') DEFAULT NULL,
+  `uso` enum('Doméstico','Industrial','Institucional','Comercial','Agropecuario') DEFAULT NULL,
+  `numero_residentes` int(10) UNSIGNED DEFAULT NULL,
+  `create_at` timestamp NULL DEFAULT current_timestamp(),
+  `update_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -192,10 +204,10 @@ INSERT INTO `inmuebles_suscritor` (`id_inmueble`, `id_usuario`, `direccion`, `es
 --
 
 CREATE TABLE `lista_asistencia` (
-  `id_asistencia` int UNSIGNED NOT NULL,
-  `id_usuario` char(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `id_reunion` int UNSIGNED DEFAULT NULL,
-  `asistencia` tinyint DEFAULT '0'
+  `id_asistencia` int(10) UNSIGNED NOT NULL,
+  `id_usuario` char(30) DEFAULT NULL,
+  `id_reunion` int(10) UNSIGNED DEFAULT NULL,
+  `asistencia` tinyint(4) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -214,13 +226,13 @@ INSERT INTO `lista_asistencia` (`id_asistencia`, `id_usuario`, `id_reunion`, `as
 --
 
 CREATE TABLE `reuniones` (
-  `id_reunion` int UNSIGNED NOT NULL,
-  `id_empresa` int UNSIGNED NOT NULL,
-  `nom_reunion` varchar(120) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `id_reunion` int(10) UNSIGNED NOT NULL,
+  `id_empresa` int(10) UNSIGNED NOT NULL,
+  `nom_reunion` varchar(120) DEFAULT NULL,
   `fecha` date DEFAULT NULL,
   `hora` time NOT NULL,
-  `lugar` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `url_asistencia` varchar(200) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `lugar` varchar(255) DEFAULT NULL,
+  `url_asistencia` varchar(200) DEFAULT NULL,
   `cuorum` tinyint(1) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -279,12 +291,12 @@ INSERT INTO `reuniones` (`id_reunion`, `id_empresa`, `nom_reunion`, `fecha`, `ho
 --
 
 CREATE TABLE `servicios` (
-  `id_servicio` int UNSIGNED NOT NULL,
-  `nom_servicio` varchar(80) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `id_servicio` int(10) UNSIGNED NOT NULL,
+  `nom_servicio` varchar(80) DEFAULT NULL,
   `paso` float(3,1) DEFAULT NULL,
-  `modulo` tinyint UNSIGNED DEFAULT NULL,
-  `create_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `update_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  `modulo` tinyint(3) UNSIGNED DEFAULT NULL,
+  `create_at` timestamp NULL DEFAULT current_timestamp(),
+  `update_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -303,8 +315,8 @@ INSERT INTO `servicios` (`id_servicio`, `nom_servicio`, `paso`, `modulo`, `creat
 --
 
 CREATE TABLE `tokens` (
-  `id_token` int NOT NULL,
-  `token` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL
+  `id_token` int(11) NOT NULL,
+  `token` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -403,7 +415,8 @@ INSERT INTO `tokens` (`id_token`, `token`) VALUES
 (224, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ6cmZHWEttSEdUU0s2RFJudTY1TFdYZEVQOHdaU1IiLCJleHAiOjE2OTg4NTIyNDd9.Ela5yFITdm-C54wj-Eei_ZR6ObhsgmStPmNWRgbKI7c'),
 (225, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJTNWZvd1JtdWp1Y2F2V0NRTzNIVm84bEZGZThSWHUiLCJleHAiOjE2OTg4NDQ4NjB9.r0D7PmGvB4U0fQI70xnK69js-jM4mPTh6U27v4bdo2I'),
 (226, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJTNWZvd1JtdWp1Y2F2V0NRTzNIVm84bEZGZThSWHUiLCJleHAiOjE2OTg4NDQ4NjF9.uNdv_itbcpGLffFABYqUJoROw2KNgD6V629qZHzl4uk'),
-(227, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ6cmZHWEttSEdUU0s2RFJudTY1TFdYZEVQOHdaU1IiLCJleHAiOjE2OTg5MTQxMzV9.VIOB3OTmN2LY7CMTzteyLVs2OFg03cyk8B37RUxn9B4');
+(227, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ6cmZHWEttSEdUU0s2RFJudTY1TFdYZEVQOHdaU1IiLCJleHAiOjE2OTg5MTQxMzV9.VIOB3OTmN2LY7CMTzteyLVs2OFg03cyk8B37RUxn9B4'),
+(228, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJTNWZvd1JtdWp1Y2F2V0NRTzNIVm84bEZGZThSWHUiLCJleHAiOjE2OTk1MTYyNzV9.cfXwjBep1SpqualBusAGLHu29_jpdFlf0i8kAbNSpwM');
 
 -- --------------------------------------------------------
 
@@ -412,12 +425,12 @@ INSERT INTO `tokens` (`id_token`, `token`) VALUES
 --
 
 CREATE TABLE `trazabilidad` (
-  `id_trazabilidad` int UNSIGNED NOT NULL,
-  `id_empresa` int UNSIGNED DEFAULT NULL,
-  `id_servicio` int UNSIGNED DEFAULT NULL,
-  `estado` enum('Pendiente','En proceso','Finalizado') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `create_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `update_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  `id_trazabilidad` int(10) UNSIGNED NOT NULL,
+  `id_empresa` int(10) UNSIGNED DEFAULT NULL,
+  `id_servicio` int(10) UNSIGNED DEFAULT NULL,
+  `estado` enum('Pendiente','En proceso','Finalizado') DEFAULT NULL,
+  `create_at` timestamp NULL DEFAULT current_timestamp(),
+  `update_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -427,20 +440,20 @@ CREATE TABLE `trazabilidad` (
 --
 
 CREATE TABLE `usuarios` (
-  `id_usuario` char(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `rol` enum('SuperAdmin','Admin','Tecnico','Suscriptor') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `empresa` int UNSIGNED DEFAULT NULL,
-  `nom_usuario` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `apellido_usuario` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `correo` varchar(90) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `tipo_doc` enum('CC','CE','DNI','NIT') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `num_doc` char(12) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `direccion` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `municipio` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `contrasenia` varchar(180) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `estado` enum('Activo','Inactivo') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT 'Activo',
-  `create_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `update_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  `id_usuario` char(30) NOT NULL,
+  `rol` enum('SuperAdmin','Admin','Tecnico','Suscriptor') DEFAULT NULL,
+  `empresa` int(10) UNSIGNED DEFAULT NULL,
+  `nom_usuario` varchar(50) DEFAULT NULL,
+  `apellido_usuario` varchar(50) DEFAULT NULL,
+  `correo` varchar(90) DEFAULT NULL,
+  `tipo_doc` enum('CC','CE','DNI','NIT') DEFAULT NULL,
+  `num_doc` char(12) DEFAULT NULL,
+  `direccion` varchar(100) DEFAULT NULL,
+  `municipio` varchar(50) DEFAULT NULL,
+  `contrasenia` varchar(180) DEFAULT NULL,
+  `estado` enum('Activo','Inactivo') DEFAULT 'Activo',
+  `create_at` timestamp NULL DEFAULT current_timestamp(),
+  `update_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -504,6 +517,7 @@ INSERT INTO `usuarios` (`id_usuario`, `rol`, `empresa`, `nom_usuario`, `apellido
 ('PKRTonuESTgXvTSh7qZxvfjMkMjjLi', 'Admin', 89, 'Julian Andres', 'Vasquez Morales', 'julianvaskes12@hotmail.com', 'CC', '312321', 'km 7 via armenia - potro rojo', 'pereira', '$2b$12$sD8G2C6YSgwz9hS7lPxh0em0hFF5k2Q60435Wc1V88jMFe/AEt8ha', 'Activo', '2023-10-25 23:13:39', '2023-10-25 23:13:39'),
 ('PROd665M8JL4mrWWZfJMd3y9vWm1Vs', 'Admin', 34, 'julian Andrés', 'Vasquez Morales', 'midnight3424@gmail.comda', 'CC', '231231312', 'km 7 via armenia - potro rojo', '4312', '$2b$12$6npfMwdvWXDkbJSwoBrnxOPWbWFW3Fnv0sEXfXJ3rHKuRF./eWZYW', 'Activo', '2023-10-25 23:33:56', '2023-10-25 23:33:56'),
 ('prvgupUg7d0XGJEP691tBIwngC5yGV', 'Suscriptor', 80, 'Esteban', 'Mesa', 'dieguito@gmail.com', 'CC', '54574545', 'asdasd', 'Pereira', '$2b$12$0qItp.8PiG.T5wFHUPUUTeb23bCIDpaXvvbUXl9KTAlWesgixMEVi', 'Activo', '2023-10-03 22:27:47', '2023-10-03 22:27:47'),
+('pv5sxPEXbOkHQp7qdERgfQ951Jgw2k', 'Tecnico', 35, 'tecnico', 'apellido tecnico', 'tecnico@gmail.com', 'CC', '1088788778', 'calle 20', 'Pereira', '$2b$12$J1c8M5W3RHUmaQEJPOP.F.fvMm9rnvvN7K117r0TdC94EEfC5M.4u', 'Activo', '2023-11-08 11:52:09', '2023-11-08 11:52:09'),
 ('qbDpeUw43LL3YPK2p2RxlSdECkRM6i', 'Suscriptor', 1, 'hcgcgc', 'herrera', 'ferrrr@mail.com', 'CC', '44455511', 'Calle 04', 'dosquebradas', '$2b$12$2pFkzHcfPUmL8zxAinXAkeq4EmB8jOTm1KWb8syx5Msgaau7diZz.', 'Activo', '2023-10-31 23:31:21', '2023-10-31 23:31:21'),
 ('qGsp4IfjPQY0Bq4wArqT5PvD52LMNY', 'Suscriptor', 1, 'dsvdvvdvdvdvvv', 'cvdvdvd ', 'dscdsdsv@mail.com', 'CC', '4785415', 'Calle 04', 'dosquebradas', '$2b$12$Rtsx7BKUsy1eSalkAaZUkOEESIGI2UXWvdmkNjaAvWa8Z3mUj63EC', 'Activo', '2023-10-30 23:30:05', '2023-10-30 23:30:05'),
 ('qioeH01FqLon0p0iLdFEO0vXIa07EY', 'Suscriptor', 55, 'pepe', 'marin', 'pepe@dsa.com', 'CC', '145645', 'dsa', 'risa', '$2b$12$ZG.7fyf95AoGKwxSEEWBlusfGussLvLADSZnOAUhVydWVIhrWLuAG', 'Activo', '2023-10-12 14:35:24', '2023-10-12 14:35:24'),
@@ -534,10 +548,56 @@ INSERT INTO `usuarios` (`id_usuario`, `rol`, `empresa`, `nom_usuario`, `apellido
 ('zrBvnmvA44HOIFv9ehGsYLNqMXbOhv', 'Admin', 84, 'admin', 'admin', 'david2013mip@gmail.com', 'CC', '456', 'Allí', 'Pereira', '$2b$12$c4NrgChgjhp0Za0VTBpFb.Ng7bSbPehyEuBEI17v0HkCq6jLmL9HO', 'Activo', '2023-10-19 00:17:58', '2023-10-19 00:17:58'),
 ('zrfGXKmHGTSK6DRnu65LWXdEP8wZSR', 'Admin', 35, 'usuario', 'adso', 'usuarioadso@gmail.com', 'CC', '1007', 'aqui', 'aqui', '$2b$12$LJOwGbxt7FuE2ljbrwRohes3xc3XkBA4PD72ug9m.hTwVAfbBIObW', 'Activo', '2023-10-22 19:24:06', '2023-10-22 19:24:06');
 
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `variables`
+--
+
+CREATE TABLE `variables` (
+  `id_variable` int(10) UNSIGNED NOT NULL,
+  `pregunta` varchar(100) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `variables`
+--
+
+INSERT INTO `variables` (`id_variable`, `pregunta`) VALUES
+(1, 'NOMBRE DEL PROYECTO'),
+(2, 'CLASIFICACION DEL SUELO RURAL'),
+(3, 'NUMERO DE VIVIENDAS'),
+(4, 'FUENTES ABASTECEDORA'),
+(5, 'INGRESOS PROMEDIO POR FAMILIA'),
+(6, 'PERIODICIDAD DEL INGRESO'),
+(7, 'DISPONIBILIDAD PARA EL PAGO DEL SERVICIO DE ACUEDUCTO'),
+(8, 'AÑO BASE DE DISEÑO'),
+(9, 'POBLACION RESIDENCIAL'),
+(10, 'EXISTE UNA INSTITUCION ESCOLAR'),
+(11, 'NUMERO TOTAL DE ALUMNOS'),
+(12, 'NUMERO DE ALUMNOS NATIVOS'),
+(13, 'NUMERO DE PROFESORES'),
+(14, 'NUMERO DE ADMINISTRATIVOS'),
+(15, 'POBLACION FLOTANTE'),
+(16, 'NUMERO ESTIMADO DE POBLACION FLOTANTE'),
+(17, 'ALTURA PROMEDIO SOBRE EL NIVEL DEL MAR DE LA ZONA ATENDIDA'),
+(18, 'ALTURA SOBRE EL NIVEL DE MAS DEL PUNTO DE CAPTACION'),
+(19, 'CAUDAL MEDIO DE LA FUENTE'),
+(20, 'CAUDAL MINIMO DE LA FUENTE'),
+(21, 'ALTURA MAXIMA DE CRECIDAS'),
+(22, 'TEMPERATURA MEDIA DEL AGUA'),
+(23, 'ANCHO MEDIO DEL CAUCE EN EL PUNTO DE CAPTACION');
+
 --
 -- Índices para tablas volcadas
 --
 
+--
+-- Indices de la tabla `datos_variables`
+--
+ALTER TABLE `datos_variables`
+  ADD PRIMARY KEY (`id_empresa`,`id_variable`),
+  ADD KEY `id_variable` (`id_variable`);
 
 --
 -- Indices de la tabla `documentos`
@@ -562,7 +622,7 @@ ALTER TABLE `inmuebles_suscritor`
   ADD KEY `id_usuario` (`id_usuario`);
 
 --
--- Indices de la tabla `listaAsistencia`
+-- Indices de la tabla `lista_asistencia`
 --
 ALTER TABLE `lista_asistencia`
   ADD PRIMARY KEY (`id_asistencia`),
@@ -604,6 +664,12 @@ ALTER TABLE `usuarios`
   ADD KEY `empresa` (`empresa`);
 
 --
+-- Indices de la tabla `variables`
+--
+ALTER TABLE `variables`
+  ADD PRIMARY KEY (`id_variable`);
+
+--
 -- AUTO_INCREMENT de las tablas volcadas
 --
 
@@ -611,53 +677,66 @@ ALTER TABLE `usuarios`
 -- AUTO_INCREMENT de la tabla `documentos`
 --
 ALTER TABLE `documentos`
-  MODIFY `id_doc` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=127;
+  MODIFY `id_doc` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=127;
 
 --
 -- AUTO_INCREMENT de la tabla `empresas`
 --
 ALTER TABLE `empresas`
-  MODIFY `id_empresa` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=96;
+  MODIFY `id_empresa` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=96;
 
 --
 -- AUTO_INCREMENT de la tabla `inmuebles_suscritor`
 --
 ALTER TABLE `inmuebles_suscritor`
-  MODIFY `id_inmueble` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=99;
+  MODIFY `id_inmueble` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=99;
 
 --
--- AUTO_INCREMENT de la tabla `listaAsistencia`
+-- AUTO_INCREMENT de la tabla `lista_asistencia`
 --
 ALTER TABLE `lista_asistencia`
-  MODIFY `id_asistencia` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id_asistencia` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT de la tabla `reuniones`
 --
 ALTER TABLE `reuniones`
-  MODIFY `id_reunion` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=129;
+  MODIFY `id_reunion` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=129;
 
 --
 -- AUTO_INCREMENT de la tabla `servicios`
 --
 ALTER TABLE `servicios`
-  MODIFY `id_servicio` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id_servicio` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `tokens`
 --
 ALTER TABLE `tokens`
-  MODIFY `id_token` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=228;
+  MODIFY `id_token` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=229;
 
 --
 -- AUTO_INCREMENT de la tabla `trazabilidad`
 --
 ALTER TABLE `trazabilidad`
-  MODIFY `id_trazabilidad` int UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id_trazabilidad` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `variables`
+--
+ALTER TABLE `variables`
+  MODIFY `id_variable` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
 -- Restricciones para tablas volcadas
 --
+
+--
+-- Filtros para la tabla `datos_variables`
+--
+ALTER TABLE `datos_variables`
+  ADD CONSTRAINT `datos_variables_ibfk_1` FOREIGN KEY (`id_empresa`) REFERENCES `empresas` (`id_empresa`),
+  ADD CONSTRAINT `datos_variables_ibfk_2` FOREIGN KEY (`id_variable`) REFERENCES `variables` (`id_variable`);
 
 --
 -- Filtros para la tabla `documentos`
@@ -673,7 +752,7 @@ ALTER TABLE `inmuebles_suscritor`
   ADD CONSTRAINT `inmuebles_suscritor_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id_usuario`);
 
 --
--- Filtros para la tabla `listaAsistencia`
+-- Filtros para la tabla `lista_asistencia`
 --
 ALTER TABLE `lista_asistencia`
   ADD CONSTRAINT `lista_asistencia_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id_usuario`),

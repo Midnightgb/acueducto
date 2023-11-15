@@ -1,4 +1,4 @@
-<nav class="pcoded-navbar shadow pt-3">
+<nav class="pcoded-navbar shadow pt-3" style="position: fixed;">
     <div class="navbar-wrapper  ">
         <div class="navbar-content scroll-div">
 
@@ -78,7 +78,7 @@
                                 <li><a href="/cuorum" target="_parent">Verificación del cuórum</a></li>
                                 <li><a href="/orden_dia" target="_parent">Orden del día</a></li>
                                 <li><a href="/eleccion_comision" target="_parent">Elección de la comisión</a></li>
-                                <li><a href="/archivo_control_documental" target="_parent">Archivo y control
+                                <li><a href="/generar_documentos" target="_parent">Archivo y control
                                     documental</a></li>
                                 <li><a href="/aprobacion_estatutos" target="_parent">Aprobación de los estatutos</a>
                                 </li>
@@ -236,7 +236,7 @@
                         <li class="nav-item pcoded-menu-caption">
                             <label class="label-modulos">Paso 3.2: Análisis de la calidad de agua</label>
                         </li>
-                        <li><a href="#" target="_parent">Parámetros físico químicos</a></li>
+                        <li><a href="/entrada_variables" target="_parent">Parámetros físico químicos</a></li>
                         <li><a href="#" target="_parent">Parámetros microbiológicos</a></li>
                         <li><a href="#" target="_parent">Otros</a></li>
                         <li class="nav-item pcoded-menu-caption">
@@ -281,7 +281,7 @@
 <!-- [ navigation menu ] end -->
 
 <!-- [ Header ] start -->
-<header class="navbar pcoded-header navbar-expand-lg navbar-light header-dark" style="background: whitesmoke;">
+<header class="navbar pcoded-header navbar-expand-lg navbar-light" style="background: whitesmoke; position: fixed; margin-bottom: 20rem;">
 
     <div class="m-header">
         <a class="mobile-menu" id="mobile-collapse" href="#!"><span></span></a>
@@ -305,8 +305,8 @@
                     <a class="text-dark" href="/registro_empresa" target="_self">Registrar empresa</a>
                 </li>
                 <li class="nav-item">
-                    <form action="/usuarios" method="post" class="btnUsuarios">
-                        <button class="btnUsuarios text-dark" type="submit" target="_self">Usuarios</button>
+                    <form action="/usuarios" method="post" id="usersList">
+                        <a class="text-dark" onclick="users()" href="#" target="_self">Usuarios</button>
                     </form>
                 </li>
                 <li class="nav-item">
@@ -318,13 +318,15 @@
                 <li class="nav-item">
                     <a class="text-dark" href="/viviendas/1" target="_self">Viviendas</a>
                 </li>
+                
+                
             {% elif usuario.rol == 'Admin' %}
                 <li class="nav-item">
                     <a class="text-dark" href="/form_registro_usuario" target="_self">Registrar usuario</a>
                 </li>
                 <li class="nav-item">
-                    <form action="/usuarios" method="post" class="btnUsuarios">
-                        <button class="btnUsuarios text-dark" type="submit" target="_self">Usuarios</button>
+                    <form action="/usuarios" method="post" id="usersList">
+                        <a class="text-dark" onclick="users()" href="#" target="_self">Usuarios</button>
                     </form>
                 </li>
                 <li class="nav-item">
@@ -332,6 +334,12 @@
                 </li>
                 <li class="nav-item">
                     <a class="text-dark" href="/viviendas/1" target="_self">Viviendas</a>
+                </li>
+            {% endif %}
+
+            {% if usuario.rol == 'Tecnico' %}
+                <li class="nav-item">
+                    <a class="text-dark" href="/listaVariables" target="_self">Diseño de componentes</a>
                 </li>
             {% endif %}
         </ul>
