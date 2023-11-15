@@ -267,63 +267,29 @@ def calcularCuorum(
                 db.query(Usuario).filter(
                     Usuario.id_usuario == token_valido).first()
             )
-        if usuario:
-            query_usuarios = (
-                db.query(Usuario)
-                .filter(
-                    (Usuario.id_usuario != token_valido)
-                    & (Usuario.rol == 'Suscriptor')
-                    & (Usuario.empresa == usuario.empresa)
-                ).all()
-            )
-            query_subs = db.query(Usuario).filter(Usuario.rol == "Suscriptor", Usuario.empresa == usuario.empresa).count()
+        
+        query_subs = db.query(Usuario).filter(Usuario.rol == "Suscriptor", Usuario.empresa == usuario.empresa).count()
+
+        if cantidadAsistentes > query_subs/2:
             
-            if cantidadAsistentes == 0 or cantidadAsistentes is None:
-                reuniones = obtenerReuAdmin(usuario.empresa,db)
-                alerta = {
-                        "mensaje": "No ha seleccionado ningún asistente",
-                        "color": "warning",
-                    }
-                headers = elimimar_cache()
-                response = template.TemplateResponse(
-                    "paso-1/paso1-2/llamado_lista.html",
-                    {"request": request, "suscriptores": query_usuarios,"usuario":usuario,"reuniones":reuniones, "cuorum":False,"alerta":alerta,"nombreReunion":reunion_1},
-                )
-                response.headers.update(headers)
-
-                return response
-
-            if cantidadAsistentes > query_subs/2:
-                sacarCuorum = True
-            else:
-                sacarCuorum = False
-
-
-            if query_subs:
-                headers = elimimar_cache()
-                reuniones = obtenerReuAdmin(usuario.empresa,db)
-                
-                response = template.TemplateResponse(
-                    "paso-1/paso1-2/llamado_lista.html",
-                    {"request": request, "suscriptores": query_usuarios,"usuario":usuario,"reuniones":reuniones, "cuorum":sacarCuorum,"nombreReunion":reunion_1},
-                )
-                response.headers.update(headers)
-                print(reunion_1)
-                return response
-            else:
-                alerta = {
-                    "mensaje": "No hay suscriptores",
-                    "color": "warning",
-                }
-
-                response = template.TemplateResponse(
-                    "paso-1/paso1-2/llamado_lista.html",
-                    {"request": request, "alerta": alerta, "suscriptores": None,"usuario":usuario,"reuniones":None},
-                )
-                response.headers.update(headers)
-                return response
+            sacarCuorum = True
         else:
-            return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
+            sacarCuorum = False
+            
+        update_reunion = (
+            db.query(Reunion).filter_by(id_reunion=reunion_1).first()
+        )
+        if sacarCuorum:
+            if update_reunion:
+                update_reunion.cuorum = 1
+                db.commit()
+        else:
+            if update_reunion:
+                update_reunion.cuorum = 0
+                db.commit()
+
+        return sacarCuorum
+
     else:
         return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
 

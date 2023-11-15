@@ -165,4 +165,3 @@ def insertarDatosReunion(id_usuario : str, id_reunion:str, db : Session):
     db.add(insertarAsistentes)
     db.commit()
     db.refresh(insertarAsistentes)
-    pass

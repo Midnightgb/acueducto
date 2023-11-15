@@ -577,10 +577,12 @@ def obtenerSuscriptoresEmpresa(
                     if not estado:
                         lista_combinada["suscriptor"].append([busquedaUsuarios,False])
 
+                cuorum = db.query(Reunion).filter(Reunion.id_reunion == reunion_1).first() 
+
                 response = template.TemplateResponse(
                     "paso-1/paso1-2/llamado_lista.html",
                     {"request": request, "usuarios": lista_combinada, "usuario": usuario,
-                        "reuniones": reuniones, "reunionSelect": reunion_select},
+                        "reunion": reunion_1, "reunionSelect": reunion_select,"estadoCuorum":cuorum},
                 )
                 response.headers.update(headers)
                 return response
@@ -593,7 +595,7 @@ def obtenerSuscriptoresEmpresa(
                 response = template.TemplateResponse(
                     "paso-1/paso1-2/llamado_lista.html",
                     {"request": request, "alerta": alerta, "suscriptores": None,
-                        "usuario": usuario, "reuniones": reuniones},
+                        "usuario": usuario, "reunion":  reunion_1},
                 )
                 response.headers.update(headers)
                 return response

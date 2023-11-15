@@ -27,6 +27,7 @@ import bcrypt
 from database import get_database
 from funciones import get_datos_empresa
 from typing import Union, List
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import and_
 
 
@@ -37,6 +38,9 @@ ESTADO = "Activo"
 datos_usuario = None
 
 app = FastAPI()
+
+
+
 
 # Agregando los archivos estaticos que están en la carpeta dist del proyecto
 app.mount("/static", StaticFiles(directory="public/dist"), name="static")
@@ -723,8 +727,8 @@ def pagLlamado(
 
 
 # CALCULAR EL CUORUM
-@app.post("/calcularCuorum", response_class=HTMLResponse)
-def calcularmCuorum(request: Request, token: str = Cookie(None), db: Session = Depends(get_database), cantidadAsistentes: Optional[int] = Form(None), reunion_1: str = Form("")):
+
+def calcularmCuorum(request: Request, token: str, db: Session, cantidadAsistentes: int, reunion_1: str):
     if cantidadAsistentes is None:
         cantidadAsistentes = 0
     is_token_valid = verificar_token(token, db)
@@ -733,20 +737,24 @@ def calcularmCuorum(request: Request, token: str = Cookie(None), db: Session = D
     return cuorumCalculado
 
 @app.post("/listaAsistentes")
-async def recibirDatos(request:Request, db: Session = Depends(get_database)):
-    datos = await request.json()
+async def recibirDatos(request: Request, token: str = Cookie(None),db: Session = Depends(get_database)):
+    print(
+        "Estamos dentro de la funcion de recibirDatos"
+    )
+    try:
+        datos = await request.json()
+        id_reunion = datos.get("id_reunion")
+        cantidad = datos.get("cantidadAsistentes")
 
-    
-    id_reunion = datos.get("id_reunion")
-    print(id_reunion)
+        if "datos" in datos:
+            for id_usuario in datos["datos"]:
+                insertarDatosReunion(id_usuario, id_reunion, db)
 
-    if "datos" in datos:
-        for id_usuario in datos["datos"]:
-            insertarDatosReunion(id_usuario,id_reunion,db)
-    
-            
-
-
+        resultado = calcularmCuorum(request,token,db,cantidad,id_reunion)
+        return {"result":resultado}
+    except HTTPException as e:
+        if e.status_code == 499:
+            print("Cliente desconectado")
 
 # VERIFICACION DEL CUORUM
 
