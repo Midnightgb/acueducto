@@ -29,6 +29,7 @@ from funciones import get_datos_empresa
 from typing import Union, List
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import and_
+from starlette.exceptions import HTTPException as StarletteHTTPException
 
 
 SUPER_ADMIN = "SuperAdmin"
@@ -1660,8 +1661,15 @@ def consultarEmpresa(request: Request, page: int, token: str = Cookie(None), db:
                     response.headers.update(headers)
                     return response
                 else:
-                    raise HTTPException(
-                        status_code=403, detail="No hay empresas que consultar"
+                    return template.TemplateResponse(
+                        "crud-empresas/consultar_empresa.html",
+                        {
+                            "request": request,
+                            "empresa": query_empresas,
+                            "usuario": usuario,
+                            "page": page,
+                            "total_pages": total_pages
+                        },
                     )
             else:
                 raise HTTPException(status_code=403, detail="No puede entrar")
@@ -2161,7 +2169,7 @@ def ver_formulario(
     return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
 
 @app.post("/diseño_acueducto")
-async def datosDiseñoAcueducto(request:Request, db: Session = Depends(get_database), ):
+async def datosDiseñoAcueducto(request:Request, db: Session = Depends(get_database)):
         datos = await request.json()
         id_empresa = datos.get("id_empresa")
         lista_respuestas = datos.get("lista_respuestas")
@@ -2176,3 +2184,10 @@ async def datosDiseñoAcueducto(request:Request, db: Session = Depends(get_datab
             return {"status":False,"msg":"No se pudo registrar la variable"}
        
 
+@app.get("/404NotFound", response_class=HTMLResponse, tags=["routes"])
+async def not_found(request: Request):
+    return template.TemplateResponse("./404.html", {"request": request})
+
+@app.exception_handler(StarletteHTTPException)
+async def http_exception_handler(request: Request, exc: StarletteHTTPException):
+    return RedirectResponse(url="/404NotFound", status_code=status.HTTP_303_SEE_OTHER)

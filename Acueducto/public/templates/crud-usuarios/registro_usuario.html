@@ -248,6 +248,23 @@
     });
   
     </script>
+    <script>
+      function ocultarPassword() {
+        var rolSelect = document.getElementById("rol");
+        var contraseniaField = document.getElementById("contraseniaField");
+      
+        if (rolSelect.value === "Suscriptor") {
+          contraseniaField.style.display = "none";
+          
+        } else {
+          contraseniaField.style.display = "block";
+        }
+      }
+      
+      ocultarPassword();
+
+    </script>
+
 </body>
 
 </html>
