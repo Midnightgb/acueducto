@@ -184,7 +184,7 @@ def pagEstatutos_documento(
             if rol_usuario == ADMIN:
 
                 response = template.TemplateResponse(
-                    "paso-1/paso1-1/estatutos0.html",
+                    "paso-1/paso1-1/estatutos.html",
                     {"request": request, "usuario": datos_usuario,
                         "ruta_pdf": ruta_pdf},
                 )
@@ -227,10 +227,24 @@ def pagEstatutos(
 
         if is_token_valid:
             ruta_pdf = None
+            id_empresa_hidden = None
             rol_usuario = get_rol(is_token_valid, db)
             datos_usuario = get_datos_usuario(is_token_valid, db)
 
-
+            if rol_usuario == ADMIN:
+                id_empresa_hidden = datos_usuario['empresa']
+            if id_empresa_hidden:
+                empresa_obtenida = db.query(Empresa).filter(
+                    Empresa.id_empresa == id_empresa_hidden).first()
+                if empresa_obtenida:
+                    query = db.query(Documento).join(Usuario).join(Empresa, and_(
+                        Usuario.empresa == Empresa.id_empresa, Empresa.id_empresa == id_empresa_hidden))
+                    documentos_de_empresa = query.all()
+                    for documento in documentos_de_empresa:
+                        if documento.id_servicio == 1:
+                            ruta_pdf = documento.url
+                            break
+                
             # print(ruta_pdf)
             headers = elimimar_cache()
             if rol_usuario == ADMIN:
@@ -345,10 +359,28 @@ def pagContrato_de_condiciones_uniformes(
 
         if is_token_valid:
             ruta_pdf = None
+            id_empresa = None
+            id_empresa_hidden = None
             rol_usuario = get_rol(is_token_valid, db)
             datos_usuario = get_datos_usuario(is_token_valid, db)
 
             headers = elimimar_cache()
+            if rol_usuario == ADMIN:
+                id_empresa = datos_usuario['empresa']
+            if id_empresa_hidden:
+                id_empresa = id_empresa_hidden
+            if id_empresa:
+                empresa_obtenida = db.query(Empresa).filter(
+                    Empresa.id_empresa == id_empresa).first()
+                if empresa_obtenida:
+                    query = db.query(Documento).join(Usuario).join(Empresa, and_(
+                        Usuario.empresa == Empresa.id_empresa, Empresa.id_empresa == id_empresa))
+                    documentos_de_empresa = query.all()
+                    for documento in documentos_de_empresa:
+                        if documento.id_servicio == 2:
+                            ruta_pdf = documento.url
+                            break
+
             if rol_usuario == ADMIN:
 
                 response = template.TemplateResponse(

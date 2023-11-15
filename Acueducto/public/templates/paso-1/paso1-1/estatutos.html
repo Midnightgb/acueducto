@@ -157,25 +157,36 @@
                             </div>
                             <div>
                                 {% if ruta_pdf: %}
-                                <div class="text-center pt-4">
-                                    <div class="align-self-center py-1">
-                                        <img src="{{ url_for('static', path='assets/images/logo-sena.ico') }}" width="40px" height="43px" alt="">
-                                    </div>
-                                    <h1 class="fw-bolder pb-3">Tus Documentos</h1>
-                                    <iframe src="{{ url_for('static', path=ruta_pdf) }}" style="width: 100%; height: 50em; border: none;"></iframe>
-                                </div>
-                                {% else %}
-                                {% if usuario.rol == "SuperAdmin" %}
-                                <div class="row">
-                                    <div class="col-lg-2 col-md-2 "></div>
-                                    <div class="col-lg-8 col-md-8 col-sm-12 text-center"> 
-                                        <div class="alert alert-warning " role="alert">
-                                            La empresa seleccionada no tiene documentos generados
+                                    <div class="text-center pt-4">
+                                        <div class="align-self-center py-1">
+                                            <img src="{{ url_for('static', path='assets/images/logo-sena.ico') }}" width="40px" height="43px" alt="">
                                         </div>
+                                        <h1 class="fw-bolder pb-3">Documento de Estatutos</h1>
+                                        <iframe src="{{ url_for('static', path=ruta_pdf) }}" style="width: 100%; height: 50em; border: none;"></iframe>
                                     </div>
-                                    <div class="col-lg-2 col-md-2"></div>
-                                </div>
-                                {% endif %}
+                                {% else %}
+
+                                    {% if usuario.rol == "SuperAdmin" %}
+                                        <div class="row">
+                                            <div class="col-lg-2 col-md-2 "></div>
+                                            <div class="col-lg-8 col-md-8 col-sm-12 text-center"> 
+                                                <div class="alert alert-warning " role="alert">
+                                                    La empresa seleccionada no tiene documentos generados
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-2 col-md-2"></div>
+                                        </div>
+                                    {% else %}
+                                        <div class="row">
+                                            <div class="col-lg-2 col-md-2 "></div>
+                                            <div class="col-lg-8 col-md-8 col-sm-12 text-center"> 
+                                                <div class="alert alert-warning " role="alert">
+                                                    La empresa no tiene documentos generados
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-2 col-md-2"></div>
+                                        </div>
+                                    {% endif %}
                                 {% endif %}
                             </div>
                             <div class="footer-wrapper col-xl-12 d-flex justify-content-center mt-2 pt-5">
