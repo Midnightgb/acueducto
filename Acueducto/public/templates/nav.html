@@ -170,7 +170,29 @@
                     <ul class="pcoded-submenu">
 
                         <li class="nav-item pcoded-menu-caption">
-                            <label class="label-modulos">Paso 1: Análisis de la fuente</label>
+                            <label class="label-modulos"><i class="feather icon-file-text"></i>Paso 3: Análisis de
+                                la fuente</label>
+                        </li>
+                        <li class="nav-item pcoded-menu-caption">
+                            <label class="label-modulos">Paso 3.1: Ubicación del punto de captación </label>
+                        </li>
+                        <li><a href="#" target="_parent">Plano hidrográfico</a></li>
+                        <li class="nav-item pcoded-menu-caption">
+                            <label class="label-modulos">Paso 3.2: Análisis de la calidad de agua</label>
+                        </li>
+                        <li><a href="/entrada_variables" target="_parent">Parámetros físico químicos</a></li>
+                        <li><a href="#" target="_parent">Parámetros microbiológicos</a></li>
+                        <li><a href="#" target="_parent">Otros</a></li>
+                        <li class="nav-item pcoded-menu-caption">
+                            <label class="label-modulos"><i class="feather icon-file-text"></i>Paso 4: Diseño del
+                                sistema de potabilización de agua</label>
+                        </li>
+                        <li class="nav-item pcoded-menu-caption">
+                            <label class="label-modulos">Paso 4.2: Cálculos de diseño de componentes del
+                                STAP</label>
+                        </li>
+                        <li class="nav-item pcoded-menu-caption">
+                            <label class="label-modulos">Paso 4.3: Diseño de componentes del STAP</label>
                         </li>
                         <li><a href="#" target="_parent">Ubicación punto de captación</a></li>
                         <li><a href="#" target="_parent">Análisis de la calidad del agua</a></li>
@@ -257,6 +279,12 @@
             <li class="nav-item">
                 <a class="text-dark" href="/viviendas/1" target="_self">Viviendas</a>
             </li>
+            {% endif %}
+
+            {% if usuario.rol == 'Tecnico' %}
+                <li class="nav-item">
+                    <a class="text-dark" href="/listaVariables" target="_self">Diseño de componentes</a>
+                </li>
             {% endif %}
         </ul>
     </div>
