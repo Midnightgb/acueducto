@@ -174,11 +174,14 @@ def pagConceptosBasicos(
         return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
 
 # ESTATUTOS
-@app.get("/estatutos", response_class=HTMLResponse, tags=["Operaciones Documentos"])
-def pagEstatutos(
-    request: Request, id_empresa: Union[str, None] = None, token: str = Cookie(None), db: Session = Depends(get_database),
+@app.post("/estatutos_documento", response_class=HTMLResponse, tags=["Operaciones Documentos"])
+def pagEstatutos_documento(
+    request: Request,
+    id_empresa_hidden: str = Form(...),
+    token: str = Cookie(None),
+    db: Session = Depends(get_database),
 ):
-
+    print(id_empresa_hidden)
     if token:
         is_token_valid = verificar_token(token, db)  # retorna el id_usuario
 
@@ -188,13 +191,13 @@ def pagEstatutos(
             datos_usuario = get_datos_usuario(is_token_valid, db)
 
             if rol_usuario == ADMIN:
-                id_empresa = datos_usuario['empresa']
-            if id_empresa:
+                id_empresa_hidden = datos_usuario['empresa']
+            if id_empresa_hidden:
                 empresa_obtenida = db.query(Empresa).filter(
-                    Empresa.id_empresa == id_empresa).first()
+                    Empresa.id_empresa == id_empresa_hidden).first()
                 if empresa_obtenida:
                     query = db.query(Documento).join(Usuario).join(Empresa, and_(
-                        Usuario.empresa == Empresa.id_empresa, Empresa.id_empresa == id_empresa))
+                        Usuario.empresa == Empresa.id_empresa, Empresa.id_empresa == id_empresa_hidden))
                     documentos_de_empresa = query.all()
                     for documento in documentos_de_empresa:
                         if documento.id_servicio == 1:
@@ -239,10 +242,79 @@ def pagEstatutos(
         return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
 
 
-# CONTRATO DE CONDICIONES UNIFORME
-@app.get("/contrato_condiciones", response_class=HTMLResponse, tags=["Operaciones Documentos"])
-def pagContrato_de_condiciones_uniformes(
-    request: Request, id_empresa: Union[str, None] = None, token: str = Cookie(None), db: Session = Depends(get_database)
+@app.get("/estatutos", response_class=HTMLResponse, tags=["Operaciones Documentos"])
+def pagEstatutos(
+    request: Request, token: str = Cookie(None), db: Session = Depends(get_database),
+):
+
+    if token:
+        is_token_valid = verificar_token(token, db)  # retorna el id_usuario
+
+        if is_token_valid:
+            ruta_pdf = None
+            id_empresa_hidden = None
+            rol_usuario = get_rol(is_token_valid, db)
+            datos_usuario = get_datos_usuario(is_token_valid, db)
+
+            if rol_usuario == ADMIN:
+                id_empresa_hidden = datos_usuario['empresa']
+            if id_empresa_hidden:
+                empresa_obtenida = db.query(Empresa).filter(
+                    Empresa.id_empresa == id_empresa_hidden).first()
+                if empresa_obtenida:
+                    query = db.query(Documento).join(Usuario).join(Empresa, and_(
+                        Usuario.empresa == Empresa.id_empresa, Empresa.id_empresa == id_empresa_hidden))
+                    documentos_de_empresa = query.all()
+                    for documento in documentos_de_empresa:
+                        if documento.id_servicio == 1:
+                            ruta_pdf = documento.url
+                            break
+                
+            # print(ruta_pdf)
+            headers = elimimar_cache()
+            if rol_usuario == ADMIN:
+
+                response = template.TemplateResponse(
+                    "paso-1/paso1-1/estatutos.html",
+                    {"request": request, "usuario": datos_usuario,
+                        "ruta_pdf": ruta_pdf},
+                )
+                response.headers.update(headers)  # Actualiza las cabeceras
+                return response
+
+            elif rol_usuario == SUPER_ADMIN:
+                datos_empresas = db.query(Empresa).all()
+                response = template.TemplateResponse(
+                    "paso-1/paso1-1/estatutos.html",
+                    {"request": request, "usuario": datos_usuario,
+                        "ruta_pdf": ruta_pdf, "datos_empresas": datos_empresas},
+                )
+                response.headers.update(headers)  # Actualiza las cabeceras
+                return response
+            else:
+                alerta = {
+                    "mensaje": "No tiene los permisos para esta acción",
+                    "color": "warning",
+                }
+                response = template.TemplateResponse(
+                    "index.html",
+                    {"request": request, "alerta": alerta, "usuario": datos_usuario},
+                )
+                response.headers.update(headers)  # Actualiza las cabeceras
+                return response
+        else:
+            return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
+    else:
+        return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
+
+from fastapi import Form
+
+@app.post("/contrato_condiciones_documento", response_class=HTMLResponse, tags=["Operaciones Documentos"])
+def pagContrato_de_condiciones_uniformes_documento(
+    request: Request,
+    id_empresa_hidden: str = Form(...),
+    token: str = Cookie(None),
+    db: Session = Depends(get_database)
 ):
 
     if token:
@@ -255,6 +327,8 @@ def pagContrato_de_condiciones_uniformes(
 
             if rol_usuario == ADMIN:
                 id_empresa = datos_usuario['empresa']
+            if id_empresa_hidden:
+                id_empresa = id_empresa_hidden
             if id_empresa:
                 empresa_obtenida = db.query(Empresa).filter(
                     Empresa.id_empresa == id_empresa).first()
@@ -269,6 +343,69 @@ def pagContrato_de_condiciones_uniformes(
 
             print(ruta_pdf)
             headers = elimimar_cache()
+            if rol_usuario == ADMIN:
+                response = template.TemplateResponse(
+                    "paso-1/paso1-1/contrato_condiciones.html",
+                    {"request": request, "usuario": datos_usuario, "ruta_pdf": ruta_pdf},
+                )
+                response.headers.update(headers)  # Actualiza las cabeceras
+                return response
+
+            elif rol_usuario == SUPER_ADMIN:
+                datos_empresas = db.query(Empresa).all()
+                response = template.TemplateResponse(
+                    "paso-1/paso1-1/contrato_condiciones.html",
+                    {"request": request, "usuario": datos_usuario, "ruta_pdf": ruta_pdf, "datos_empresas": datos_empresas},
+                )
+                response.headers.update(headers)  # Actualiza las cabeceras
+                return response
+            else:
+                alerta = {"mensaje": "No tiene los permisos para esta acción", "color": "warning"}
+                response = template.TemplateResponse(
+                    "index.html",
+                    {"request": request, "alerta": alerta, "usuario": datos_usuario},
+                )
+                response.headers.update(headers)  # Actualiza las cabeceras
+                return response
+        else:
+            return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
+    else:
+        return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
+
+
+# CONTRATO DE CONDICIONES UNIFORME
+@app.get("/contrato_condiciones", response_class=HTMLResponse, tags=["Operaciones Documentos"])
+def pagContrato_de_condiciones_uniformes(
+    request: Request, token: str = Cookie(None), db: Session = Depends(get_database)
+):
+
+    if token:
+        is_token_valid = verificar_token(token, db)  # retorna el id_usuario
+
+        if is_token_valid:
+            ruta_pdf = None
+            id_empresa = None
+            id_empresa_hidden = None
+            rol_usuario = get_rol(is_token_valid, db)
+            datos_usuario = get_datos_usuario(is_token_valid, db)
+
+            headers = elimimar_cache()
+            if rol_usuario == ADMIN:
+                id_empresa = datos_usuario['empresa']
+            if id_empresa_hidden:
+                id_empresa = id_empresa_hidden
+            if id_empresa:
+                empresa_obtenida = db.query(Empresa).filter(
+                    Empresa.id_empresa == id_empresa).first()
+                if empresa_obtenida:
+                    query = db.query(Documento).join(Usuario).join(Empresa, and_(
+                        Usuario.empresa == Empresa.id_empresa, Empresa.id_empresa == id_empresa))
+                    documentos_de_empresa = query.all()
+                    for documento in documentos_de_empresa:
+                        if documento.id_servicio == 2:
+                            ruta_pdf = documento.url
+                            break
+
             if rol_usuario == ADMIN:
 
                 response = template.TemplateResponse(
@@ -851,7 +988,7 @@ def pagEleccion(
     else:
         return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
 
-'''
+
 # APROBACION ESTATUTOS
 @app.get("/aprobacion_estatutos", response_class=HTMLResponse, tags=["Operaciones Documentos"])
 def pagAprobacion_estatutos(
@@ -888,7 +1025,6 @@ def pagAprobacion_estatutos(
     else:
         return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
 
-'''
 
 # ELECCION DE LA JUNTA
 @app.get("/eleccion_junta_administradora", response_class=HTMLResponse, tags=["Operaciones Documentos"])
