@@ -248,6 +248,7 @@
                                   id="deleteVivienda_{{vivienda.id_inmueble}}">
                                   <input type="hidden" name="id_usuario" value="{{ user.id_usuario }}">
                                   <input type="hidden" name="id_vivienda" value="{{ vivienda.id_inmueble }}">
+                                  <input type="text" name="id_empresa" value="{{ user.empresa }}" hidden="true">
                                   <button type="button" class="btn btn-danger p-2"
                                     onclick="confirmar('{{vivienda.id_inmueble}}')">
                                     Eliminar
@@ -271,7 +272,7 @@
                     <button type="button" data-bs-toggle="modal" data-bs-target="#modalAddVivienda"
                       class="btn btn-info  my-2">AGREGAR VIVIENDA</button>
                     {% endif %}
-                    <form action="/usuarios" method="get">
+                    <form action="/usuarios" method="post">
                       <input type="hidden" name="id_empresa" value="{{ user.empresa }}">
                       <button type="submit" class="btn btn-danger my-2">CANCELAR</button>
                     </form>
@@ -350,6 +351,7 @@
                   max="2147483647" min="0">
               </div>
             </div>
+            <input type="text" name="id_empresa" value="{{ user.empresa }}" hidden="true">
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-danger" data-bs-dismiss="modal" onclick="reset()">Cancelar</button>
@@ -404,6 +406,7 @@
                 <label for="numPersonas">Número de residentes</label>
                 <input type="number" class="form-control" name="numPersonas" id="numPersonas" required max="2147483647" min="0">
               </div>
+              <input type="text" name="id_empresa" value="{{ user.empresa }}" hidden="true">
             </div>
           </div>
           <div class="modal-footer">

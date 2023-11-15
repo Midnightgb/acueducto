@@ -1233,9 +1233,15 @@ def create_usuario(
 
 # =============================================== BLOQUE USUARIOS(GENERAL) ===============================================
 
+@app.get("/usuarios", response_class=HTMLResponse, tags=["Operaciones Users"])
+def get_usuarios(
+    request: Request, token: str = Cookie(None), db: Session = Depends(get_database), id_empresa: str = Form(None)
+):
+    respuesta = consultarUsuarios(request, token, db, id_empresa)
+    return respuesta
 
 # --- FUNCION PARA MOSTRAR TODOS LOS USUARIOS(GENERAL)
-@app.post("/usuarios", response_class=HTMLResponse, tags=["Operaciones Users"])
+@app.post("/usuarios", tags=["Operaciones Users"])
 def consultarUsuario(
     request: Request, token: str = Cookie(None), db: Session = Depends(get_database), id_empresa: str = Form(None)
 ):
@@ -1252,15 +1258,13 @@ def obtenerUsuariosEmpresa(
 
 
 # --- FUNCION PARA MOSTRAR LA PAGINA DONDE SE EDITA EL USUARIO(GENERAL)
-
-
-@app.post("/EditarUsuarios/", response_class=HTMLResponse, tags=["Operaciones Users"])
-def Editar_Usuarios(
+@app.get("/EditarUsuarios/{id_usuario}/{id_empresa}", response_class=HTMLResponse, tags=["Operaciones Users"])
+def get_editar_usuario(
     request: Request,
-    id_usuario: str = Form(...),
+    id_usuario: str,
+    id_empresa: str,
     token: str = Cookie(None),
     db: Session = Depends(get_database),
-    id_empresa: str = Form(None)
 ):
     respuesta = EditarUsuarios(request, id_usuario, token, db, id_empresa)
     return respuesta
@@ -1570,7 +1574,7 @@ def updateEmpresa(
 # ============================================= FIN DE BLOQUE PARA ACTUALIZAR EMPRESA =============================================
 
 
-@app.post("/registrarVivienda", tags=["Operaciones Viviendas"], response_class=HTMLResponse)
+@app.post("/registrarVivienda")
 def crearVivienda(
     request: Request,
     id_usuario: str = Form(...),
@@ -1578,14 +1582,17 @@ def crearVivienda(
     estrato: int = Form(...),
     tipoVivienda: str = Form(...),
     numPersonas: int = Form(...),
+    id_empresa: str = Form(...),
     token: str = Cookie(None),
     db: Session = Depends(get_database),
 ):
+    print("paso 1")
     if token:
         token_valido = verificar_token(token, db)
     if token_valido:
         rol_usuario = get_rol(token_valido, db)
         if rol_usuario in [SUPER_ADMIN, ADMIN]:
+            print("paso 2")
 
             vivienda_db = Vivienda(
                 id_usuario=id_usuario,
@@ -1597,7 +1604,7 @@ def crearVivienda(
             usuario = db.query(Usuario).filter(
                 Usuario.id_usuario == token_valido).first()
             user = get_datos_usuario(id_usuario, db)
-
+            print("paso 3")
             try:
                 db.add(vivienda_db)
                 db.commit()
@@ -1607,18 +1614,23 @@ def crearVivienda(
                     "color": "success",
                 }
                 viviendas = get_viviendas(id_usuario, db)
-                return template.TemplateResponse("crud-usuarios/EditarUsuario.html", {"request": request, "user": user, "usuario": usuario, "viviendas": viviendas, "alerta": alerta})
+                print("paso 4")
+                return RedirectResponse(url="/EditarUsuarios/" + id_usuario + "/" + id_empresa, status_code=status.HTTP_303_SEE_OTHER)
             except Exception as e:
                 db.rollback()
                 alerta = {
                     "mensaje": "Error al registrar la vivienda",
                     "color": "error",
                 }
-                return template.TemplateResponse("crud-usuarios/EditarUsuario.html", {"request": request, "user": user, "usuario": usuario, "viviendas": viviendas, "alerta": alerta})
+                print("paso 5")
+                return RedirectResponse(url="/EditarUsuarios/" + id_usuario + "/" + id_empresa, status_code=status.HTTP_303_SEE_OTHER)
+
         else:
+            print("paso 6")
             raise HTTPException(
                 status_code=403, detail="nada")
     else:
+        print("paso 7")
         return RedirectResponse("/", status_code=status.HTTP_303_SEE_OTHER)
 
 # --- FUNCION PARA Desactivar vivienda del usuario
@@ -1629,6 +1641,7 @@ def desactivarVivienda(
     request: Request,
     id_vivienda: int = Form(...),
     id_usuario: str = Form(...),
+    id_empresa: str = Form(...),
     token: str = Cookie(None),
     db: Session = Depends(get_database),
 ):
@@ -1653,13 +1666,13 @@ def desactivarVivienda(
                     "mensaje": "Vivienda desactivada exitosamente",
                     "color": "success",
                 }
-                return template.TemplateResponse("crud-usuarios/EditarUsuario.html", {"request": request, "user": user, "usuario": usuario, "viviendas": viviendas, "alerta": alerta})
+                return RedirectResponse(url="/EditarUsuarios/" + id_usuario + "/" + id_empresa, status_code=status.HTTP_303_SEE_OTHER)
             else:
                 alerta = {
                     "mensaje": "Vivienda no encontrada",
                     "color": "error",
                 }
-                return template.TemplateResponse("crud-usuarios/EditarUsuario.html", {"request": request, "user": user, "usuario": usuario, "viviendas": viviendas, "alerta": alerta})
+                return RedirectResponse(url="/EditarUsuarios/" + id_usuario + "/" + id_empresa, status_code=status.HTTP_303_SEE_OTHER)
         else:
             raise HTTPException(
                 status_code=403, detail="nada")
@@ -1678,6 +1691,7 @@ def updateVivienda(
     estratoEdit: int = Form(...),
     tipoViviendaEdit: str = Form(...),
     numPersonasEdit: int = Form(...),
+    id_empresa: str = Form(...),
     token: str = Cookie(None),
     db: Session = Depends(get_database),
 ):
@@ -1703,13 +1717,15 @@ def updateVivienda(
                     "mensaje": "Vivienda actualizada exitosamente",
                     "color": "success",
                 }
-                return template.TemplateResponse("crud-usuarios/EditarUsuario.html", {"request": request, "user": user, "usuario": usuario, "viviendas": viviendas, "alerta": alerta})
+                return RedirectResponse(url="/EditarUsuarios/" + id_usuario + "/" + id_empresa, status_code=status.HTTP_303_SEE_OTHER)
+
             else:
                 alerta = {
                     "mensaje": "Vivienda no encontrada",
                     "color": "error",
                 }
-                return template.TemplateResponse("crud-usuarios/EditarUsuario.html", {"request": request, "user": user, "usuario": usuario, "viviendas": viviendas, "alerta": alerta})
+                return RedirectResponse(url="/EditarUsuarios/" + id_usuario + "/" + id_empresa, status_code=status.HTTP_303_SEE_OTHER)
+
         else:
             raise HTTPException(
                 status_code=403, detail="nada")
@@ -1755,12 +1771,10 @@ def consultarVivienda(request: Request, alter: int, token: str = Cookie(None), d
 
 
 # --- FUNCION PARA MOSTRAR LA PAGINA DONDE SE EDITA LA VIVIENDA
-
-
-@app.post("/EditarVivienda", response_class=HTMLResponse, tags=["Operaciones Viviendas"])
-def Editar_Viviendas(
+@app.get("/EditarVivienda/{id_vivienda}", response_class=HTMLResponse, tags=["Operaciones Viviendas"])
+def Editar_Vivienda(
     request: Request,
-    id_vivienda: int = Form(...),
+    id_vivienda: int,
     token: str = Cookie(None),
     db: Session = Depends(get_database),
 ):
@@ -1774,6 +1788,27 @@ def Editar_Viviendas(
             if rol_usuario in [SUPER_ADMIN, ADMIN]:
                 vivienda = get_datos_vivienda(id_vivienda, db)
                 return template.TemplateResponse("crud-viviendas/EditarVivienda.html", {"request": request, "vivienda": vivienda, "usuario": usuario, "users": users})
+            else:
+                raise HTTPException(status_code=403, detail="No puede entrar")
+        else:
+            return RedirectResponse("/", status_code=status.HTTP_303_SEE_OTHER)
+    else:
+        return RedirectResponse("/", status_code=status.HTTP_303_SEE_OTHER)
+    
+
+@app.post("/EditarVivienda", response_class=HTMLResponse, tags=["Operaciones Viviendas"])
+def Editar_Viviendas(
+    request: Request,
+    id_vivienda: int = Form(...),
+    token: str = Cookie(None),
+    db: Session = Depends(get_database),
+):
+    if token:
+        token_valido = verificar_token(token, db)
+        if token_valido:
+            rol_usuario = get_rol(token_valido, db)
+            if rol_usuario in [SUPER_ADMIN, ADMIN]:
+                return RedirectResponse(url="/EditarVivienda/"+str(id_vivienda), status_code=status.HTTP_303_SEE_OTHER)
             else:
                 raise HTTPException(status_code=403, detail="No puede entrar")
         else:

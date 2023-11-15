@@ -111,11 +111,13 @@
                             <td>{{ user.direccion }}</td>
 
                             <td>
-                                <form action="/EditarUsuarios/" method="POST">
+<!--                                 <form action="/EditarUsuarios/" method="POST">
                                     <input type="hidden" name="id_usuario" value="{{ user.id_usuario }}">
                                     <input type="hidden" name="id_empresa" value="{{ user.empresa }}">
                                     <button type="submit" class="btn btn-primary">Editar</button>
-                                </form>
+                                </form> -->
+                                <a href="/EditarUsuarios/{{ user.id_usuario }}/{{ user.empresa }}"
+                                    class="btn btn-primary">Editar</a>
                             <td>
                                 {% if user.estado == 'Activo' %}
                                 {% set texto = 'Desactivar' %}
