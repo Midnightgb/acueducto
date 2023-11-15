@@ -93,13 +93,32 @@ def pagCenso(
             print(rol_usuario)
             datos_usuario = get_datos_usuario(is_token_valid, db)
             headers = elimimar_cache()
-            if rol_usuario == SUPER_ADMIN or rol_usuario == ADMIN:
+            
+            
+            if rol_usuario == ADMIN:
+                query_usuarios = (
+                    db.query(Usuario, Empresa.nom_empresa)
+                    .join(Empresa, Usuario.empresa == Empresa.id_empresa).filter(
+                        (Usuario.rol == 'Suscriptor') &
+                        (Usuario.empresa == datos_usuario['empresa'])
+                    )
+                )
+                
+                mensaje = "LISTA DE SUSCRIPTORES"
                 response = template.TemplateResponse(
                     "paso-1/paso1-1/censo.html",
-                    {"request": request, "usuario": datos_usuario},
+                    {"request": request, "usuario": query_usuarios, "mensaje": mensaje, "datos_usuario": datos_usuario}
+                )
+                return response
+            
+            if rol_usuario == SUPER_ADMIN:
+                response = template.TemplateResponse(
+                    "paso-1/paso1-1/censo.html",
+                    {"request": request, "usuario": datos_usuario, "datos_usuario": datos_usuario},
                 )
                 response.headers.update(headers)  # Actualiza las cabeceras
                 return response
+            
             else:
                 alerta = {
                     "mensaje": "No tiene los permisos para esta acción",
@@ -119,7 +138,7 @@ def pagCenso(
 
 
 # CONCEPTOS BASICO
-@app.get("/conceptos_basicos", response_class=HTMLResponse, tags=["Operaciones Documentos"])
+@app.get("/introduccion", response_class=HTMLResponse, tags=["Operaciones Documentos"])
 def pagConceptosBasicos(
     request: Request, token: str = Cookie(None), db: Session = Depends(get_database)
 ):
@@ -133,7 +152,7 @@ def pagConceptosBasicos(
             headers = elimimar_cache()
             if rol_usuario == SUPER_ADMIN or rol_usuario == ADMIN:
                 response = template.TemplateResponse(
-                    "paso-1/paso1-1/conceptos_basicos.html",
+                    "paso-1/paso1-1/introduccion.html",
                     {"request": request, "usuario": datos_usuario},
                 )
                 response.headers.update(headers)  # Actualiza las cabeceras
@@ -219,7 +238,7 @@ def pagEstatutos(
     else:
         return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
 
-'''
+
 # CONTRATO DE CONDICIONES UNIFORME
 @app.get("/contrato_condiciones", response_class=HTMLResponse, tags=["Operaciones Documentos"])
 def pagContrato_de_condiciones_uniformes(
@@ -285,7 +304,7 @@ def pagContrato_de_condiciones_uniformes(
     else:
         return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
 
-'''
+
 
 # INVITACION A LA ASAMBLEA
 @app.get("/invitacion_asamblea", response_class=HTMLResponse, tags=["Operaciones Documentos"])
@@ -757,42 +776,6 @@ async def recibirDatos(request: Request, token: str = Cookie(None),db: Session =
             print("Cliente desconectado")
 
 # VERIFICACION DEL CUORUM
-
-
-@app.get("/cuorum", response_class=HTMLResponse, tags=["Operaciones Documentos"])
-def pagCuorum(
-    request: Request, token: str = Cookie(None), db: Session = Depends(get_database)
-):
-    if token:
-        is_token_valid = verificar_token(token, db)  # retorna el id_usuario
-
-        if is_token_valid:
-            rol_usuario = get_rol(is_token_valid, db)
-            print(rol_usuario)
-            datos_usuario = get_datos_usuario(is_token_valid, db)
-            headers = elimimar_cache()
-            if rol_usuario == SUPER_ADMIN or rol_usuario == ADMIN:
-                response = template.TemplateResponse(
-                    "paso-1/paso1-2/cuorum.html",
-                    {"request": request, "usuario": datos_usuario},
-                )
-                response.headers.update(headers)  # Actualiza las cabeceras
-                return response
-            else:
-                alerta = {
-                    "mensaje": "No tiene los permisos para esta acción",
-                    "color": "warning",
-                }
-                response = template.TemplateResponse(
-                    "index.html",
-                    {"request": request, "alerta": alerta, "usuario": datos_usuario},
-                )
-                response.headers.update(headers)  # Actualiza las cabeceras
-                return response
-        else:
-            return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
-    else:
-        return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
 
 
 # ORDEN DEL DIA
