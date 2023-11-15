@@ -8,8 +8,7 @@
   {% endblock %}
 
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
-  <link rel="stylesheet"
-    href="https://cdn.datatables.net/v/bs5/jszip-3.10.1/dt-1.13.6/af-2.6.0/b-2.4.2/b-html5-2.4.2/b-print-2.4.2/kt-2.10.0/r-2.5.0/sr-1.3.0/datatables.min.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/v/bs5/jszip-3.10.1/dt-1.13.6/af-2.6.0/b-2.4.2/b-html5-2.4.2/b-print-2.4.2/kt-2.10.0/r-2.5.0/sr-1.3.0/datatables.min.css">
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
   <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.7.1/css/buttons.dataTables.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11">
@@ -105,11 +104,9 @@
                     <th>ID Empresa</th>
                     <th>Fecha</th>
                     <th>URL</th>
-                    {% if usuario.rol == 'SuperAdmin' or usuario.rol == 'Admin' %}
-                    <th>Estado</th>
+                    {% if usuario.rol == 'Admin' %}
+                      <th class="dt-no-sorting"></th>
                     {% endif %}
-                    <th class="dt-no-sorting"></th>
-                    <th class="dt-no-sorting"></th>
                     <th class="dt-no-sorting"></th>
                 </tr>
             </thead>
@@ -123,7 +120,6 @@
                   <td>{{ emp.id_empresa }}</td>
                   <td>{{ emp.fecha }}</td>
                   <td>{{ emp.url_asistencia }}</td>
-                  <td><img src="{{ url_for('static', path='assets/images/')}}{{emp.estado}}.png" alt="{{ emp.estado }}"></td>
                   {% if usuario.rol == 'Admin' %}
                   <td>
                     <form action="/llamado_lista" method="POST">
@@ -137,11 +133,6 @@
                       <input type="hidden" name="id_reunion" value="{{ emp.id_reunion  }}">
                       <button type="submit" class="btn btn-primary">Editar</button>
                     </form>
-                  </td>
-                  <td>
-                    {% if emp.estado == 'Activo' %}
-                      <button type="button" class="btn btn-danger" onclick="confirmDeleteEmpresa('{{ emp.id_empresa }}')">Desactivar</button>
-                    {% endif %}
                   </td>
                 </tr>
                 {% endfor %}
@@ -200,10 +191,6 @@
             targets: [5],
             orderable: false
           },
-          {
-            targets: [6],
-            orderable: false
-          }
         ],
         language: {
           url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json',
@@ -220,7 +207,6 @@
         "pageLength": 10
       });
     });
-
     function confirmDeleteEmpresa(id_empresa) {
     // Muestra el modal de confirmación
     $('#confirmDeleteModal').modal('show');

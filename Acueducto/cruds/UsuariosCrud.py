@@ -265,10 +265,10 @@ def createUsuario(
                     raise HTTPException(
                         status_code=400, detail="Id de usuario ya Existe"
                     )
-                # Encriptar la contraseña antes de almacenarla
-                hashed_password = bcrypt.hashpw(
-                    contrasenia.encode("utf-8"), bcrypt.gensalt()
-                )
+                if contrasenia:
+                    hashed_password = bcrypt.hashpw(contrasenia.encode("utf-8"), bcrypt.gensalt())
+
+                contrasenia = hashed_password.decode("utf-8") if contrasenia else None
                 # Validar y crear el usuario en la base de datos con la contrasena encriptada
                 usuario_db = Usuario(
                     id_usuario=id_usuario,
@@ -281,9 +281,7 @@ def createUsuario(
                     num_doc=num_doc,
                     direccion=direccion,
                     municipio=municipio,
-                    contrasenia=hashed_password.decode(
-                        "utf-8"
-                    ),  # Almacena la contraseña encriptada
+                    contrasenia=contrasenia,
                 )
                 try:
                     db.add(usuario_db)

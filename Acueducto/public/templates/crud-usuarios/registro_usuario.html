@@ -28,10 +28,13 @@
         municipio === "" ||
         direccion === "" ||
         empresa === "" ||
-        rol === "" ||
-        contrasenia === ""
+        rol === "" 
       ) {
-        alert("Por favor, ingresa valores válidos en todos los campos.");
+        Swal.fire({
+            title: "Aviso",
+            text: "no puede dejar campos vacios",
+            icon: type,
+        });
         return false;
       }
     
@@ -153,7 +156,7 @@
 
                     <div class="form-group col-lg-6 col-md-6 col-sm-12 mb-3 " id="contraseniaField">
                       <label for="contrasenia">Contraseña:</label>
-                      <input type="password" class="form-control" name="contrasenia" id="contrasenia" required>
+                      <input type="password" class="form-control" name="contrasenia" id="contrasenia">
                     </div>
                     <div class="text-center mt-2 ">
                       <a href="/index"  class="btn btn-danger">Cancelar</a>
@@ -199,8 +202,10 @@
   
           console.log(reponse.status);
           if(reponse.status === 201){
-            const data = await reponse.json();
-            return {success: true, data};
+            
+            //const data = await reponse.json();
+            console.log("qqqaaaa")
+            return {success: true};
   
           } else {
             const errorData = await reponse.json();
@@ -230,6 +235,7 @@
         const response = await enviarSolicitud(formData);
   
         if (response.success) {
+          console.log("nos fuimos")
           mostrarAlert("Usuario regsitrado con exito.", "success");
   
           //Limpiamos el form
@@ -237,13 +243,13 @@
   
           document.getElementById("nom_usuario").focus();
           
-          
+          console.log("aui etamos")
           setTimeout(function() {
             window.location.href = "/form_registro_usuario";
           }, 3000); // segundos
         }
       } catch (error) {
-        mostrarAlert(`Error al registrar el usuario: ${error.message}`, "error");
+        mostrarAlert(`Error al registrar el usuario: `,"error");
       }
     });
   

@@ -1413,7 +1413,7 @@ def create_usuario(
     num_doc: str = Form(...),
     direccion: str = Form(...),
     municipio: str = Form(...),
-    contrasenia: str = Form(...),
+    contrasenia: Optional[str] = Form(None),
     token: str = Cookie(None),
     db: Session = Depends(get_database),
 ):
