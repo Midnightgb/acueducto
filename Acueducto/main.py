@@ -645,9 +645,9 @@ def obtenerDatos(
 
 
 # LLAMADO A LISTA
-@app.get("/llamado_lista", response_class=HTMLResponse, tags=["Operaciones Documentos"])
+@app.post("/llamado_lista", response_class=HTMLResponse, tags=["Operaciones Documentos"])
 def pagLlamado(
-    request: Request, token: str = Cookie(None), db: Session = Depends(get_database)
+    request: Request, token: str = Cookie(None), db: Session = Depends(get_database), id_reunion: int = Form(None)
 ):
     if token:
         is_token_valid = verificar_token(token, db)  # retorna el id_usuario
@@ -658,13 +658,9 @@ def pagLlamado(
             datos_usuario = get_datos_usuario(is_token_valid, db)
             headers = elimimar_cache()
             if rol_usuario == ADMIN:
-                id_empresa = get_empresa(is_token_valid, db)
-                response = template.TemplateResponse(
-                    "paso-1/paso1-2/llamado_lista.html",
-                    {"request": request, "usuario": datos_usuario},
-                )
-                response.headers.update(headers)  # Actualiza las cabeceras
-                return response
+                suscriptores = obtenerSuscriptoresEmpresa(
+                    db, is_token_valid, request, id_reunion)
+                return suscriptores
             else:
                 alerta = {
                     "mensaje": "No tiene los permisos para esta acción",
@@ -680,6 +676,7 @@ def pagLlamado(
             return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
     else:
         return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
+
 
 # RUTA PARA ENVIAR DATOS DE LA ASISTENCIA
 
