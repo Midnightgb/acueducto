@@ -135,7 +135,7 @@
                     </div>
                     <div class="form-group col-lg-6 col-md-6 col-sm-12 mb-3">
                       <label for="rol">Rol:</label>
-                      <select class="form-select" name="rol" id="rol" required>
+                      <select class="form-select" name="rol" id="rol" onchange="ocultarPassword()" required>
                         {% if usuario.rol == 'SuperAdmin': %}
                         <option value="Admin">Admin</option>
                         <option value="Técnico">Técnico</option>
@@ -247,6 +247,24 @@
     });
   
     </script>
+
+    
+  <script>
+    function ocultarPassword() {
+      var rolSelect = document.getElementById("rol");
+      var contraseniaField = document.getElementById("contraseniaField");
+    
+      if (rolSelect.value === "Suscriptor") {
+        contraseniaField.style.display = "none";
+        
+      } else {
+        contraseniaField.style.display = "block";
+      }
+    }
+    
+    ocultarPassword();
+
+  </script>
 </body>
 
 </html>
