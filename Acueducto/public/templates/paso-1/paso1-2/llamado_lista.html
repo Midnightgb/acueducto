@@ -48,38 +48,40 @@
                     </div>
                     
                     <div class="row col-12">
-                        <div class="col-6 form-group mt-5">
+                        <div class="col-9 form-group mt-3">
                             {% if reunionSelect: %}
-                            <h5>Reunion seleccionada: {{reunionSelect.nom_reunion}}</h5>
+                            <h4>Reunion seleccionada: {{reunionSelect.nom_reunion}}</h4>
                             {% elif nombreReunion:%}
-                            <h5>Reunion seleccionada: {{nombreReunion}}</h5>
+                            <h4>Reunion seleccionada: {{nombreReunion}}</h4>
                             {%endif%}
                         </div>
-                        <div class="col-6 form-group">
+                        <div class="col-3 form-group">
                             {% if reunion %}
                                 <input type="hidden" value="{{ reunion }}" name="id_reunion" id="idReunion">
 
                             {%endif%}
                             {%if usuarios %}
-                            <form action="/calcularCuorum" method="POST" id="Calcular">
-                                <div class="col form-group">
-                                   
-                                    {%if estadoCuorum.cuorum == 1 or estadoCuorum.cuorum == 0 :%}
-                                        <h4>Ya se calculó el cuorum de esta reunion.</h4>
+                            <div class="row text-center">
+                                <div class="form-group">
+                                    {%if estadoCuorum.cuorum == 0 :%}
+                                        <h4 class="mt-3 mb-3">No se aprobó el cuorum.</h4>
+                                        <p>Total suscriptores: <b>{{totalSuscriptores}}</b> </p>
+                                        <p>Total asistentes: <b>{{totalAsistentes}}</b> </p>
+                                    {%elif estadoCuorum.cuorum == 1%}
+                                        <h4 class="mt-3 mb-3">Aprobado el cuorum</h4>
+                                        <p> Total suscriptores: <b>{{totalSuscriptores}}</b>  </p>
+                                        <p> Total asistentes: <b>{{totalAsistentes}}</b>  </p>
                                     {%else:%}
-                                        <button type="button" class="btn btn-primary mt-5" id="calcularCuorum"
-                                            onclick="limpiar()">
-                                            Calcular Cuorum
-                                        </button>
+                                        <button type="button" class="btn btn-primary mt-5 " id="calcularCuorum" onclick="limpiar()">Calcular Cuorum</button>
                                     {%endif%}
 
                                 </div>
+                            </div>
                                 {% if reunionSelect: %}
-                                <input type="hidden" name="reunion_1" value="{{reunionSelect.nom_reunion}}" />
+                                    <input type="hidden" name="reunion_1" value="{{reunionSelect.nom_reunion}}" />
                                 {% elif nombreReunion:%}
-                                <input type="hidden" name="reunion_1" value="{{nombreReunion}}" />
+                                    <input type="hidden" name="reunion_1" value="{{nombreReunion}}" />
                                 {%endif%}
-                            </form>
                             {%endif%}
                         </div>
                     </div>
@@ -169,7 +171,6 @@
     <script>
         let asistentes = [];
         let idReunion = document.getElementById("idReunion");
-        let formularioCuorum = document.getElementById("Calcular");
         let calcularCuorum = document.getElementById('calcularCuorum');
         console.log(idReunion.value);
         
@@ -208,8 +209,7 @@
 
         function mostrarAlert(message, type = "info"){
             Swal.fire({
-                title: "Aviso",
-                text: message,
+                title: message,
                 icon: type,
             });
           } 
@@ -245,7 +245,7 @@
             .then(data => {
                 console.log(data.result);
                 if(data.result){
-                    mostrarAlert("Hay Cuorom");
+                    mostrarAlert("Hay Cuorom","success");
                 }else{
                     mostrarAlert("No hay Cuorom");
                 }

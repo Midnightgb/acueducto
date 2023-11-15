@@ -566,13 +566,16 @@ def obtenerSuscriptoresEmpresa(
                 query_asistentes = db.query(Lista_asistencia).filter(Lista_asistencia.id_reunion == reunion_1).all()
 
                 lista_combinada = {"suscriptor":[]}
-
+                total_asistentes = 0
+                total_suscriptores = 0
                 for busquedaUsuarios in query_usuarios:
+                    total_suscriptores += 1
                     estado = False
                     for usuariosReunion in query_asistentes:
                         if busquedaUsuarios.id_usuario == usuariosReunion.id_usuario:
                             lista_combinada["suscriptor"].append([busquedaUsuarios,True])
                             estado = True
+                            total_asistentes += 1
                             break
                     if not estado:
                         lista_combinada["suscriptor"].append([busquedaUsuarios,False])
@@ -582,7 +585,7 @@ def obtenerSuscriptoresEmpresa(
                 response = template.TemplateResponse(
                     "paso-1/paso1-2/llamado_lista.html",
                     {"request": request, "usuarios": lista_combinada, "usuario": usuario,
-                        "reunion": reunion_1, "reunionSelect": reunion_select,"estadoCuorum":cuorum},
+                        "reunion": reunion_1, "reunionSelect": reunion_select,"estadoCuorum":cuorum,"totalAsistentes":total_asistentes,"totalSuscriptores":total_suscriptores},
                 )
                 response.headers.update(headers)
                 return response
