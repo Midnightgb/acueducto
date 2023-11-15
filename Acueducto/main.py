@@ -1461,8 +1461,7 @@ def obtenerUsuariosEmpresa(
 
 # --- FUNCION PARA MOSTRAR LA PAGINA DONDE SE EDITA EL USUARIO(GENERAL)
 
-
-@app.post("/EditarUsuarios/", response_class=HTMLResponse, tags=["Operaciones Users"])
+@app.post("/EditarUsuarios/", tags=["Operaciones Users"])
 def Editar_Usuarios(
     request: Request,
     id_usuario: str = Form(...),

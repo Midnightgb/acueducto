@@ -271,7 +271,7 @@
                     <button type="button" data-bs-toggle="modal" data-bs-target="#modalAddVivienda"
                       class="btn btn-info  my-2">AGREGAR VIVIENDA</button>
                     {% endif %}
-                    <form action="/usuarios" method="get">
+                    <form action="/usuarios" method="post">
                       <input type="hidden" name="id_empresa" value="{{ user.empresa }}">
                       <button type="submit" class="btn btn-danger my-2">CANCELAR</button>
                     </form>
