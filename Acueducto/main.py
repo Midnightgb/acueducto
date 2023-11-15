@@ -24,7 +24,6 @@ from funciones import *
 from models import Empresa, Servicio, Usuario, Token, Vivienda
 import bcrypt
 from database import get_database
-from funciones import get_datos_empresa
 from typing import Union
 from sqlalchemy import and_
 
@@ -168,11 +167,14 @@ def pagConceptosBasicos(
         return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
 
 # ESTATUTOS
-@app.get("/estatutos", response_class=HTMLResponse, tags=["Operaciones Documentos"])
-def pagEstatutos(
-    request: Request, id_empresa: Union[str, None] = None, token: str = Cookie(None), db: Session = Depends(get_database),
+@app.post("/estatutos_documento", response_class=HTMLResponse, tags=["Operaciones Documentos"])
+def pagEstatutos_documento(
+    request: Request,
+    id_empresa_hidden: str = Form(...),
+    token: str = Cookie(None),
+    db: Session = Depends(get_database),
 ):
-
+    print(id_empresa_hidden)
     if token:
         is_token_valid = verificar_token(token, db)  # retorna el id_usuario
 
@@ -182,13 +184,13 @@ def pagEstatutos(
             datos_usuario = get_datos_usuario(is_token_valid, db)
 
             if rol_usuario == ADMIN:
-                id_empresa = datos_usuario['empresa']
-            if id_empresa:
+                id_empresa_hidden = datos_usuario['empresa']
+            if id_empresa_hidden:
                 empresa_obtenida = db.query(Empresa).filter(
-                    Empresa.id_empresa == id_empresa).first()
+                    Empresa.id_empresa == id_empresa_hidden).first()
                 if empresa_obtenida:
                     query = db.query(Documento).join(Usuario).join(Empresa, and_(
-                        Usuario.empresa == Empresa.id_empresa, Empresa.id_empresa == id_empresa))
+                        Usuario.empresa == Empresa.id_empresa, Empresa.id_empresa == id_empresa_hidden))
                     documentos_de_empresa = query.all()
                     for documento in documentos_de_empresa:
                         if documento.id_servicio == 1:
@@ -196,6 +198,72 @@ def pagEstatutos(
                             break
 
             print(ruta_pdf)
+            headers = elimimar_cache()
+            if rol_usuario == ADMIN:
+
+                response = template.TemplateResponse(
+                    "paso-1/paso1-1/estatutos.html",
+                    {"request": request, "usuario": datos_usuario,
+                        "ruta_pdf": ruta_pdf},
+                )
+                response.headers.update(headers)  # Actualiza las cabeceras
+                return response
+
+            elif rol_usuario == SUPER_ADMIN:
+                datos_empresas = db.query(Empresa).all()
+                response = template.TemplateResponse(
+                    "paso-1/paso1-1/estatutos.html",
+                    {"request": request, "usuario": datos_usuario,
+                        "ruta_pdf": ruta_pdf, "datos_empresas": datos_empresas},
+                )
+                response.headers.update(headers)  # Actualiza las cabeceras
+                return response
+            else:
+                alerta = {
+                    "mensaje": "No tiene los permisos para esta acción",
+                    "color": "warning",
+                }
+                response = template.TemplateResponse(
+                    "index.html",
+                    {"request": request, "alerta": alerta, "usuario": datos_usuario},
+                )
+                response.headers.update(headers)  # Actualiza las cabeceras
+                return response
+        else:
+            return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
+    else:
+        return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
+
+
+@app.get("/estatutos", response_class=HTMLResponse, tags=["Operaciones Documentos"])
+def pagEstatutos(
+    request: Request, token: str = Cookie(None), db: Session = Depends(get_database),
+):
+
+    if token:
+        is_token_valid = verificar_token(token, db)  # retorna el id_usuario
+
+        if is_token_valid:
+            ruta_pdf = None
+            id_empresa_hidden = None
+            rol_usuario = get_rol(is_token_valid, db)
+            datos_usuario = get_datos_usuario(is_token_valid, db)
+
+            if rol_usuario == ADMIN:
+                id_empresa_hidden = datos_usuario['empresa']
+            if id_empresa_hidden:
+                empresa_obtenida = db.query(Empresa).filter(
+                    Empresa.id_empresa == id_empresa_hidden).first()
+                if empresa_obtenida:
+                    query = db.query(Documento).join(Usuario).join(Empresa, and_(
+                        Usuario.empresa == Empresa.id_empresa, Empresa.id_empresa == id_empresa_hidden))
+                    documentos_de_empresa = query.all()
+                    for documento in documentos_de_empresa:
+                        if documento.id_servicio == 1:
+                            ruta_pdf = documento.url
+                            break
+                
+            # print(ruta_pdf)
             headers = elimimar_cache()
             if rol_usuario == ADMIN:
 
@@ -701,6 +769,26 @@ def calcularmCuorum(request: Request, token: str = Cookie(None), db: Session = D
     return cuorumCalculado
 
 # VERIFICACION DEL CUORUM
+
+@app.post("/listaAsistentes")
+async def recibirDatos(request: Request, token: str = Cookie(None),db: Session = Depends(get_database)):
+    print(
+        "Estamos dentro de la funcion de recibirDatos"
+    )
+    try:
+        datos = await request.json()
+        id_reunion = datos.get("id_reunion")
+        cantidad = datos.get("cantidadAsistentes")
+
+        if "datos" in datos:
+            for id_usuario in datos["datos"]:
+                insertarDatosReunion(id_usuario, id_reunion, db)
+
+        resultado = calcularmCuorum(request,token,db,cantidad,id_reunion)
+        return {"result":resultado}
+    except HTTPException as e:
+        if e.status_code == 499:
+            print("Cliente desconectado")
 
 
 # ORDEN DEL DIA

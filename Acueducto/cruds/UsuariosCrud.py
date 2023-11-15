@@ -21,8 +21,7 @@ from sqlalchemy.orm import Session
 from funciones import *
 from cruds.EmpresasCrud import *
 from cruds.ReunionesCrud import obtenerReuAdmin
-from models import Usuario, Reunion
-from models import Usuario, Reunion
+from models import Usuario, Reunion, Lista_asistencia, Empresa, Vivienda
 
 SUPER_ADMIN = "SuperAdmin"
 ADMIN = "Admin"
@@ -552,15 +551,41 @@ def obtenerSuscriptoresEmpresa(
                     & (Usuario.empresa == usuario.empresa)
                 ).all()
             )
+
             reunion_select = db.query(Reunion).filter(
                 Reunion.id_reunion == reunion_1).first()
+
             headers = elimimar_cache()
             reuniones = obtenerReuAdmin(usuario.empresa, db)
             if query_usuarios:
+
+                query_asistentes = db.query(Lista_asistencia).filter(
+                    Lista_asistencia.id_reunion == reunion_1).all()
+
+                lista_combinada = {"suscriptor": []}
+                total_asistentes = 0
+                total_suscriptores = 0
+                for busquedaUsuarios in query_usuarios:
+                    total_suscriptores += 1
+                    estado = False
+                    for usuariosReunion in query_asistentes:
+                        if busquedaUsuarios.id_usuario == usuariosReunion.id_usuario:
+                            lista_combinada["suscriptor"].append(
+                                [busquedaUsuarios, True])
+                            estado = True
+                            total_asistentes += 1
+                            break
+                    if not estado:
+                        lista_combinada["suscriptor"].append(
+                            [busquedaUsuarios, False])
+
+                cuorum = db.query(Reunion).filter(
+                    Reunion.id_reunion == reunion_1).first()
+
                 response = template.TemplateResponse(
                     "paso-1/paso1-2/llamado_lista.html",
-                    {"request": request, "suscriptores": query_usuarios, "usuario": usuario,
-                        "reuniones": reuniones, "reunionSelect": reunion_select},
+                    {"request": request, "usuarios": lista_combinada, "usuario": usuario,
+                        "reunion": reunion_1, "reunionSelect": reunion_select, "estadoCuorum": cuorum, "totalAsistentes": total_asistentes, "totalSuscriptores": total_suscriptores},
                 )
                 response.headers.update(headers)
                 return response
@@ -573,7 +598,7 @@ def obtenerSuscriptoresEmpresa(
                 response = template.TemplateResponse(
                     "paso-1/paso1-2/llamado_lista.html",
                     {"request": request, "alerta": alerta, "suscriptores": None,
-                        "usuario": usuario, "reuniones": reuniones},
+                        "usuario": usuario, "reunion":  reunion_1},
                 )
                 response.headers.update(headers)
                 return response

@@ -89,3 +89,24 @@ class Vivienda(Base):
     create_at = Column(String, server_default=func.now(), nullable=False)
     update_at = Column(String, server_default=func.now(),
                        onupdate=func.now(), nullable=False)
+
+
+class Lista_asistencia(Base):
+    __tablename__ = "lista_asistencia"
+    id_asistencia = Column(Integer, primary_key=True, autoincrement=True)
+    id_usuario = Column(String(30), ForeignKey('usuarios.id_usuario'))
+    id_reunion = Column(Integer, ForeignKey('reuniones.id_reunion'))
+    asistencia = Column(Integer)
+    
+class Variable(Base):
+    __tablename__ = 'variables'
+
+    id_variable = Column(Integer, primary_key=True, autoincrement=True)
+    pregunta = Column(String(100))
+
+class DatosVariable(Base):
+    __tablename__ = 'datos_variables'
+
+    id_empresa = Column(Integer, ForeignKey('empresas.id_empresa'), primary_key=True)
+    id_variable = Column(Integer, ForeignKey('variables.id_variable'), primary_key=True)
+    respuesta = Column(String(100))
