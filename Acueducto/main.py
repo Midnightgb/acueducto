@@ -2138,6 +2138,7 @@ def desvincularVivienda(
                 Vivienda.id_inmueble == id_vivienda).first()
             usuario = db.query(Usuario).filter(
                 Usuario.id_usuario == token_valido).first()
+            
             if vivienda:
                 vivienda.id_usuario = None
                 vivienda.numero_residentes = 0
@@ -2145,6 +2146,11 @@ def desvincularVivienda(
                 query_viviendas = db.query(Vivienda).filter(
                     Vivienda.id_usuario != None)
                 viviendas_con_usuario = query_viviendas.all()
+                if rol_usuario != SUPER_ADMIN:
+                    id_empresa = usuario.empresa
+                    usuarios= db.query(Usuario).filter(Usuario.empresa == id_empresa).all()
+                    viviendas_con_usuario = query_viviendas.filter(Vivienda.id_usuario.in_([usuario.id_usuario for usuario in usuarios]))
+
                 alerta = {
                     "mensaje": "Vivienda desvinculada exitosamente",
                     "color": "success",
