@@ -7,7 +7,7 @@
     {% endblock %}
 </head>
 
-<body>
+<body class="dashboard-analytics admin-header">
     <!-- [ navigation menu ] start -->
     {% block nav %}
     {% include 'nav.html' %}
@@ -20,57 +20,60 @@
     {% endblock %}
     <!--  END LOADER -->
 
-    <div class="pcoded-main-container">
-        <div class="pcoded-content">
-
-            <div class="container-xxl py-5 bg-white">
-                <div class="container">
-                    <div class="row g-5 align-items-end">
-                        {% if alerta: %}
-                        <div class="alert alert-{{alerta.color}}" role="alert">
-                            {{alerta.mensaje}}
-                        </div>
-                        {% endif %}
-                        <div class="col-lg-3 col-md-5 pb-4">
-                            <img class="img-fluid rounded"
-                                src="{{ url_for('static', path='assets/images/cortes.jpg') }}">
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 
 
-    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="exampleModalLabel">Resuelve tus inquietudes</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">X</button>
-                </div>
-                <div class="modal-body">
-                    <div class="container mt-5" style="max-width: 400px;">
-                        <h3 class="mb-4">Chat Bot</h3>
-                        <div class="card mb-4">
-                            <div class="card-body" id="chat-box" style="height: 300px; overflow-y: scroll;">
+    <!--  BEGIN MAIN CONTAINER  -->
+
+        <!--  BEGIN CONTENT AREA  -->
+        <div class="pcoded-main-container">
+            <div class="pcoded-content">
+                <div class="container-xxl">
+                    <div class="layout-top-spacing">
+                        <div class="col-left-content">
+                            <div class="admin-data-content layout-top-spacing ">
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <div class="text-center ">
+                                            <h1 class="text-center">Introducción</h1>
+                                            <video class="img-fluid" autoplay muted loop controls width="420" height="320">
+                                                <source src="{{ url_for('static', path='ArchivosDescarga/Video_Asamblea-de-constitución.mp4') }}" type="video/mp4">
+                                                Tu navegador no admite la reproducción de videos.
+                                            </video>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                        <div class="text-center">
+                                            <a href="{{ url_for('static', path='ArchivosDescarga/Video_Asamblea-de-constitución.mp4') }}"
+                                                type="button" class="mx-3 mt-2 btn"
+                                                style="background-color: #37a349; color: white;"> <b>Descargar Video</b>
+                                            </a> 
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="footer-wrapper col-xl-12 d-flex justify-content-center ">
+                                    <div class="footer-section f-section-1">
+                                        <p class="">&copy; 2023 
+                                            <a target="_blank" href="https://www.sena.edu.co/es-co/Paginas/default.aspx">SENA -
+                                                Acueducto
+                                            </a>
+                                        </p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div class="input-group mb-3">
-                            <input type="text" class="form-control" id="message-input"
-                                placeholder="Escribe un mensaje...">
-                            <button class="btn btn-primary" id="send-button">Enviar</button>
-                        </div>
                     </div>
                 </div>
             </div>
+            <!--  END CONTENT AREA  -->
         </div>
-    </div>
-    <!-- BEGIN SCRIPTS -->
-    {% block scripts %}
-    {% include 'scripts.html' %}
-    {% endblock %}
-    <!-- END SCRIPTS -->
+
+        <!-- BEGIN SCRIPTS -->
+        {% block scripts %}
+        {% include 'scripts.html' %}
+        {% endblock %}
+        <!-- END SCRIPTS -->
 </body>
 
 </html>

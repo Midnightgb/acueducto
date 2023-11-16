@@ -46,6 +46,7 @@ class Usuario(Base):
     contrasenia = Column(String(180))
     estado = Column(Enum('Activo', 'Inactivo'), default='Activo')
 
+    viviendas = relationship("Vivienda", backref="usuario")
 class Documento(Base):
     __tablename__ = 'documentos'
     id_doc = Column(Integer, primary_key=True)
