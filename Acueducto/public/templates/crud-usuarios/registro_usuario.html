@@ -140,6 +140,7 @@
                     <div class="form-group col-lg-6 col-md-6 col-sm-12 mb-3">
                       <label for="rol">Rol:</label>
                       <select class="form-select" name="rol" id="rol" onchange="ocultarPassword()" required>
+                        <option value="" disabled selected>Seleccione un rol</option>
                         {% if usuario.rol == 'SuperAdmin': %}
                         <option value="Admin">Admin</option>
                         <option value="Técnico">Técnico</option>
