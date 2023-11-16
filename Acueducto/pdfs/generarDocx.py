@@ -52,7 +52,7 @@ def manejarDocumentos(nombre_documento, datos, nit, id_usuario, db, id_servicio)
     db.commit()
     db.refresh(nuevo_documento1)
 
-def generarDocx_P01_F_03(
+def generarDocx(
     request: Request, 
     token: str, 
     db: Session,
@@ -135,14 +135,12 @@ def generarDocx_P01_F_03(
                         }
                         arreglo_rutas = []
                         #crear, guardar y convertir a pdf archivo 1
-                        manejarDocumentos("P01-F-03_Estatutos_Asociación_Suscriptores", datos, nit, is_token_valid, db,1)
-                        arreglo_rutas.append('ArchivosDescarga/Generados/P01-F-03_Estatutos_Asociación_Suscriptores'+ nit + '.pdf')
+                        manejarDocumentos("P01-F-03_Estatutos_Asociacion_Suscriptores", datos, nit, is_token_valid, db,1)
+                        arreglo_rutas.append('ArchivosDescarga/Generados/P01-F-03_Estatutos_Asociacion_Suscriptores'+ nit + '.pdf')
                         manejarDocumentos("P01-F-02_Formato_Contrato_Condiciones_Uniformes", datos, nit, is_token_valid, db, 2)
                         arreglo_rutas.append('ArchivosDescarga/Generados/P01-F-02_Formato_Contrato_Condiciones_Uniformes'+ nit + '.pdf')
-                        manejarDocumentos("P01-F-06_ActaConstitución", datos, nit, is_token_valid, db, 3)
-                        arreglo_rutas.append('ArchivosDescarga/Generados/P01-F-06_ActaConstitución'+ nit + '.pdf')
                         response = template.TemplateResponse(
-                        "paso-1/paso1-3/archivo_control_documental.html", {"request": request, "usuario": datos_usuario, "rutas_pdf": arreglo_rutas}
+                        "paso-1/paso1-1/generar_documentos.html", {"request": request, "usuario": datos_usuario, "rutas_pdf": arreglo_rutas}
                         )
                         response.headers.update(headers)  # Actualiza las cabeceras
                         return response
@@ -152,7 +150,7 @@ def generarDocx_P01_F_03(
                 else:
                     print('No se encontró el usuario con el ID proporcionado.')
                 response = template.TemplateResponse(
-                    "paso-1/paso1-3/archivo_control_documental.html", {"request": request, "usuario": datos_usuario, "rutas_pdf": []}
+                    "paso-1/paso1-1/generar_documentos.html", {"request": request, "usuario": datos_usuario, "rutas_pdf": []}
                 )
                 response.headers.update(headers)  # Actualiza las cabeceras
                 return response

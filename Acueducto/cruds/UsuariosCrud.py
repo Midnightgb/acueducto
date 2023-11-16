@@ -7,7 +7,7 @@ from fastapi.templating import Jinja2Templates
 
 from fastapi import (
     FastAPI,
-    Request,
+    Request, 
     Form,
     status,
     Depends,
@@ -21,8 +21,7 @@ from sqlalchemy.orm import Session
 from funciones import *
 from cruds.EmpresasCrud import *
 from cruds.ReunionesCrud import obtenerReuAdmin
-from models import Usuario, Reunion
-from models import Usuario, Reunion
+from models import Usuario, Reunion,Lista_asistencia
 
 SUPER_ADMIN = "SuperAdmin"
 ADMIN = "Admin"
@@ -189,8 +188,9 @@ def actualizarUsuario(
                     # Guarda los cambios en la base de datos
                     db.commit()
                     # Compara los valores actuales con los nuevos valores
-
-                    return RedirectResponse(url="/usuarios", status_code=status.HTTP_303_SEE_OTHER)
+                    raise HTTPException(status_code=307, detail="Redireccionando...", headers={
+                                        "Location": "/usuarios"})
+                    # return RedirectResponse(url="/usuarios", status_code=status.HTTP_303_SEE_OTHER)
 
                 else:
 
@@ -216,7 +216,6 @@ def createUsuario(
     contrasenia: str,
     token: str,
     db: Session,
-
 ):
 
     empresa_existente = db.query(Empresa).filter(
@@ -228,12 +227,12 @@ def createUsuario(
         }
         return RedirectResponse(url="/form_registro_usuario", status_code=status.HTTP_303_SEE_OTHER, alerta=alerta) """
         raise HTTPException(
-            status_code=403, detail="La empresa seleccionada, no existe.")
+            status_code=400, detail="La empresa seleccionada, no existe.")
     campos = ['correo', 'num_doc']
     valores = [correo, num_doc]
     if verificar_existencia(campos, valores, db):
         raise HTTPException(
-            status_code=403, detail="El correo o el número de documento ya existe.")
+            status_code=400, detail="El correo o el número de documento ya existe.")
 
     if token:
         is_valid = verificar_token(token, db)
@@ -266,10 +265,10 @@ def createUsuario(
                     raise HTTPException(
                         status_code=400, detail="Id de usuario ya Existe"
                     )
-                # Encriptar la contraseña antes de almacenarla
-                hashed_password = bcrypt.hashpw(
-                    contrasenia.encode("utf-8"), bcrypt.gensalt()
-                )
+                if contrasenia:
+                    hashed_password = bcrypt.hashpw(contrasenia.encode("utf-8"), bcrypt.gensalt())
+
+                contrasenia = hashed_password.decode("utf-8") if contrasenia else None
                 # Validar y crear el usuario en la base de datos con la contrasena encriptada
                 usuario_db = Usuario(
                     id_usuario=id_usuario,
@@ -282,9 +281,7 @@ def createUsuario(
                     num_doc=num_doc,
                     direccion=direccion,
                     municipio=municipio,
-                    contrasenia=hashed_password.decode(
-                        "utf-8"
-                    ),  # Almacena la contraseña encriptada
+                    contrasenia=contrasenia,
                 )
                 try:
                     db.add(usuario_db)
@@ -389,6 +386,7 @@ def EditarUsuarios(
     id_usuario: str,
     token: str,
     db: Session,
+    id_empresa: str,
 ):
     if token:
         token_valido = verificar_token(token, db)
@@ -405,7 +403,7 @@ def EditarUsuarios(
                 response = template.TemplateResponse(
                     "crud-usuarios/EditarUsuario.html",
                     {"request": request, "user": user,
-                        "usuario": usuario, "viviendas": viviendas},
+                        "usuario": usuario, "viviendas": viviendas, "id_empresa": id_empresa},
                 )
                 response.headers.update(headers)
                 return response
@@ -555,15 +553,40 @@ def obtenerSuscriptoresEmpresa(
                     & (Usuario.empresa == usuario.empresa)
                 ).all()
             )
+
+            
+
             reunion_select = db.query(Reunion).filter(
                 Reunion.id_reunion == reunion_1).first()
+
+            
             headers = elimimar_cache()
             reuniones = obtenerReuAdmin(usuario.empresa, db)
             if query_usuarios:
+
+                query_asistentes = db.query(Lista_asistencia).filter(Lista_asistencia.id_reunion == reunion_1).all()
+
+                lista_combinada = {"suscriptor":[]}
+                total_asistentes = 0
+                total_suscriptores = 0
+                for busquedaUsuarios in query_usuarios:
+                    total_suscriptores += 1
+                    estado = False
+                    for usuariosReunion in query_asistentes:
+                        if busquedaUsuarios.id_usuario == usuariosReunion.id_usuario:
+                            lista_combinada["suscriptor"].append([busquedaUsuarios,True])
+                            estado = True
+                            total_asistentes += 1
+                            break
+                    if not estado:
+                        lista_combinada["suscriptor"].append([busquedaUsuarios,False])
+
+                cuorum = db.query(Reunion).filter(Reunion.id_reunion == reunion_1).first() 
+
                 response = template.TemplateResponse(
                     "paso-1/paso1-2/llamado_lista.html",
-                    {"request": request, "suscriptores": query_usuarios, "usuario": usuario,
-                        "reuniones": reuniones, "reunionSelect": reunion_select},
+                    {"request": request, "usuarios": lista_combinada, "usuario": usuario,
+                        "reunion": reunion_1, "reunionSelect": reunion_select,"estadoCuorum":cuorum,"totalAsistentes":total_asistentes,"totalSuscriptores":total_suscriptores},
                 )
                 response.headers.update(headers)
                 return response
@@ -576,7 +599,7 @@ def obtenerSuscriptoresEmpresa(
                 response = template.TemplateResponse(
                     "paso-1/paso1-2/llamado_lista.html",
                     {"request": request, "alerta": alerta, "suscriptores": None,
-                        "usuario": usuario, "reuniones": reuniones},
+                        "usuario": usuario, "reunion":  reunion_1},
                 )
                 response.headers.update(headers)
                 return response

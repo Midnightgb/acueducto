@@ -8,8 +8,7 @@
   {% endblock %}
 
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
-  <link rel="stylesheet"
-    href="https://cdn.datatables.net/v/bs5/jszip-3.10.1/dt-1.13.6/af-2.6.0/b-2.4.2/b-html5-2.4.2/b-print-2.4.2/kt-2.10.0/r-2.5.0/sr-1.3.0/datatables.min.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/v/bs5/jszip-3.10.1/dt-1.13.6/af-2.6.0/b-2.4.2/b-html5-2.4.2/b-print-2.4.2/kt-2.10.0/r-2.5.0/sr-1.3.0/datatables.min.css">
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
   <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.7.1/css/buttons.dataTables.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11">
@@ -36,32 +35,62 @@
   
   <main class="pcoded-main-container">
     <div class="pcoded-content">
-      <div class="row col-12">
-        {% if alerta: %}
-          <div class="alert alert-{{alerta.color}}" role="alert">
-              {{alerta.mensaje}}
+      <div class="col-12">
+
+          <div class="row">
+            {% if alerta: %}
+                <div class="alert alert-{{alerta.color}}" role="alert">
+                    {{alerta.mensaje}}
+                </div>
+              {% endif %}
+            <div class="col-auto form-group">
+              {%if usuario.rol == 'SuperAdmin': %}
+                <form action="/obtenerDatosReunionSuperAdmin" method="POST" id="formDatosReu">
+                  <label class="mt-2" for="">Seleccione la empresa:</label>
+                  <select class="form-select" name="id_empresa" id="selectEmpresa" required>
+                      <option value="">Seleccione la empresa</option>
+                      {% if empresas: %}
+                        {% for empresa in empresas %}
+                          <option value="{{ empresa.id_empresa }}">{{ empresa.nom_empresa }}</option>
+                        {% endfor %}
+                      {% else: %}
+                          <option value="">No hay empresas </option>
+                      {%endif%}
+                  </select><br>
+                </form>
+              {%endif%} 
+            </div>
+            <div class="col-auto" >
+              <form action="/reunionesFecha" method="post" class="row" id="buscarReuniones">
+                  <input type="hidden" name="id_empresa" id="inputHidden">
+                  <div class="col-auto">
+                      <label for="">Desde</label>
+                      <input type="date" id="fecha" name="fechaActual" value="" class="form-control" required />
+                  </div>
+                  <div class="col-auto">
+                      <label for="">Hasta</label>
+                      <input type="date" class="form-control" name="fechaHasta" id="hora"
+                          placeholder="Hora" required />
+                  </div>
+                  <div class="col-auto mt-4">
+                      <button type="submit" class="btn btn-primary">
+                          Buscar reuniones
+                      </button>
+                  </div>
+              </form>
+            </div>
+          </div>
+       
+        {% if usuario.rol == 'Admin': %}
+          <div class="d-flex justify-content-end">
+            <a type="button" href="/reunion" class="btn btn-success">Crear Reunión</a>
           </div>
         {% endif %}
-          <div class="col-3 form-group">
-            {%if usuario.rol == 'SuperAdmin': %}
-              <form action="/obtenerDatosReunionSuperAdmin" method="POST" id="formDatosReu">
-                <label class="mt-2" for="">Seleccione la empresa:</label>
-                <select class="form-select" name="id_empresa" id="selectEmpresa" required>
-                    <option value=""></option>
-                    {% if empresas: %}
-                      {% for empresa in empresas %}
-                        <option value="{{ empresa.id_empresa }}">{{ empresa.nom_empresa }}</option>
-                      {% endfor %}
-                    {% else: %}
-                        <option value="">No hay empresas </option>
-                    {%endif%}
-                </select><br>
-              </form>
-            {%endif%}
-          </div>  
-        <div class="d-flex justify-content-end">
-          <a type="button" href="/reunion" class="btn btn-success">Crear Reunión</a>
-        </div>
+        {% if empresa : %}
+          <div class="d-flex justify-content-start">
+            <h3>Empresa: {{empresa.nom_empresa}} </h3>
+          </div>
+        {% endif %}
         <div class="table-responsive mt-3">
           <table class="table table-striped
               table-hover	
@@ -75,15 +104,14 @@
                     <th>ID Empresa</th>
                     <th>Fecha</th>
                     <th>URL</th>
-                    {% if usuario.rol == 'SuperAdmin' or usuario.rol == 'Admin' %}
-                    <th>Estado</th>
+                    {% if usuario.rol == 'Admin' %}
+                      <th class="dt-no-sorting"></th>
                     {% endif %}
-                    <th class="dt-no-sorting"></th>
                     <th class="dt-no-sorting"></th>
                 </tr>
             </thead>
             
-            <tbody>
+            <tbody id="tbody">
               {% if reuniones: %}
                 {% for emp in reuniones %}
                 <tr>
@@ -92,18 +120,19 @@
                   <td>{{ emp.id_empresa }}</td>
                   <td>{{ emp.fecha }}</td>
                   <td>{{ emp.url_asistencia }}</td>
-                  {% if usuario.rol == 'SuperAdmin' or usuario.rol == 'Admin' %}
-                  <td><img src="{{ url_for('static', path='assets/images/')}}{{emp.estado}}.png" alt="{{ emp.estado }}"></td>
-                  {% endif %}
-                  <td><form action="/EditarReunion/" method="POST">
-                    <input type="hidden" name="id_reunion" value="{{ emp.id_reunion  }}">
-                    <button type="submit" class="btn btn-primary">Editar</button>
-                  </form>
-                    
+                  {% if usuario.rol == 'Admin' %}
                   <td>
-                    {% if emp.estado == 'Activo' %}
-                      <button type="button" class="btn btn-danger" onclick="confirmDeleteEmpresa('{{ emp.id_empresa }}')">Desactivar</button>
-                    {% endif %}
+                    <form action="/llamado_lista" method="POST">
+                      <input type="hidden" name="id_reunion" value="{{ emp.id_reunion  }}">
+                      <button type="submit" class="btn btn-light">Asistencia</button>
+                    </form>
+                  </td>
+                  {% endif %}
+                  <td>
+                    <form action="/EditarReunion/" method="POST">
+                      <input type="hidden" name="id_reunion" value="{{ emp.id_reunion  }}">
+                      <button type="submit" class="btn btn-primary">Editar</button>
+                    </form>
                   </td>
                 </tr>
                 {% endfor %}
@@ -162,10 +191,6 @@
             targets: [5],
             orderable: false
           },
-          {
-            targets: [6],
-            orderable: false
-          }
         ],
         language: {
           url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json',
@@ -182,7 +207,6 @@
         "pageLength": 10
       });
     });
-
     function confirmDeleteEmpresa(id_empresa) {
     // Muestra el modal de confirmación
     $('#confirmDeleteModal').modal('show');
@@ -229,21 +253,30 @@
   <script>
     let formDatosReu = document.getElementById('formDatosReu');
     let selectEmpresa = document.getElementById('selectEmpresa');
-
+    let buscarReuniones = document.getElementById('buscarReuniones');
+    let tbody = document.getElementById('tbody');
     selectEmpresa.addEventListener('change',() => {
       localStorage.setItem("opcionSeleccionada", selectEmpresa.value);
       formDatosReu.submit();
     });
 
-    window.addEventListener('load', () => {
-        var opcionGuardada = localStorage.getItem("opcionSeleccionada");
-        if (opcionGuardada) {
-            let optionToSelect = selectEmpresa.querySelector(`option[value="${opcionGuardada}"]`);
-            if (optionToSelect) {
-                optionToSelect.selected = true;
-            }
-        }
-    });
+    buscarReuniones.addEventListener('submit', () => {
+      localStorage.clear();
+    })
+    
+
+
+    let inputHidden = document.getElementById('inputHidden');
+    inputHidden.value = localStorage.getItem("opcionSeleccionada");
+    // window.addEventListener('load', () => {
+    //     var opcionGuardada = localStorage.getItem("opcionSeleccionada");
+    //     if (opcionGuardada) {
+    //         let optionToSelect = selectEmpresa.querySelector(`option[value="${opcionGuardada}"]`);
+    //         if (optionToSelect) {
+    //             optionToSelect.selected = true;
+    //         }
+    //     }
+    // });
 
 
   </script>

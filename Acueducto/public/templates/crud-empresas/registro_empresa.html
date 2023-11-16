@@ -36,7 +36,7 @@
   {% include 'loader.html' %}
   {% endblock %}
 
-  <div class="main-container" id="container">
+  <div class="main-container mt-5" id="container">
 
     <div class="overlay"></div>
     <div class="search-overlay"></div>
@@ -78,13 +78,13 @@
                       <div class="form-group ">
                         <label for="email">Correo electrónico</label>
                         <input type="email" class="form-control" name="email" id="email" placeholder="Correo" required>
-                      </div>
+                      </div> 
                     
-                      <div class="text-center">
-                        <a href="/index" class="btn btn-danger mb-3">Cancelar</a>
-                        <button type="submit" class="btn btn-success mb-3">Registrar</button>
-                      </div>
                     </form>
+                    <div class="text-center">
+                      <a href="/index" class="btn btn-danger mb-3">Cancelar</a>
+                      <button type="submit" class="btn btn-success mb-3">Registrar</button>
+                    </div>
                 </div>
               </div>
               <div class="footer-wrapper col-xl-12 d-flex justify-content-center">
@@ -137,7 +137,7 @@
           text: message,
           icon: type,
       });
-    }
+    } 
 
   document.getElementById("formularioEmpresa").addEventListener("submit", async function (event){
     event.preventDefault();

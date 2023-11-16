@@ -6,12 +6,52 @@
   {% block meta %}
   {% include 'meta.html' %}
   {% endblock %}
+  <script>
+    function validarFormulario() {
+      var nom_usuario = document.getElementById("nom_usuario").value.trim();
+      var apellido_usuario = document.getElementById("apellido_usuario").value.trim();
+      var tipo_doc = document.getElementById("tipo_doc").value.trim();
+      var num_doc = document.getElementById("num_doc").value.trim();
+      var correo = document.getElementById("correo").value.trim();
+      var municipio = document.getElementById("municipio").value.trim();
+      var direccion = document.getElementById("direccion").value.trim();
+      var empresa = document.getElementById("empresa").value.trim();
+      var rol = document.getElementById("rol").value.trim();
+      var contrasenia = document.getElementById("contrasenia").value.trim();
+    
+      if (
+        nom_usuario === "" ||
+        apellido_usuario === "" ||
+        tipo_doc === "" ||
+        num_doc === "" ||
+        correo === "" ||
+        municipio === "" ||
+        direccion === "" ||
+        empresa === "" ||
+        rol === "" 
+      ) {
+        Swal.fire({
+            title: "Aviso",
+            text: "no puede dejar campos vacios",
+            icon: type,
+        });
+        return false;
+      }
+    
+      return true;
+    }
+    </script>
+    
 </head>
 <style>
-  #tipo_doc, #rol, #empresa {
+  #tipo_doc,
+  #rol,
+  #empresa {
     cursor: pointer;
   }
 </style>
+
+
 <body class="dashboard-analytics admin-header">
   <header>
     {% block nav %}
@@ -26,7 +66,7 @@
   {% endblock %}
   <!--  END LOADER -->
   <!--  BEGIN MAIN CONTAINER  -->
-  <div class="main-container" id="container">
+  <div class="main-container mt-5" id="container">
     <div class="overlay"></div>
     <div class="search-overlay"></div>
     <!--  BEGIN CONTENT AREA  -->
@@ -40,16 +80,16 @@
                 <div class="col-lg-12 col-md-12 col-sm-12 pt-2">
                   {% if alerta: %}
                   <div class="alert alert-{{alerta.color}}" role="alert">
-                      {{alerta.mensaje}}
+                    {{alerta.mensaje}}
                   </div>
                   {% endif %}
                   <h2 class="text-center mb-4 py-3">Registro Usuario</h2>
-                  <form action="" method="POST" id="registroForm" class="row">
+                  <form  id="registroForm" class="row" onsubmit="return validarFormulario()">
                     <!-- Agregamos action y method para enviar datos al servidor -->
                     <div class="form-group  col-lg-6 col-md-6 col-sm-12 mb-3">
                       <label for="nom_usuario">Nombres</label>
-                      <input type="text" class="form-control" id="nom_usuario" name="nom_usuario"
-                        placeholder="Nombres" required>
+                      <input type="text" class="form-control" id="nom_usuario" name="nom_usuario" placeholder="Nombres"
+                        required>
                     </div>
                     <div class="form-group col-lg-6 col-md-6 col-sm-12 mb-3">
                       <label for="apellido_usuario">Apellidos</label>
@@ -86,19 +126,20 @@
                     <div class="form-group col-lg-6 col-md-6 col-sm-12 mb-3">
                       <label for="empresa">Empresa</label>
                       <select class="form-control" name="empresa" id="empresa" required>
-                          {% if usuario.rol == 'SuperAdmin': %}
-                            {% for empresa in empresas %}
-                            <option value="{{ empresa.id_empresa }}">{{ empresa.nom_empresa }}</option>
-                            {% endfor %}
-                          {%endif%}
-                          {%if usuario.rol == 'Admin': %}
-                          <option value="{{empresa.id_empresa}}">{{empresa.nom_empresa}}</option>
-                          {%endif%}
+                        {% if usuario.rol == 'SuperAdmin': %}
+                        <option value="" disabled selected>Seleccione una empresa</option>
+                        {% for empresa in empresas %}
+                        <option value="{{ empresa.id_empresa }}">{{ empresa.nom_empresa }}</option>
+                        {% endfor %}
+                        {%endif%}
+                        {%if usuario.rol == 'Admin': %}
+                        <option value="{{empresa.id_empresa}}">{{empresa.nom_empresa}}</option>
+                        {%endif%}
                       </select>
-                  </div>
+                    </div>
                     <div class="form-group col-lg-6 col-md-6 col-sm-12 mb-3">
                       <label for="rol">Rol:</label>
-                      <select class="form-select" name="rol" id="rol" required>
+                      <select class="form-select" name="rol" id="rol" onchange="ocultarPassword()" required>
                         {% if usuario.rol == 'SuperAdmin': %}
                         <option value="Admin">Admin</option>
                         <option value="Técnico">Técnico</option>
@@ -113,82 +154,124 @@
                         {% endif %}
                       </select>
                     </div>
-                    <div class="form-group col-lg-6 col-md-6 col-sm-12 mb-3 ">
+
+                    <div class="form-group col-lg-6 col-md-6 col-sm-12 mb-3 " id="contraseniaField">
                       <label for="contrasenia">Contraseña:</label>
-                      <input type="password" class="form-control" name="contrasenia" id="contrasenia" required>
+                      <input type="password" class="form-control" name="contrasenia" id="contrasenia">
                     </div>
-                    <div class="text-center mt-2">
-                      <a href="/usuarios" class="btn btn-danger">Cancelar</a>
-                      <button type="button" class="btn btn-success" onclick="enviarFormulario()">Registrar</button>
+                    <div class="text-center mt-2 ">
+                      <a href="/index"  class="btn btn-danger">Cancelar</a>
+                      <button type="submit" class="btn btn-success" onclick="insertUser()">Registrar</button>
                     </div>
+                    
                   </form>
+                  
+                  
                 </div>
               </div>
               <br>
+            </div>
           </div>
         </div>
+        <!--  END CONTENT AREA  -->
       </div>
-      <!--  END CONTENT AREA  -->
-    </div>
-    <br>
-              <div class="footer-section f-section-1 m-1" style="text-align: center;">
-                <p>&copy; 2023 <a target="_blank" href="https://www.sena.edu.co/es-co/Paginas/default.aspx">SENA -Acueducto</a></p>
-              </div>
+      <br>
+      <div class="footer-section f-section-1 m-1" style="text-align: center;">
+        <p>&copy; 2023 <a target="_blank" href="https://www.sena.edu.co/es-co/Paginas/default.aspx">SENA -Acueducto</a>
+        </p>
+      </div>
     </div>
     {% block scripts %}
     {% include 'scripts.html' %}
     {% endblock %}
-    <script>
-      function enviarFormulario() {
-        // Obtén los valores del formulario
-        var nomUsuario = document.getElementById('nom_usuario').value;
-        var apellidoUsuario = document.getElementById('apellido_usuario').value;
-        var tipoDoc = document.getElementById('tipo_doc').value;
-        var numDoc = document.getElementById('num_doc').value;
-        var correo = document.getElementById('correo').value;
-        var municipio = document.getElementById('municipio').value;
-        var direccion = document.getElementById('direccion').value;
-        var empresa = document.getElementById('empresa').value;
-        var rol = document.getElementById('rol').value;
-        var contrasenia = document.getElementById('contrasenia').value;
-            
-        if (!nomUsuario || !apellidoUsuario || !tipoDoc || !numDoc || !correo || !municipio || !direccion || !empresa || !rol || !contrasenia) {
-          mostrarAlerta("Error", "Por favor, complete todos los campos.");
-          return;
-        }
-
-        var formData = {
-          nom_usuario: nomUsuario,
-          apellido_usuario: apellidoUsuario,
-          tipo_doc: tipoDoc,
-          num_doc: numDoc,
-          correo: correo,
-          municipio: municipio,
-          direccion: direccion,
-          empresa: empresa,
-          rol: rol,
-          contrasenia: contrasenia
-        };
-        
-        $.ajax({
-          url: '/crearUser', 
-          type: 'POST',
-          data: formData,
-          success: function(response) {
-            mostrarAlerta("Éxito", "Usuario registrado exitosamente");
-            limpiarFormulario();
-          },
-          error: function(error) {
-            mostrarAlerta("Error", "Hubo un error al registrar el usuario es posible que el documento o el correo ya exista.");
-          }
-        });
-      }
-
-      function limpiarFormulario() {
+    <!-- <script>
+      function insertUser(){
+        document.getElementById("registroForm").submit();
         document.getElementById("registroForm").reset();
       }
+    </script> -->
+
+    <script >
+      //funcion para valirdar que se creo
+  
+      async function enviarSolicitud(formData){
+        try {
+          const reponse = await fetch("/crearUser", {
+            method: "POST",
+            body: formData,
+          });
+  
+          console.log(reponse.status);
+          if(reponse.status === 201){
+            
+            //const data = await reponse.json();
+            console.log("qqqaaaa")
+            return {success: true};
+  
+          } else {
+            const errorData = await reponse.json();
+            throw new Error(errorData.detail || "Error desconocido" );
+          }
+  
+        } catch (error) {
+          throw error;
+        }
+      }
+  
+      //funcion  para mostrar alert
+      function mostrarAlert(message, type = "info"){
+        Swal.fire({
+            title: "Aviso",
+            text: message,
+            icon: type,
+        });
+      } 
+  
+    document.getElementById("registroForm").addEventListener("submit", async function (event){
+      event.preventDefault();
+      console.log("SI ENTRAMOS PAPI");
+      try {
+        const formData = new FormData(this);
+  
+        const response = await enviarSolicitud(formData);
+  
+        if (response.success) {
+          console.log("nos fuimos")
+          mostrarAlert("Usuario regsitrado con exito.", "success");
+  
+          //Limpiamos el form
+          this.reset();
+  
+          document.getElementById("nom_usuario").focus();
+          
+          console.log("aui etamos")
+          setTimeout(function() {
+            window.location.href = "/form_registro_usuario";
+          }, 3000); // segundos
+        }
+      } catch (error) {
+        mostrarAlert(`Error al registrar el usuario: `,"error");
+      }
+    });
+  
     </script>
-    
+    <script>
+      function ocultarPassword() {
+        var rolSelect = document.getElementById("rol");
+        var contraseniaField = document.getElementById("contraseniaField");
+      
+        if (rolSelect.value === "Suscriptor") {
+          contraseniaField.style.display = "none";
+          
+        } else {
+          contraseniaField.style.display = "block";
+        }
+      }
+      
+      ocultarPassword();
+
+    </script>
+
 </body>
 
 </html>

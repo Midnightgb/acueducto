@@ -20298,7 +20298,7 @@ pre[class*=language-]:before {
 
 .pcoded-header {
     z-index: 1029;
-    position: relative;
+    position: fixed;
     display: flex;
     min-height: 56px;
     padding: 0;
@@ -20701,7 +20701,7 @@ pre[class*=language-]:before {
 .pcoded-navbar {
     display: block;
     z-index: 1028;
-    position: absolute;
+    position: fixed !important;
     box-shadow: 0 2px 10px -1px rgba(69, 90, 100, 0.3);
     transition: all 0.3s ease-in-out;
     width: 235px;
@@ -21640,6 +21640,7 @@ pre[class*=language-]:before {
     right: 0;
     top: 0;
     margin-left: 235px;
+    margin-top: 50px;
     min-height: 100vh;
     transition: all 0.3s ease-in-out;
 }

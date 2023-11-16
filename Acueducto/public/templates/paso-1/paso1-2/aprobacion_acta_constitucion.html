@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -6,7 +6,6 @@
     {% include 'meta.html' %}
     {% endblock %}
 </head>
-
 
 <body class="dashboard-analytics admin-header">
     <!-- [ navigation menu ] start -->
@@ -23,128 +22,194 @@
 
 
     <!--  BEGIN MAIN CONTAINER  -->
-    <div class="main-container" id="container">
 
         <!--  BEGIN CONTENT AREA  -->
-        <div id="content" class="main-content">
-            <div class="layout-px-spacing">
-                <div class="container-xxl">
-                    <div class="layout-top-spacing">
-                        <div class="col-left-content">
+        <div class="pcoded-main-container">
+            <div class="pcoded-content">
+                <div class="container-xxl py-5 bg-white">
+                    <div class="container">
+                        <div>
+                            <div>
+                                <div class="row">
+                                    
+                                    <div class="col-lg-3 col-md-5 pb-4">
+                                        <img class="img-fluid rounded"
+                                        src="{{ url_for('static', path='assets/images/cortes.jpg') }}">
+                                    </div>
+                                    <div class="col-lg-9">
+                                        <div class="mb-5 mt-2">
+                                            <div class="media-body">
+                                                <br><br><br><br><br><br>
 
-                            <br>
-                            <div class="admin-data-content layout-top-spacing">
+                                                <h2 class=" display-4 text-primary mb-0 ">Acta de Constitución</h2>
+                                                <h6 class="text-primary mb-5">El acta de la asamblea de constitución de una asociación comunitaria de acueducto es un documento fundamental que registra los detalles y decisiones tomadas durante la reunión donde se establece formalmente la asociación. Este tipo de acta es esencial en el proceso de formación de la asociación y puede tener varios propósitos y beneficios. Aquí hay algunas funciones comunes:</h6>
+                                            </div>
+                                        </div>
+                                    </div>
 
-                                <div id="" class="main-content w-75 container">
-                                    <div class="container">
+                                    <div class="col-lg-6 mb-5 mt-4">
+                                        <div class="border-start ps-4">
+                                            <div class="media-body">
+                                                <h4 class="mb-3">Registro Oficial: </h4>
+                                                <span class="mb-5">El acta sirve como un registro oficial que documenta la creación de la asociación comunitaria de acueducto. Es un documento legal que establece la existencia y legitimidad de la asociación.</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6 mt-4">
+                                        <div class="border-start ps-4">
+                                            <div class="media-body">
+                                                <h4 class="mb-3">Establecimiento de la Asociación:</h4>
+                                                <span class="mb-5">En el acta se detallan los aspectos esenciales relacionados con la creación de la asociación, como el nombre de la asociación, el propósito para el cual se forma, la ubicación, y otros detalles importantes.</span>
+                                            </div>
+                                        </div>
+                                    </div>
 
-                                        <div class="col-lg-12  mt-4">
-                                            <div class="border-start ps-4">
-                                                <div class="media-body">
-    
-                                                    <span class="mb-5">
-                                                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing
-                                                            elit. Sapiente mollitia suscipit sunt. Odio esse
-                                                            tenetur sint, voluptatum repudiandae saepe ipsa
-                                                            porro inventore ut temporibus corporis ab velit
-                                                            tempora voluptatem est.</p>
-                                                        </span>
+                                    <div class="col-lg-6">
+                                        <div class="border-start ps-4">
+                                            <div class="media-body">
+                                                <h4 class="mb-3">Elección de la Junta Directiva:</h4>
+                                                <span class="mb-5">La asamblea de constitución generalmente implica la elección de la junta directiva o el comité de la asociación. El acta registra quiénes son los miembros electos, sus roles y responsabilidades.</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6 mb-5">
+                                        <div class="border-start ps-4">
+                                            <div class="media-body">
+                                                <h4 class="mb-3">Aprobación de Estatutos y Reglamentos:</h4>
+                                                <span class="mb-5">La asamblea de constitución discutirá y aprobará los estatutos y reglamentos que gobernarán el funcionamiento de la asociación. Estos documentos establecerán las normas internas, los procedimientos y los derechos y responsabilidades de los miembros.<span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6 mt-3">
+                                        <div class="border-start ps-4">
+                                            <div class="media-body">
+                                                <h4 class="mb-3">Definición de Objetivos y Actividades:</h4>
+                                                <span class="mb-5">Se establecen los objetivos y las actividades principales de la asociación en el acta. Esto proporciona una base clara para la misión y visión de la asociación.</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6 mt-3 pb-5">
+                                        <div class="border-start ps-4">
+                                            <div class="media-body">
+                                                <h4 class="mb-3">Declaración de Membresía:</h4>
+                                                <span class="mb-5">El acta puede incluir una lista de los miembros fundadores que participaron en la asamblea de constitución. También puede contener información sobre cómo otros individuos pueden unirse a la asociación en el futuro.</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="text-center">
+                                    
+                                    {% if rutas_pdf %}
+                                        <div class="align-self-center py-1">
+                                            <img src="{{ url_for('static', path='assets/images/logo-sena.ico') }}" width="40px" height="43px" alt="">
+                                        </div>
+                                        <h1 class="fw-bolder">Tus Documentos</h1>
+                                        <p class="lead fw-normal text-muted mb-0 pb-3">Estos son los documentos generados, puedes editarlos si deseas llenando el formulario nuevamente </p>
+                                        {% for ruta in rutas_pdf %}
+                                            <iframe src="{{ url_for('static', path=ruta) }}" style="width: 100%; height: 25em; border: none;"></iframe>
+                                            <div class="row pt-2 pb-2">
+                                                <div class="col-6">
+                                                    <div class="d-grid">
+                                                        <a href="{{ url_for('static', path=ruta) }}" download="Documento.pdf" class="btn btn-success btn-lg">Descargar Documento</a>
+                                                    </div>
+                                                </div>
+                                                <div class="col-6">
+                                                    <div class="d-grid">
+                                                        {% if loop.index == 1 %}
+                                                            <a href="{{ url_for('static', path='ArchivosDescarga/P01-F-03_Estatutos_Asociacion_Suscriptores.docx') }}" download="Estatutos_Asociacion_Suscriptores.docx" class="btn btn-success btn-lg">Descargar Formato</a>
+                                                            {% elif loop.index == 2 %}
+                                                            <a href="{{ url_for('static', path='ArchivosDescarga/P01-F-02_Formato_Contrato_Condiciones_Uniformes.docx') }}" download="Formato_Contrato_Condiciones_Uniformes.docx" class="btn btn-success btn-lg">Descargar Formato</a>
+                                                        {% elif loop.index == 3 %}
+                                                        <a href="{{ url_for('static', path='ruta_especial_2') }}" class="btn btn-success btn-lg">Descargar Formato</a>
+                                                        {% endif %}
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-
-                                        </div>
-                                    
-                                    <div class="row">
-                                        <div class="col">
-                                            <div class="text-center">
-                                                <a href="#" type="button" class="mx-3 mt-3 btn" data-toggle="modal"
-                                                    data-target="#exampleModal"
-                                                    style="background-color: #00af00; color: white;"> <b>Ver Acta</b>
-                                                </a>
-                                                <a href="" type="button" class="mx-3 mt-3 btn" data-toggle="modal"
-                                                    data-target="#modalVotos"
-                                                    style="background-color: #00af00; color: white;"> <b>Cargar Resultados</b>
-                                                </a>
+                                            {% endfor %}
+                                            {% else %}
+                                            <div class="align-self-center py-1">
+                                                <img src="{{ url_for('static', path='assets/images/logo-sena.ico') }}" width="40px" height="43px" alt="">
                                             </div>
+                                        <h1 class="fw-bolder">Documento de Acta de Constitución</h1>
+                                        <iframe src="{{ url_for('static', path='ArchivosDescarga/P01-F-06_ActaConstitucion.pdf') }}" style="width: 100%; height: 50em; border: none; "></iframe>
+                                        {% endif %}
+                                        <div class="row pt-5">
+                                        {% if usuario.rol == "SuperAdmin" %}
+                                        <div class="col-lg-2 col-md-2"></div>
+                                        <div class="col-lg-8 col-md-8 col-sm-12"> 
+                                            <form id="formulario" action="contrato_condiciones_documento" method="POST">
+                                                <h6>Selecciona la empresa que quieres ver los documentos:</h6>
+                                                <select class="form-select mt-2 mb-3" name="id_empresa" id="selectEmpresa" required>
+                                                    <option selected>Elige una empresa</option>
+                                                    {% for empresa in datos_empresas %}
+                                                    <option value="{{empresa.id_empresa}}">{{empresa.nom_empresa}}</option>
+                                                    {% endfor %}
+                                                </select>
+                                                <input type="hidden" name="id_empresa_hidden" id="id_empresa_hidden" value="">
+                                            </form>
                                         </div>
-
-                                    </div>
-
-                                </div>
-
-
-                                <!-- Modal con iframe -->
-                                <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog"
-                                    aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static">
-                                    <div class="modal-dialog" role="document">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title" id="exampleModalLabel">Preview PDF</h5>
-                                                <button type="button" class="close" data-dismiss="modal"
-                                                    aria-label="Close">
-                                                </button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <!-- Agregar el iframe aquí -->
-                                                <iframe src="{{ url_for('static', path='ArchivosDescarga/P01-F-06_ActaConstitución.pdf') }}" width="100%" height="500"
-                                                    frameborder="0"></iframe>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button class="btn" data-dismiss="modal"><i class="flaticon-cancel-12"></i> Cerrar</button>
-                                                <a href="{{ url_for('static', path='ArchivosDescarga/P01-F-06_ActaConstitución.pdf') }}" download="acta_constitucion.pdf" class="btn btn-primary">Descargar</a>
-                                            </div>
-                                        </div>
+                                        <div class="col-lg-2 col-md-2"></div>
+                                        <script>
+                                            document.getElementById("selectEmpresa").addEventListener("change", function() {
+                                                document.getElementById("id_empresa_hidden").value = this.value;
+                                            });
+                                        </script>
+                                        {% endif %}
                                     </div>
                                 </div>
-
-                                <!-- Modal de votos -->
-                                <div class="modal fade" id="modalVotos" tabindex="-1" role="dialog"
-                                    aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static">
-                                    <div class="modal-dialog" role="document">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title" id="exampleModalLabel">Ingrese los votos a favor y en contra</h5>
-                                                <button type="button" class="close" data-dismiss="modal"
-                                                    aria-label="Close">
-                                                </button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <p>formulario bacan &#129305;</p>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button class="btn" data-dismiss="modal"><i class="flaticon-cancel-12"></i> Cerrar</button>
-                                                <button class="btn" data-dismiss="modal"><i class="flaticon-cancel-12"></i> Enviar</button>
-                                            </div>
+                                <div>
+                                    {% if ruta_pdf: %}
+                                    <div class="text-center pt-4">
+                                        <div class="align-self-center py-1">
+                                            <img src="{{ url_for('static', path='assets/images/logo-sena.ico') }}" width="40px" height="43px" alt="">
                                         </div>
+                                        <h1 class="fw-bolder pb-3">Documento de Contrato De Condiciones Uniformes</h1>
+                                        <iframe src="{{ url_for('static', path=ruta_pdf) }}" style="width: 100%; height: 50em; border: none;"></iframe>
                                     </div>
-                                </div>
+                                    {% else %}
 
-
-                                <div class="container">
-                                    <div class="row">
-                                        <div class="footer-wrapper col-xl-12 d-flex justify-content-center mt-2">
-                                            <div class="footer-section f-section-1 ">
-                                                <p class="">© 2023 <a target="_blank"
-                                                        href="https://www.sena.edu.co/es-co/Paginas/default.aspx">SENA -
-                                                        Acueducto</a></p>
+                                        {% if usuario.rol == "SuperAdmin" %}
+                                            <div class="row">
+                                                <div class="col-lg-2 col-md-2 "></div>
+                                                <div class="col-lg-8 col-md-8 col-sm-12 text-center"> 
+                                                    <div class="alert alert-warning " role="alert">
+                                                        La empresa seleccionada no tiene documentos generados
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-2 col-md-2"></div>
+                                            </div>
+                                            {% else %}
+                                            <div class="row">
+                                                <div class="col-lg-2 col-md-2 "></div>
+                                                <div class="col-lg-8 col-md-8 col-sm-12 text-center"> 
+                                                    <div class="alert alert-warning " role="alert">
+                                                        La empresa no tiene documentos generados
+                                                    </div>
+                                                    <a href="/generar_documentos" class="btn btn-success">Generar documentos</a>
+                                                </div>
+                                                <div class="col-lg-2 col-md-2"></div>
+                                            </div>
+                                            {% endif %}
+                                            {% endif %}
+                                        </div>
+                                <div class="footer-wrapper col-xl-12 d-flex justify-content-center mt-2 pt-5">
+                                    <div class="footer-section f-section-1">
+                                        <p class="">&copy; 2023 <a target="_blank"
+                                            href="https://www.sena.edu.co/es-co/Paginas/default.aspx">SENA -
+                                                Acueducto</a></p>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-    
                             </div>
                         </div>
                     </div>
                 </div>
-
             </div>
-            <!--  END CONTENT AREA  -->
         </div>
         <!-- END MAIN CONTAINER -->
 
-
-        <!-- BEGIN SCRIPTS -->
+        <!-- BEGIN PAGE LEVEL PLUGINS/CUSTOM SCRIPTS -->
         {% block scripts %}
         {% include 'scripts.html' %}
         {% endblock %}
