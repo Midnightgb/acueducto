@@ -92,7 +92,7 @@
                 {% else %}
                 <form action="/desvincularVivienda" method="post" id="desvincularVivienda{{ vivienda.id_inmueble }}">
                   <input type="text" hidden name="id_vivienda" id="id_vivienda" value="{{ vivienda.id_inmueble }}">
-                    <button type="button" class="btn btn-danger" onclick="confirmDelete('{{ vivienda.id_inmueble }}', 'Desvincular')">
+                    <button type="button" class="btn btn-danger" onclick="confirmUnlink('{{ vivienda.id_inmueble }}', 'Desvincular')">
                       Desvincular
                   </button>
                 </form>
@@ -134,6 +134,22 @@
       }).then((result) => {
         if (result.isConfirmed) {
           document.getElementById(`deleteVivienda_${id}`).submit();
+        }
+      });
+    }
+    function confirmUnlink(id,txt) {
+      Swal.fire({
+        title: '¿Estás seguro?',
+        text: 'No podrás revertir esta acción',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: txt,
+        cancelButtonText: 'Cancelar'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          document.getElementById(`desvincularVivienda${id}`).submit();
         }
       });
     }

@@ -127,6 +127,7 @@
                       <label for="empresa">Empresa</label>
                       <select class="form-control" name="empresa" id="empresa" required>
                         {% if usuario.rol == 'SuperAdmin': %}
+                        <option value="" disabled selected>Seleccione una empresa</option>
                         {% for empresa in empresas %}
                         <option value="{{ empresa.id_empresa }}">{{ empresa.nom_empresa }}</option>
                         {% endfor %}

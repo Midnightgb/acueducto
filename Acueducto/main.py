@@ -2122,13 +2122,13 @@ def desvincularVivienda(
                     "mensaje": "Vivienda desvinculada exitosamente",
                     "color": "success",
                 }
-                return template.TemplateResponse("crud-viviendas/consultarViviendasVinculadas.html", {"request": request, "usuario": usuario, "viviendas": viviendas_con_usuario, "alerta": alerta})
+                return template.TemplateResponse("crud-viviendas/consultar_viviendas.html", {"request": request, "usuario": usuario, "viviendas": viviendas_con_usuario, "alerta": alerta})
             else:
                 alerta = {
                     "mensaje": "Vivienda no encontrada",
                     "color": "error",
                 }
-                return template.TemplateResponse("crud-viviendas/consultarViviendasVinculadas.html", {"request": request, "usuario": usuario, "viviendas": viviendas_con_usuario, "alerta": alerta})
+                return template.TemplateResponse("crud-viviendas/consultar_viviendas.html", {"request": request, "usuario": usuario, "viviendas": viviendas_con_usuario, "alerta": alerta})
         else:
             raise HTTPException(
                 status_code=403, detail="nada")
