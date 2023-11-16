@@ -1449,6 +1449,15 @@ def create_usuario(
 
 
 # --- FUNCION PARA MOSTRAR TODOS LOS USUARIOS(GENERAL)
+
+@app.get("/usuarios_get/{id_empresa}", response_class=HTMLResponse, tags=["Operaciones Users"])
+def consultarUsuario(
+    id_empresa: int,
+    request: Request, token: str = Cookie(None), db: Session = Depends(get_database)
+):
+    respuesta = consultarUsuarios(request, token, db, id_empresa)
+    return respuesta
+
 @app.post("/usuarios", response_class=HTMLResponse, tags=["Operaciones Users"])
 def consultarUsuario(
     request: Request, token: str = Cookie(None), db: Session = Depends(get_database), id_empresa: str = Form(None)
@@ -1496,6 +1505,7 @@ def updateUser(
     token: str = Cookie(None),
     db: Session = Depends(get_database),
 ):
+    print("Estamos en la funcion de updateUser")
     respuesta = actualizarUsuario(
         id_usuario,
         nom_usuario,
@@ -1509,6 +1519,8 @@ def updateUser(
         token,
         db,
     )
+    print(f"Respuestaasdasdasdasdasdasdasdasdasdasdasd: {respuesta}")
+    print("se llego hasta aqui emlosos")
     return respuesta
 
 
