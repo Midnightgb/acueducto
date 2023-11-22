@@ -70,10 +70,11 @@
                                     {%elif estadoCuorum.cuorum == 1%}
                                         <h4 class="mt-3 mb-3">Aprobado el cuorum</h4>
                                         <p> Total suscriptores: <b>{{totalSuscriptores}}</b>  </p>
-                                        <p> Total asistentes: <b>{{totalAsistentes}}</b>  </p>
-                                    {%else:%}
-                                        <button type="button" class="btn btn-primary mt-5 " id="calcularCuorum" onclick="limpiar()">Calcular Cuorum</button>
+                                        <p> Total asistentes: <b>{{totalAsistentes}}</b>  </p>     
+
                                     {%endif%}
+                                    <button type="button" class="btn btn-primary mt-5 " id="calcularCuorum" onclick="limpiar()">Calcular Cuorum</button>
+                                    <input type="hidden" id="cantidadAsistentesDB" value="{{totalAsistentes}}">
 
                                 </div>
                             </div>
@@ -172,10 +173,12 @@
         let asistentes = [];
         let idReunion = document.getElementById("idReunion");
         let calcularCuorum = document.getElementById('calcularCuorum');
+        let contadorDB = document.getElementById('cantidadAsistentesDB');
         console.log(idReunion.value);
+        console.log(contadorDB.value);
         
         // Agrega un contador para llevar el registro de los checkboxes marcados
-        let contadorCheckboxes = 0;
+        let contadorCheckboxes = contadorDB.value;
 
         let checkboxes = document.querySelectorAll('input[type="checkbox"]');
 
@@ -249,8 +252,6 @@
                 }else{
                     mostrarAlert("No hay Cuorom");
                 }
-
-                calcularCuorum.disabled = true;
             })
             .catch(error => {
                 console.error('Error en la solicitud fetch:', error);

@@ -564,6 +564,7 @@ def obtenerSuscriptoresEmpresa(
                 lista_combinada = {"suscriptor":[]}
                 total_asistentes = 0
                 total_suscriptores = 0
+                
                 for busquedaUsuarios in query_usuarios:
                     total_suscriptores += 1
                     estado = False
@@ -577,7 +578,7 @@ def obtenerSuscriptoresEmpresa(
                         lista_combinada["suscriptor"].append([busquedaUsuarios,False])
 
                 cuorum = db.query(Reunion).filter(Reunion.id_reunion == reunion_1).first() 
-
+                print("total: ",total_asistentes)
                 response = template.TemplateResponse(
                     "paso-1/paso1-2/llamado_lista.html",
                     {"request": request, "usuarios": lista_combinada, "usuario": usuario,
