@@ -151,7 +151,6 @@ def cambiarEstadoUsuario(
 
 
 def actualizarUsuario(
-
     id_usuario: str,
     nom_usuario: str,
     apellido_usuario: str,
@@ -176,7 +175,6 @@ def actualizarUsuario(
                     Usuario).filter_by(id_usuario=id_usuario).first()
 
                 if usuario_actualizar:
-
                     # Actualiza los campos con los nuevos valores
                     usuario_actualizar.nom_usuario = nom_usuario
                     usuario_actualizar.apellido_usuario = apellido_usuario
@@ -187,13 +185,10 @@ def actualizarUsuario(
                     usuario_actualizar.tipo_doc = tipo_doc
                     # Guarda los cambios en la base de datos
                     db.commit()
+
                     # Compara los valores actuales con los nuevos valores
-                    raise HTTPException(status_code=307, detail="Redireccionando...", headers={
-                                        "Location": "/usuarios"})
-                    # return RedirectResponse(url="/usuarios", status_code=status.HTTP_303_SEE_OTHER)
-
+                    return RedirectResponse(url=f"/usuarios_get/{usuario_actualizar.empresa}", status_code=status.HTTP_303_SEE_OTHER)
                 else:
-
                     return RedirectResponse(url="/usuarios", status_code=status.HTTP_303_SEE_OTHER)
         else:
 
@@ -569,6 +564,7 @@ def obtenerSuscriptoresEmpresa(
                 lista_combinada = {"suscriptor":[]}
                 total_asistentes = 0
                 total_suscriptores = 0
+                
                 for busquedaUsuarios in query_usuarios:
                     total_suscriptores += 1
                     estado = False
@@ -582,7 +578,7 @@ def obtenerSuscriptoresEmpresa(
                         lista_combinada["suscriptor"].append([busquedaUsuarios,False])
 
                 cuorum = db.query(Reunion).filter(Reunion.id_reunion == reunion_1).first() 
-
+                print("total: ",total_asistentes)
                 response = template.TemplateResponse(
                     "paso-1/paso1-2/llamado_lista.html",
                     {"request": request, "usuarios": lista_combinada, "usuario": usuario,
